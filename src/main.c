@@ -15,7 +15,7 @@
 #include "keyboard.h"
 #include "timer.h"
 
-int playerX = 34, playerY = 12;
+int playerX = 10, playerY = 12;
 int startIRoom1 = 8, finishIRoom1 = 27;
 int startJRoom1 = 8, finishJRoom1 = 16;
 
@@ -41,7 +41,7 @@ void printRoom1()
         {
             if (i == finishIRoom1 - 1 && j == 12)
             {
-                screenGotoxy(i - 1, j);
+                screenGotoxy(i, j);
                 printf("🚪");
             }
             else if (i == startIRoom1 || i == finishIRoom1 - 1)
@@ -119,11 +119,11 @@ int main()
             {
                 newX = playerX - incX;
 
-                if (newX == finishIRoom1 - 1 && newY > startJRoom1 && newY < finishJRoom1 || newX == finishIRoom1 - 1 && playerY > startJRoom1 && playerY < finishJRoom1)
+                if (newY != 12 && (newX == finishIRoom1 - 1 && newY > startJRoom1 && newY < finishJRoom1 || newX == finishIRoom1 - 1 && playerY > startJRoom1 && playerY < finishJRoom1))
                 {
                     newX += 1;
                 }
-                else if (newX == 4 && newY > startJRoom1 && newY < finishJRoom1 || newX == 4 && playerY > startJRoom1 && playerY < finishJRoom1)
+                else if ((newX == startIRoom1 && newY > startJRoom1 && newY < finishJRoom1 || newX == startIRoom1 && playerY > startJRoom1 && playerY < finishJRoom1))
                 {
                     newX += 1;
                 }
@@ -144,11 +144,11 @@ int main()
             {
                 newX = playerX + incX;
 
-                if (newX == finishIRoom1 - 1 && newY > startJRoom1 && newY < finishJRoom1 || newX == finishIRoom1 - 1 && playerY > startJRoom1 && playerY < finishJRoom1)
+                if (newY != 12 && (newX == finishIRoom1 - 4 && newY > startJRoom1 && newY < finishJRoom1 || newX == finishIRoom1 - 4 && playerY > startJRoom1 && playerY < finishJRoom1))
                 {
                     newX -= 1;
                 }
-                else if (newX == 4 && newY > startJRoom1 && newY < finishJRoom1 || newX == 4 && playerY > startJRoom1 && playerY < finishJRoom1)
+                else if (newX == startIRoom1 - 1 && newY > startJRoom1 && newY < finishJRoom1 || newX == startIRoom1 - 1 && playerY > startJRoom1 && playerY < finishJRoom1)
                 {
                     newX -= 1;
                 }
@@ -173,7 +173,7 @@ int main()
                 {
                     newY -= 1;
                 }
-                else if (newY == finishJRoom1 && newX > startIRoom1 && newX < finishIRoom1 || newY == finishJRoom1 && playerX > startIRoom1 && playerX < finishIRoom1)
+                else if (newY == finishJRoom1 - 1 && newX > startIRoom1 && newX < finishIRoom1 || newY == finishJRoom1 - 1 && playerX > startIRoom1 && playerX < finishIRoom1)
                 {
                     newY -= 1;
                 }
