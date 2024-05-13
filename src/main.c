@@ -20,8 +20,11 @@ int playerX = 16, playerY = 14;
 int startIRoom1 = 8, finishIRoom1 = 27;
 int startJRoom1 = 8, finishJRoom1 = 16;
 
-int startIHall = 27, finishIHall = 37;
+int startIHall = 27, finishIHall = 32;
 int starJHall = 11, finishJHall = 14;
+
+int startIRoom2 = 34, finishIRoom2 = 44;
+int startJRoom2 = 8, finishJRoom2 = 20;
 
 int incX = 1, incY = 1;
 
@@ -48,11 +51,6 @@ void printRoom1()
                 screenGotoxy(i, j);
                 printf("🚪");
             }
-            else if (j == startIRoom1 && i == 16)
-            {
-                screenGotoxy(i, j);
-                printf("🚪");
-            }
             else if (j == startJRoom1 || j == finishJRoom1 - 1)
             {
                 screenGotoxy(i, j);
@@ -71,9 +69,43 @@ void printRoom1()
     }
 }
 
+void printRoom2()
+{
+    screenSetColor(CYAN, DARKGRAY);
+    int lastJ = startJRoom2;
+    if (playerX + 1 == startIRoom2)
+    {
+        for (int i = startIRoom2; i < finishIRoom2; i++)
+        {
+            for (int j = startJRoom2; j < finishJRoom2; j++)
+            {
+
+                if (j == startJRoom2 || j == finishJRoom2 - 1)
+                {
+                    screenGotoxy(i, j);
+                    printf("-");
+                }
+                else if (i == startIRoom2 && j == 12)
+                {
+                    screenGotoxy(i, j);
+                    printf("🚪");
+                }
+                else if (i == startIRoom2 || i == finishIRoom2 - 1)
+                {
+                    screenGotoxy(i, j);
+                    printf("|");
+                }
+
+                lastJ = j;
+            }
+            screenGotoxy(i, lastJ);
+            printf("\n");
+        }
+    }
+}
+
 void printHall1()
 {
-
     if (playerX >= startIHall - 2 && playerX < finishIHall)
     {
         screenGotoxy(playerX + 2, starJHall);
@@ -115,6 +147,8 @@ int main()
     screenGotoxy(MINX + 1, MINY + 1);
     printf("🐱🐱🐱");
     printPlayer(playerX, playerY);
+    screenGotoxy(playerX, playerY - 5);
+    printf("🗡️");
     printRoom1();
     screenUpdate();
 
@@ -135,19 +169,20 @@ int main()
         {
             int newX = playerX, newY = playerY;
 
-            int collisionXInside = newY > startJRoom1 - 1 && newY < finishJRoom1;
-            int collisionYInside = newX >= startIRoom1 && newX < finishIRoom1;
-            int collisionYHall = newX >= finishIRoom1 - 1 && newX <= finishIHall + 1;
+            int collisionXRoom1 = newY > startJRoom1 - 1 && newY < finishJRoom1;
+            int collisionYRoom1 = newX >= startIRoom1 && newX < finishIRoom1;
+
+            int collisionYHall = newX >= finishIRoom1 - strlen("🐱") && newX <= finishIHall + 1;
 
             if (ch == 97)
             {
                 newX = playerX - incX;
 
-                if (newY != 12 && (newX == finishIRoom1 - 1 && collisionXInside))
+                if (newY != 12 && (newX == finishIRoom1 - 1 && collisionXRoom1))
                 {
                     newX += 1;
                 }
-                else if ((newX == startIRoom1 && collisionXInside))
+                else if ((newX == startIRoom1 && collisionXRoom1))
                 {
                     newX += 1;
                 }
@@ -168,11 +203,11 @@ int main()
             {
                 newX = playerX + incX;
 
-                if (newY != 12 && (newX == finishIRoom1 - 4 && collisionXInside))
+                if (newY != 12 && (newX == finishIRoom1 - 4 && collisionXRoom1))
                 {
                     newX -= 1;
                 }
-                else if (newX == startIRoom1 - 1 && collisionXInside)
+                else if (newX == startIRoom1 - 1 && collisionXRoom1)
                 {
                     newX -= 1;
                 }
@@ -193,11 +228,11 @@ int main()
             {
                 newY = playerY + incY;
 
-                if (newY == startJRoom1 && collisionYInside)
+                if (newY == startJRoom1 && collisionYRoom1)
                 {
                     newY -= 1;
                 }
-                else if (newY == finishJRoom1 - 1 && collisionYInside)
+                else if (newY == finishJRoom1 - 1 && collisionYRoom1)
                 {
                     newY -= 1;
                 }
@@ -224,11 +259,11 @@ int main()
             {
                 newY = playerY - incY;
 
-                if (newY == startJRoom1 && collisionYInside)
+                if (newY == startJRoom1 && collisionYRoom1)
                 {
                     newY += 1;
                 }
-                else if (newY == finishJRoom1 && collisionYInside)
+                else if (newY == finishJRoom1 && collisionYRoom1)
                 {
                     newY += 1;
                 }
@@ -252,6 +287,7 @@ int main()
             }
 
             printHall1();
+            printRoom2();
             printPlayer(newX, newY);
 
             // Updating screen
