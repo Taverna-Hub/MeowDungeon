@@ -15,7 +15,7 @@
 #include "keyboard.h"
 #include "timer.h"
 
-int playerX = 10, playerY = 12;
+int playerX = 16, playerY = 14;
 int startIRoom1 = 8, finishIRoom1 = 27;
 int startJRoom1 = 8, finishJRoom1 = 16;
 
@@ -44,26 +44,40 @@ void printRoom1()
                 screenGotoxy(i, j);
                 printf("🚪");
             }
+            else if (j == startIRoom1 && i == 16)
+            {
+                screenGotoxy(i, j);
+                printf("🚪");
+            }
+            else if (j == startJRoom1 || j == finishJRoom1 - 1)
+            {
+                screenGotoxy(i, j);
+                printf("-");
+            }
             else if (i == startIRoom1 || i == finishIRoom1 - 1)
             {
                 screenGotoxy(i, j);
                 printf("|");
-            }
-            else if (j == startJRoom1)
-            {
-                screenGotoxy(i, j);
-                printf("‾");
-            }
-            else if (j == finishJRoom1 - 1)
-            {
-                screenGotoxy(i, j);
-                printf("_");
             }
 
             lastJ = j;
         }
         screenGotoxy(i, lastJ);
         printf("\n");
+    }
+}
+
+void printHall1()
+{
+    int startIHall = 27, finishIHall = 37;
+    int starJHall = 11, finishJHall = 14;
+
+    if (playerX >= startIHall - 2 && playerX < finishIHall)
+    {
+        screenGotoxy(playerX + 2, starJHall);
+        printf("=");
+        screenGotoxy(playerX + 2, finishJHall - 1);
+        printf("=");
     }
 }
 
@@ -115,15 +129,19 @@ int main()
         if (timerTimeOver() == 1)
         {
             int newX = playerX, newY = playerY;
+
+            int collisionXInside = newY > startJRoom1 - 1 && newY < finishJRoom1;
+            int collisionYInside = newX >= startIRoom1 && newX < finishIRoom1;
+
             if (ch == 97)
             {
                 newX = playerX - incX;
 
-                if (newY != 12 && (newX == finishIRoom1 - 1 && newY > startJRoom1 && newY < finishJRoom1))
+                if (newY != 12 && (newX == finishIRoom1 - 1 && collisionXInside))
                 {
                     newX += 1;
                 }
-                else if ((newX == startIRoom1 && newY > startJRoom1 && newY < finishJRoom1))
+                else if ((newX == startIRoom1 && collisionXInside))
                 {
                     newX += 1;
                 }
@@ -144,11 +162,11 @@ int main()
             {
                 newX = playerX + incX;
 
-                if (newY != 12 && (newX == finishIRoom1 - 4 && newY > startJRoom1 && newY < finishJRoom1))
+                if (newY != 12 && (newX == finishIRoom1 - 4 && collisionXInside))
                 {
                     newX -= 1;
                 }
-                else if (newX == startIRoom1 - 1 && newY > startJRoom1 && newY < finishJRoom1)
+                else if (newX == startIRoom1 - 1 && collisionXInside)
                 {
                     newX -= 1;
                 }
@@ -169,11 +187,11 @@ int main()
             {
                 newY = playerY + incY;
 
-                if (newY == startJRoom1 && newX > startIRoom1 && newX < finishIRoom1)
+                if (newY == startJRoom1 && collisionYInside)
                 {
                     newY -= 1;
                 }
-                else if (newY == finishJRoom1 - 1 && newX > startIRoom1 && newX < finishIRoom1)
+                else if (newY == finishJRoom1 - 1 && collisionYInside)
                 {
                     newY -= 1;
                 }
@@ -195,11 +213,11 @@ int main()
             {
                 newY = playerY - incY;
 
-                if (newY == startJRoom1 && newX > startIRoom1 && newX < finishIRoom1)
+                if (newY == startJRoom1 && collisionYInside)
                 {
                     newY += 1;
                 }
-                else if (newY == finishJRoom1 && newX > startIRoom1 && newX < finishIRoom1)
+                else if (newY == finishJRoom1 && collisionYInside)
                 {
                     newY += 1;
                 }
@@ -217,6 +235,7 @@ int main()
                 ch = 0;
             }
 
+            printHall1();
             printPlayer(newX, newY);
 
             // Updating screen
