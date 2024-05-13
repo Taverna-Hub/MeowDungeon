@@ -16,8 +16,12 @@
 #include "timer.h"
 
 int playerX = 16, playerY = 14;
+
 int startIRoom1 = 8, finishIRoom1 = 27;
 int startJRoom1 = 8, finishJRoom1 = 16;
+
+int startIHall = 27, finishIHall = 37;
+int starJHall = 11, finishJHall = 14;
 
 int incX = 1, incY = 1;
 
@@ -69,8 +73,6 @@ void printRoom1()
 
 void printHall1()
 {
-    int startIHall = 27, finishIHall = 37;
-    int starJHall = 11, finishJHall = 14;
 
     if (playerX >= startIHall - 2 && playerX < finishIHall)
     {
@@ -125,6 +127,9 @@ int main()
             screenUpdate();
         }
 
+        screenGotoxy(MINX + 1, MINY + 2);
+        printf("%d %d", playerX, playerY);
+
         // Update game state (move elements, verify collision, etc)
         if (timerTimeOver() == 1)
         {
@@ -132,6 +137,7 @@ int main()
 
             int collisionXInside = newY > startJRoom1 - 1 && newY < finishJRoom1;
             int collisionYInside = newX >= startIRoom1 && newX < finishIRoom1;
+            int collisionYHall = newX >= finishIRoom1 - 1 && newX <= finishIHall + 1;
 
             if (ch == 97)
             {
@@ -196,6 +202,11 @@ int main()
                     newY -= 1;
                 }
 
+                if (collisionYHall)
+                {
+                    newY -= 1;
+                }
+
                 if (newY >= MAXY - 3)
                 {
                     incY = 0;
@@ -218,6 +229,11 @@ int main()
                     newY += 1;
                 }
                 else if (newY == finishJRoom1 && collisionYInside)
+                {
+                    newY += 1;
+                }
+
+                if (collisionYHall)
                 {
                     newY += 1;
                 }
