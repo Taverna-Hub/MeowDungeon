@@ -15,7 +15,7 @@
 #include "keyboard.h"
 #include "timer.h"
 
-int playerX = 16, playerY = 14;
+int player_x = 16, player_y = 14;
 
 int startIRoom1 = 8, finishIRoom1 = 27;
 int startJRoom1 = 8, finishJRoom1 = 16;
@@ -34,45 +34,46 @@ int incX = 1, incY = 1;
 //     int positionX;
 //     int positionY;
 //      int incX;
-//      int incY;   
-//     int sword; 
-//     int shield;    
+//      int incY;
+//     int sword;
+//     int shield;
 // };
 
 struct enemy_skull
 {
-    int skull_X;
-    int skull_Y;
+    int skull_x;
+    int skull_y;
 };
 
-int skullX = 22;
-int skullY = 10;
+int skull_x = 22;
+int skull_y = 10;
 
-void printSkull(struct enemy_skull isqueleto){
+void printSkull(struct enemy_skull skull)
+{
     screenSetColor(CYAN, DARKGRAY);
-    screenGotoxy(skullX, skullY);
+    screenGotoxy(skull_x, skull_y);
     printf("    ");
-    skullX = isqueleto.skull_X;
-    skullY = isqueleto.skull_Y;
-    screenGotoxy(skullX, skullY);
+    skull_x = skull.skull_x;
+    skull_y = skull.skull_y;
+    screenGotoxy(skull_x, skull_y);
     printf("💀");
 }
 
 void printPlayer(int nextX, int nextY)
 {
     screenSetColor(CYAN, DARKGRAY);
-    screenGotoxy(playerX, playerY);
+    screenGotoxy(player_x, player_y);
     printf("    ");
-    playerX = nextX;
-    playerY = nextY;
-    screenGotoxy(playerX, playerY);
+    player_x = nextX;
+    player_y = nextY;
+    screenGotoxy(player_x, player_y);
     printf("🐱");
 }
 
 void printRooms(int starIRoom, int finishIRoom, int startJRoom, int finishJRoom, int lastJ, int room)
 {
     screenSetColor(CYAN, DARKGRAY);
-    if ((playerX + 1 == starIRoom) && (room != 0))
+    if ((player_x + 1 == starIRoom) && (room != 0))
     {
         for (int i = starIRoom; i < finishIRoom; i++)
         {
@@ -99,7 +100,6 @@ void printRooms(int starIRoom, int finishIRoom, int startJRoom, int finishJRoom,
             screenGotoxy(i, lastJ);
             printf("\n");
         }
-
     }
     else if (room == 0)
     {
@@ -133,11 +133,11 @@ void printRooms(int starIRoom, int finishIRoom, int startJRoom, int finishJRoom,
 
 void printHorizontalHall(int startIHall, int finishIHall, int starJHall, int finishJHall)
 {
-    if (playerX >= startIHall - 2 && playerX < finishIHall)
+    if (player_x >= startIHall - 2 && player_x < finishIHall)
     {
-        screenGotoxy(playerX + 2, starJHall);
+        screenGotoxy(player_x + 2, starJHall);
         printf("=");
-        screenGotoxy(playerX + 2, finishJHall - 1);
+        screenGotoxy(player_x + 2, finishJHall - 1);
         printf("=");
     }
 }
@@ -173,23 +173,19 @@ int main()
     timerInit(100);
     screenGotoxy(MINX + 1, MINY + 1);
     printf("🐱🐱🐱");
-    printPlayer(playerX, playerY);
-    screenGotoxy(playerX, playerY - 5);
-    skeleton.skull_X = skullX;
-    skeleton.skull_Y = skullY;
+    printPlayer(player_x, player_y);
+    screenGotoxy(player_x, player_y - 5);
+    skeleton.skull_x = skull_x;
+    skeleton.skull_y = skull_y;
 
     printf("🗡️");
 
-    screenUpdate();
+    printRooms(8, 27, 8, 16, 8, 0); // first room
 
-    printRooms(8, 27, 8, 16, 8, 0); //first room
-
-
-    printRoom1();
     printSkull(skeleton);
     screenUpdate();
 
-    int Skull_verify = 1;
+    int skull_verify = 1;
 
     while (ch != 10)
     {
@@ -201,31 +197,31 @@ int main()
         }
 
         screenGotoxy(MINX + 1, MINY + 2);
-        printf("%d %d", playerX, playerY);
+        printf("%d %d", player_x, player_y);
 
         // Update game state (move elements, verify collision, etc)
         if (timerTimeOver() == 1)
         {
 
-            int newX = playerX, newY = playerY;
+            int newX = player_x, newY = player_y;
 
             int collisionXRoom1 = newY > startJRoom1 - 1 && newY < finishJRoom1;
             int collisionYRoom1 = newX >= startIRoom1 && newX < finishIRoom1;
 
             int collisionYHall = newX >= finishIRoom1 - strlen("🐱") && newX <= finishIHall + 1;
 
-            if (Skull_verify == 1)
+            if (skull_verify == 1)
             {
                 printSkull(skeleton);
             }
-            
+
             if (ch == 97)
             {
                 // if ()
-            
-            // printSkull(skeleton);
 
-                newX = playerX - incX;
+                // printSkull(skeleton);
+
+                newX = player_x - incX;
 
                 if (newY != 12 && (newX == finishIRoom1 - 1 && collisionXRoom1))
                 {
@@ -250,8 +246,8 @@ int main()
 
             if (ch == 100)
             {
-                
-                newX = playerX + incX;
+
+                newX = player_x + incX;
 
                 if (newY != 12 && (newX == finishIRoom1 - 4 && collisionXRoom1))
                 {
@@ -276,9 +272,9 @@ int main()
 
             if (ch == 115)
             {
-            
-            // printSkull(skeleton);
-                newY = playerY + incY;
+
+                // printSkull(skeleton);
+                newY = player_y + incY;
 
                 if (newY == startJRoom1 && collisionYRoom1)
                 {
@@ -309,10 +305,9 @@ int main()
 
             if (ch == 119)
             {
-            
-            
-            // printSkull(skeleton);
-                newY = playerY - incY;
+
+                // printSkull(skeleton);
+                newY = player_y - incY;
 
                 if (newY == startJRoom1 && collisionYRoom1)
                 {
@@ -346,14 +341,14 @@ int main()
 
             printRooms(34, 44, 8, 20, 8, 1);
             printPlayer(newX, newY);
-            if (newX == skullX && newY == skullY){
-                Skull_verify = 0;
+            if (newX == skull_x && newY == skull_y)
+            {
+                skull_verify = 0;
             }
 
             // Updating screen
             printKey(ch);
             screenUpdate();
-
         }
     }
 
