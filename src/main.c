@@ -19,6 +19,7 @@ int playerX = 16, playerY = 14;
 
 int startIRoom1 = 8, finishIRoom1 = 27;
 int startJRoom1 = 8, finishJRoom1 = 16;
+int doorI1 = 26, doorJ1 = 12;
 
 int startIHall = 27, finishIHall = 32;
 int starJHall = 11, finishJHall = 14;
@@ -27,6 +28,17 @@ int startIRoom2 = 34, finishIRoom2 = 44;
 int startJRoom2 = 8, finishJRoom2 = 20;
 
 int incX = 1, incY = 1;
+
+// struct player
+// {
+//     int positionX;
+//     int positionY;
+//      int incX;
+//      int incY;   
+//     int sword; 
+//     int shield;    
+// };
+
 
 void printPlayer(int nextX, int nextY)
 {
@@ -39,58 +51,55 @@ void printPlayer(int nextX, int nextY)
     printf("🐱");
 }
 
-void printRoom1()
-{
-    int lastJ = 8;
-    for (int i = startIRoom1; i < finishIRoom1; i++)
-    {
-        for (int j = startJRoom1; j < finishJRoom1; j++)
-        {
-            if (i == finishIRoom1 - 1 && j == 12)
-            {
-                screenGotoxy(i, j);
-                printf("🚪");
-            }
-            else if (j == startJRoom1 || j == finishJRoom1 - 1)
-            {
-                screenGotoxy(i, j);
-                printf("-");
-            }
-            else if (i == startIRoom1 || i == finishIRoom1 - 1)
-            {
-                screenGotoxy(i, j);
-                printf("|");
-            }
-
-            lastJ = j;
-        }
-        screenGotoxy(i, lastJ);
-        printf("\n");
-    }
-}
-
-void printRoom2()
+void printRooms(int starIRoom, int finishIRoom, int startJRoom, int finishJRoom, int lastJ, int room)
 {
     screenSetColor(CYAN, DARKGRAY);
-    int lastJ = startJRoom2;
-    if (playerX + 1 == startIRoom2)
+    if ((playerX + 1 == starIRoom) && (room != 0))
     {
-        for (int i = startIRoom2; i < finishIRoom2; i++)
+        for (int i = starIRoom; i < finishIRoom; i++)
         {
-            for (int j = startJRoom2; j < finishJRoom2; j++)
+            for (int j = startJRoom; j < finishJRoom; j++)
             {
-
-                if (j == startJRoom2 || j == finishJRoom2 - 1)
-                {
-                    screenGotoxy(i, j);
-                    printf("-");
-                }
-                else if (i == startIRoom2 && j == 12)
+                if (i == doorI1 && j == doorJ1)
                 {
                     screenGotoxy(i, j);
                     printf("🚪");
                 }
-                else if (i == startIRoom2 || i == finishIRoom2 - 1)
+                else if (j == startJRoom || j == finishJRoom - 1)
+                {
+                    screenGotoxy(i, j);
+                    printf("-");
+                }
+                else if (i == starIRoom || i == finishIRoom - 1)
+                {
+                    screenGotoxy(i, j);
+                    printf("|");
+                }
+
+                lastJ = j;
+            }
+            screenGotoxy(i, lastJ);
+            printf("\n");
+        }
+
+    }
+    else if (room == 0)
+    {
+        for (int i = starIRoom; i < finishIRoom; i++)
+        {
+            for (int j = startJRoom; j < finishJRoom; j++)
+            {
+                if (i == doorI1 && j == doorJ1)
+                {
+                    screenGotoxy(i, j);
+                    printf("🚪");
+                }
+                else if (j == startJRoom || j == finishJRoom - 1)
+                {
+                    screenGotoxy(i, j);
+                    printf("-");
+                }
+                else if (i == starIRoom || i == finishIRoom - 1)
                 {
                     screenGotoxy(i, j);
                     printf("|");
@@ -104,7 +113,7 @@ void printRoom2()
     }
 }
 
-void printHall1()
+void printHorizontalHall(int startIHall, int finishIHall, int starJHall, int finishJHall)
 {
     if (playerX >= startIHall - 2 && playerX < finishIHall)
     {
@@ -149,8 +158,9 @@ int main()
     printPlayer(playerX, playerY);
     screenGotoxy(playerX, playerY - 5);
     printf("🗡️");
-    printRoom1();
     screenUpdate();
+
+    printRooms(8, 27, 8, 16, 8, 0); //first room
 
     while (ch != 10)
     {
@@ -286,8 +296,10 @@ int main()
                 ch = 0;
             }
 
-            printHall1();
-            printRoom2();
+            printHorizontalHall(27, 32, 11, 14);
+            printHorizontalHall(44, 48, 16, 19);
+
+            printRooms(34, 44, 8, 20, 8, 1);
             printPlayer(newX, newY);
 
             // Updating screen
