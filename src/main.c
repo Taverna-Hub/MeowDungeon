@@ -44,6 +44,7 @@ char *enemies[] = {"💀", "👿", "👹", "👻"};
 int incX = 1, incY = 1;
 
 int player_x = 16, player_y = 14;
+
 struct player
 {
     int sword;
@@ -51,6 +52,7 @@ struct player
     int score;
     int steps;
     char name[4];
+    int hp;
 };
 
 struct enemy_obj
@@ -59,7 +61,6 @@ struct enemy_obj
     int y;
     int is_dead;
     int inc_x;
-    char *emoji;
 };
 
 void print_enemy(struct enemy_obj enemy, int new_enemy_x, int new_enemy_y)
@@ -185,6 +186,21 @@ void printKey(int ch)
         printf("%d ", readch());
     }
 }
+void printHp(int health){
+    screenGotoxy(MINX + 1, MINY + 1);
+        printf("      ");
+        for (int h = 1; h<health+1; h++){
+            screenGotoxy(MINX + h + h, MINY + 1);
+            screenSetColor(RED, DARKGRAY);
+            printf("♥");
+            screenSetColor(CYAN, DARKGRAY);
+        }
+        if (health == 0){
+            
+            printf("voce morreu");
+        }
+    
+}
 
 int main()
 {
@@ -199,18 +215,21 @@ int main()
     enemy_room_2.x = 36;
     enemy_room_2.y = 10;
     enemy_room_2.inc_x = 1;
+    enemy_room_2.is_dead = 1;
 
     player.sword = 0;
     player.shield = 0;
     player.steps = 0;
     player.score = 0;
-
+    player.hp = 3;
     screenInit(1);
     keyboardInit();
-    timerInit(100);
+    timerInit(150);
 
     screenGotoxy(MINX + 1, MINY + 1);
-    printf("🐱🐱🐱");
+    
+    printHp(player.hp);
+    //printf("🐱🐱🐱");
 
     printf("\t| Iventory |");
     if (player.shield == 0)
@@ -269,6 +288,8 @@ int main()
             {
                 newX = player_x - incX;
 
+                
+
                 // Colisão room 0
                 if ((newX == FINISHIROOM1 - 1 && collisionXRoom1))
                 {
@@ -304,7 +325,6 @@ int main()
             if (ch == 100)
             {
                 newX = player_x + incX;
-
                 if (newY != 12 && (newX == FINISHIROOM1 - 4 && collisionXRoom1))
                 {
                     newX -= 1;
@@ -420,7 +440,13 @@ int main()
 
             printRooms(STARTIROOM2, FINISHIROOM2, STARTJROOM2, FINISHJROOM2, 2);
             print_player(newX, newY);
+
+            if (enemy_room_2.x == newX && enemy_room_2.y == newY){
+                player.hp--; // mudar
+                printHp(player.hp);
+            }
             print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
+            
 
             if ((newX == 16 || newX == 15) && newY == 9)
             {
