@@ -29,12 +29,16 @@ int start_j_room2 = 8, finish_j_room2 = 20;
 
 int incX = 1, incY = 1;
 
+int player_x = 16, player_y = 14;
+struct player
+{
+    int sword;
+    int shield;
+    int score;
+    int steps;
+    char name[4];
+};
 
-
-
-// ┍━┓
-// ╿ ╿
-// ┗━┛
 
 char *enemies[] = {"💀", "👿", "👹", "👻"};
 struct enemy_obj
