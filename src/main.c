@@ -89,6 +89,40 @@ void print_player(int nextX, int nextY)
 */
 // void print_sword()
 
+void print_sword(int pos_X ,int pos_Y)
+{
+    int cont = 8;
+    while (cont > 0)
+    {
+        screenGotoxy(pos_X - 1, pos_Y - 1);
+        printf("╲");
+        printf(" ");
+        screenGotoxy(pos_X, pos_Y - 1);
+        printf("|");
+        printf(" ");
+        screenGotoxy(pos_X + 1, pos_Y - 1);
+        printf("╱");
+        printf(" ");
+        screenGotoxy(pos_X - 1, pos_Y);
+        printf("─ ");
+        printf(" ");
+        screenGotoxy(pos_X + 1, pos_Y);
+        printf(" ─");
+        printf(" ");
+        screenGotoxy(pos_X - 1, pos_Y + 1);
+        printf("╱");
+        printf(" ");
+        screenGotoxy(pos_X, pos_Y + 1);
+        printf("|");
+        printf(" ");
+        screenGotoxy(pos_X + 1, pos_Y + 1);
+        printf("╲");
+        printf(" ");
+
+        cont--;
+    }
+}
+
 void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int room)
 {
     screenSetColor(CYAN, DARKGRAY);
@@ -209,7 +243,7 @@ int main()
     screenGotoxy(MINX + 1, MINY + 1);
     printf("🐱🐱🐱");
 
-    printf("\t| Iventory |");
+    printf("\t┃ Iventory ┃");
     if (player.shield == 0)
     {
         screenGotoxy(MINX + 22, MINY + 2);
@@ -412,6 +446,12 @@ int main()
                 ch = 0;
             }
 
+            if (ch == 32 && player.sword == 1) 
+            {
+                print_sword(newX, newY);
+                ch = 0;
+            }
+
             printHorizontalHall(STARTIHALL1, FINISHIHALL1, STARTJHALL1, FINISHJHALL1);
             printHorizontalHall(STARTIHALL2, FINISHIHALL2, STARTJHALL2, FINISHJHALL2);
 
@@ -425,7 +465,8 @@ int main()
             }
 
             if (player.sword == 1)
-            {
+            {   
+                screenSetColor(WHITE, DARKGRAY);
                 screenGotoxy(MINX + 15, MINY + 2);
                 printf("┏━━━┓");
                 screenGotoxy(MINX + 15, MINY + 3);
