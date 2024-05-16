@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "screen.h"
 #include "keyboard.h"
@@ -122,6 +123,25 @@ void print_sword(int pos_X ,int pos_Y)
         screenGotoxy(pos_X + 1, pos_Y + 1);
         printf("╲");
         printf(" ");
+        
+        usleep(5000); // AQUI ANA CLAUDIA
+
+        screenGotoxy(pos_X - 1, pos_Y - 1);
+        printf("  ");
+        screenGotoxy(pos_X, pos_Y - 1);
+        printf("  ");
+        screenGotoxy(pos_X + 1, pos_Y - 1);
+        printf("  ");
+        screenGotoxy(pos_X - 1, pos_Y);
+        printf("  ");
+        screenGotoxy(pos_X + 1, pos_Y);
+        printf("  ");
+        screenGotoxy(pos_X - 1, pos_Y + 1);
+        printf("  ");
+        screenGotoxy(pos_X, pos_Y + 1);
+        printf("  ");
+        screenGotoxy(pos_X + 1, pos_Y + 1);
+        printf("  ");
 
         cont--;
     }
@@ -323,6 +343,7 @@ int main()
                 newX = player_x - incX;
 
                 
+                
 
                 // Colisão room 0
                 if ((newX == FINISHIROOM1 - 1 && collisionXRoom1))
@@ -473,6 +494,8 @@ int main()
             {
                 print_sword(newX, newY);
                 ch = 0;
+                
+                
             }
 
             printHorizontalHall(STARTIHALL1, FINISHIHALL1, STARTJHALL1, FINISHJHALL1);
