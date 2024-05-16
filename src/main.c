@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <time.h>
 
 #include "screen.h"
 #include "keyboard.h"
@@ -39,23 +40,21 @@ int incX = 1, incY = 1;
 //     int shield;
 // };
 
-struct enemy_skull
+struct enemy_obj
 {
-    int skull_x;
-    int skull_y;
+    int enemy_x;
+    int enemy_y;
 };
 
-int skull_x = 22;
-int skull_y = 10;
 
-void print_Skull(struct enemy_skull skull)
+void print_enemy(struct enemy_obj skull)
 
 {
-    screenGotoxy(skull_x, skull_y);
+    screenGotoxy(skull.enemy_x, skull.enemy_y);
     printf(" ");
-    skull_x = skull.skull_x;
-    skull_y = skull.skull_y;
-    screenGotoxy(skull_x, skull_y);
+    int enemy_x = skull.enemy_x;
+    int enemy_y = skull.enemy_y;
+    screenGotoxy(enemy_x, enemy_y);
     printf("💀");
 }
 
@@ -63,7 +62,7 @@ void printPlayer(int nextX, int nextY)
 {
     screenSetColor(CYAN, DARKGRAY);
     screenGotoxy(player_x, player_y);
-    printf(" ");
+    printf("  ");
     player_x = nextX;
     player_y = nextY;
     screenGotoxy(player_x, player_y);
@@ -166,7 +165,7 @@ void printKey(int ch)
 int main()
 {
     static int ch = 0;
-    struct enemy_skull skeleton;
+    struct enemy_obj skeleton;
 
     screenInit(1);
     keyboardInit();
@@ -178,17 +177,18 @@ int main()
 
     printPlayer(player_x, player_y);
     screenGotoxy(player_x, player_y - 5);
-
-    skeleton.skull_x = skull_x;
-    skeleton.skull_y = skull_y;
+    
+    skeleton.enemy_x = 22;
+    skeleton.enemy_y = 10;
 
     printf("🗡️");
 
     screenUpdate();
 
-    printRooms(8, 27, 8, 16, 8, 0); // first room
+    printRooms(8, 27, 8, 16, 8, 0); //first room
 
-    print_Skull(skeleton);
+
+    print_enemy(skeleton);
     screenUpdate();
 
     int skull_verify = 1;
@@ -221,7 +221,7 @@ int main()
 
             if (skull_verify == 1)
             {
-                print_Skull(skeleton);
+                print_enemy(skeleton);
             }
 
             if (ch == 97)
@@ -379,8 +379,7 @@ int main()
 
             printRooms(34, 44, 8, 20, 8, 2);
             printPlayer(newX, newY);
-
-            if (newX == skull_x && newY == skull_y)
+            if (newX == skeleton.enemy_x && newY == skeleton.enemy_y)
             {
                 skull_verify = 0;
             }
