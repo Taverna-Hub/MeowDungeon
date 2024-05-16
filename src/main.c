@@ -220,7 +220,9 @@ void printKey(int ch)
         printf("%d ", readch());
     }
 }
-void printHp(int health){
+
+void printHp(int health)
+{
     screenGotoxy(MINX + 1, MINY + 1);
         printf("      ");
         for (int h = 1; h<health+1; h++){
@@ -231,7 +233,7 @@ void printHp(int health){
         }
         if (health == 0){
             
-            printf("voce morreu");
+            printf("voce morreu!");
         }
     
 }
@@ -256,6 +258,7 @@ int main()
     player.steps = 0;
     player.score = 0;
     player.hp = 3;
+    
     screenInit(1);
     keyboardInit();
     timerInit(150);
@@ -265,14 +268,17 @@ int main()
     printHp(player.hp);
     //printf("🐱🐱🐱");
 
-    printf("\t┃ Iventory ┃");
+    screenSetColor(WHITE, DARKGRAY);
+    screenGotoxy(MINX + 35, MINY + 1);
+    printf("┃ Iventory ┃");
+
     if (player.shield == 0)
     {
-        screenGotoxy(MINX + 22, MINY + 2);
+        screenGotoxy(MINX + 42, MINY + 2);
         printf("┏━━━┓");
-        screenGotoxy(MINX + 22, MINY + 3);
+        screenGotoxy(MINX + 42, MINY + 3);
         printf("┃🛡️  ┃");
-        screenGotoxy(MINX + 22, MINY + 4);
+        screenGotoxy(MINX + 42, MINY + 4);
         printf("┗━━━┛");
     }
 
@@ -496,11 +502,11 @@ int main()
             if (player.sword == 1)
             {   
                 screenSetColor(WHITE, DARKGRAY);
-                screenGotoxy(MINX + 15, MINY + 2);
+                screenGotoxy(MINX + 35, MINY + 2);
                 printf("┏━━━┓");
-                screenGotoxy(MINX + 15, MINY + 3);
+                screenGotoxy(MINX + 35, MINY + 3);
                 printf("┃🗡️  ┃");
-                screenGotoxy(MINX + 15, MINY + 4);
+                screenGotoxy(MINX + 35, MINY + 4);
                 printf("┗━━━┛");
             }
 
