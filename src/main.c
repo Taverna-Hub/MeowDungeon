@@ -1,4 +1,4 @@
-/**
+/*
  * main.h
  * Created on Aug, 23th 2023
  * Author: Tiago Barros
@@ -15,7 +15,6 @@
 #include "keyboard.h"
 #include "timer.h"
 
-int player_x = 16, player_y = 14;
 
 int start_I_Room0 = 8, finish_I_Room0 = 27;
 int start_J_Room0 = 8, finish_J_Room0 = 16;
@@ -29,15 +28,15 @@ int start_J_Room2 = 8, finish_J_Room2 = 20;
 
 int incX = 1, incY = 1;
 
-// struct player
-// {
-//     int positionX;
-//     int positionY;
-//      int incX;
-//      int incY;
-//     int sword;
-//     int shield;
-// };
+int player_x = 16, player_y = 14;
+struct player
+{
+    int sword;
+    int shield;
+    int score;
+    int steps;
+    char name[4];
+};
 
 struct enemy_skull
 {
@@ -49,7 +48,6 @@ int skull_x = 22;
 int skull_y = 10;
 
 void print_Skull(struct enemy_skull skull)
-
 {
     screenGotoxy(skull_x, skull_y);
     printf(" ");
@@ -59,7 +57,7 @@ void print_Skull(struct enemy_skull skull)
     printf("💀");
 }
 
-void printPlayer(int nextX, int nextY)
+void print_Player(int nextX, int nextY)
 {
     screenSetColor(CYAN, DARKGRAY);
     screenGotoxy(player_x, player_y);
@@ -69,6 +67,14 @@ void printPlayer(int nextX, int nextY)
     screenGotoxy(player_x, player_y);
     printf("🐱");
 }
+
+    /* animação de ayaque em area (ou blik)
+     \ | /
+    --🐱--
+     / | \
+    */  
+//void print_sword()
+
 
 void printRooms(int start_I_Room, int finish_I_Room, int start_J_Room, int finish_J_Room, int last_J, int room)
 {
@@ -167,6 +173,12 @@ int main()
 {
     static int ch = 0;
     struct enemy_skull skeleton;
+    struct player player;
+
+    player.sword = 0;
+    player.shield = 0;
+    player.steps = 0;
+    player.score = 0;
 
     screenInit(1);
     keyboardInit();
@@ -175,16 +187,27 @@ int main()
     screenGotoxy(MINX + 1, MINY + 1);
     
     printf("🐱🐱🐱");
+    printf("\t| Iventory |");
+
+    if (player.shield == 0)
+    {
+        screenGotoxy(MINX + 20, MINY + 2);
+        printf("┍━━━┓");
+        screenGotoxy(MINX + 20, MINY + 3);
+        printf("╿🛡️  ╿");
+        screenGotoxy(MINX + 20, MINY + 4);
+        printf("┗━━━┛");
+        // printf("🛡️");
+    }
+
     
-    printPlayer(player_x, player_y);
+    print_Player(player_x, player_y);
     screenGotoxy(player_x, player_y - 5);
     
     skeleton.skull_x = skull_x;
     skeleton.skull_y = skull_y;
 
-    printf("🗡️");
-
-    screenUpdate();
+    printf("🗡️"); //16,9
 
     printRooms(8, 27, 8, 16, 8, 0); //first room
 
@@ -346,11 +369,27 @@ int main()
             printHorizontalHall(44, 48, 16, 19);
 
             printRooms(34, 44, 8, 20, 8, 2);
-            printPlayer(newX, newY);
+            print_Player(newX, newY);
             if (newX == skull_x && newY == skull_y)
             {
                 skull_verify = 0;
             }
+
+            if (newX == 16 && newY == 9)
+            {
+                player.sword = 1;
+            }
+
+            if (player.sword == 1)
+            {
+                screenGotoxy(MINX + 15, MINY + 2);
+                printf("┍━━━┓");
+                screenGotoxy(MINX + 15, MINY + 3);
+                printf("╿🗡️  ╿");
+                screenGotoxy(MINX + 15, MINY + 4);
+                printf("┗━━━┛");
+            }
+            
 
             // Updating screen
             printKey(ch);
