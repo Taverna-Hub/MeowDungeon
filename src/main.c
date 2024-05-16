@@ -40,6 +40,12 @@ int incX = 1, incY = 1;
 //     int shield;
 // };
 
+
+// ┍━┓
+// ╿ ╿
+// ┗━┛
+
+char *enemies[] = {"💀", "👿", "👹", "👻"};
 struct enemy_obj
 {
     int enemy_x;
@@ -166,6 +172,7 @@ int main()
 {
     static int ch = 0;
     struct enemy_obj skeleton;
+    struct enemy_obj demon;
 
     screenInit(1);
     keyboardInit();
@@ -181,6 +188,10 @@ int main()
     skeleton.enemy_x = 22;
     skeleton.enemy_y = 10;
 
+    demon.enemy_x = 39;
+    demon.enemy_y = 11;
+
+
     printf("🗡️");
 
     screenUpdate();
@@ -192,7 +203,7 @@ int main()
     screenUpdate();
 
     int skull_verify = 1;
-
+    int demon_verify = 1;
     while (ch != 10)
     {
         if (keyhit())
@@ -222,6 +233,10 @@ int main()
             if (skull_verify == 1)
             {
                 print_enemy(skeleton);
+            }
+            if (demon_verify == 1){
+                print_enemy(demon);
+
             }
 
             if (ch == 97)
@@ -382,6 +397,9 @@ int main()
             if (newX == skeleton.enemy_x && newY == skeleton.enemy_y)
             {
                 skull_verify = 0;
+            }
+            if (newX == demon.enemy_x && newY == demon.enemy_y){
+                demon_verify = 0;
             }
 
             // Updating screen
