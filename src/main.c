@@ -189,13 +189,12 @@ int main()
 
     if (player.shield == 0)
     {
-        screenGotoxy(MINX + 20, MINY + 2);
-        printf("┍━━━┓");
-        screenGotoxy(MINX + 20, MINY + 3);
-        printf("╿🛡️  ╿");
-        screenGotoxy(MINX + 20, MINY + 4);
+        screenGotoxy(MINX + 22, MINY + 2);
+        printf("┏━━━┓");
+        screenGotoxy(MINX + 22, MINY + 3);
+        printf("┃🛡️  ┃");
+        screenGotoxy(MINX + 22, MINY + 4);
         printf("┗━━━┛");
-        // printf("🛡️");
     }
 
     
@@ -427,13 +426,13 @@ int main()
             if (player.sword == 1)
             {
                 screenGotoxy(MINX + 15, MINY + 2);
-                printf("┍━━━┓");
+                printf("┏━━━┓");
                 screenGotoxy(MINX + 15, MINY + 3);
-                printf("╿🗡️  ╿");
+                printf("┃🗡️  ┃");
                 screenGotoxy(MINX + 15, MINY + 4);
                 printf("┗━━━┛");
             }
-            
+
 
             // Updating screen
             printKey(ch);
