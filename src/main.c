@@ -16,7 +16,6 @@
 #include "keyboard.h"
 #include "timer.h"
 
-
 int start_i_room1 = 8, finish_i_room1 = 27;
 int start_j_room1 = 8, finish_j_room1 = 16;
 int door_i1 = 26, door_j1 = 12;
@@ -39,25 +38,24 @@ struct player
     char name[4];
 };
 
-
 char *enemies[] = {"💀", "👿", "👹", "👻"};
 struct enemy_obj
 {
-    int enemy_x;
-    int enemy_y;
+    int x;
+    int y;
 };
 
-void print_enemy(struct enemy_obj skull)
+void print_enemy(struct enemy_obj skull, int new_enemy_x, int new_enemy_y)
 {
-    screenGotoxy(skull.enemy_x, skull.enemy_y);
+    screenGotoxy(skull.x, skull.y);
     printf(" ");
-    int enemy_x = skull.enemy_x;
-    int enemy_y = skull.enemy_y;
-    screenGotoxy(enemy_x, enemy_y);
+    skull.x = new_enemy_x;
+    skull.y = new_enemy_y;
+    screenGotoxy(skull.x, skull.y);
     printf("💀");
 }
 
-void print_Player(int nextX, int nextY)
+void print_player(int nextX, int nextY)
 {
     screenSetColor(CYAN, DARKGRAY);
     screenGotoxy(player_x, player_y);
@@ -68,17 +66,17 @@ void print_Player(int nextX, int nextY)
     printf("🐱");
 }
 
-    /* animação de ataque em area (ou blik)
-     \ | /
-    --🐱--
-     / | \
-    */  
-//void print_sword()
+/* animação de ataque em area (ou blik)
+ \ | /
+--🐱--
+ / | \
+*/
+// void print_sword()
 
-
-void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int last_j, int room)
+void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int room)
 {
     screenSetColor(CYAN, DARKGRAY);
+    int last_j = start_j_room;
     if ((player_x + 1 == start_i_room) && (room != 0))
     {
         for (int i = start_i_room; i < finish_i_room; i++)
@@ -187,7 +185,6 @@ int main()
     timerInit(100);
 
     screenGotoxy(MINX + 1, MINY + 1);
-
     printf("🐱🐱🐱");
     printf("\t| Iventory |");
 
@@ -201,25 +198,25 @@ int main()
         printf("┗━━━┛");
     }
 
-    
-    print_Player(player_x, player_y);
+    print_player(player_x, player_y);
     screenGotoxy(player_x, player_y - 5);
 
-    skeleton.enemy_x = 22;
-    skeleton.enemy_y = 10;
+    skeleton.x = 22;
+    skeleton.y = 10;
 
-    demon.enemy_x = 39;
-    demon.enemy_y = 11;
+    demon.x = 39;
+    demon.y = 11;
 
+    enemy_room_2.x = 36;
+    enemy_room_2.y = 10;
 
-    enemy_room_2.enemy_x = 22;
-    enemy_room_2.enemy_y = 10;
-
+    screenGotoxy(player_x, player_y - 5);
     printf("🗡️");
 
-    printRooms(8, 27, 8, 16, 8, 0); // first room
+    printRooms(start_i_room1, finish_i_room1, start_j_room1, finish_j_room1, 0); // first room
 
-    print_enemy(skeleton);
+    print_enemy(skeleton, skeleton.x, skeleton.y);
+    print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
     screenUpdate();
 
     int skull_verify = 1;
@@ -250,14 +247,20 @@ int main()
 
             int collisionYHall = newX >= finish_i_room1 - strlen("🐱") && newX <= finish_i_hall + 1;
 
-            if (skull_verify == 1)
+            if (enemy_room_2.x >= finish_i_room2 - strlen("🐱") - 1)
             {
-                print_enemy(skeleton);
+                enemy_room_2.x = enemy_room_2.x - 1;
             }
-            if (demon_verify == 1){
-                print_enemy(demon);
+            else
+            {
+                enemy_room_2.x = enemy_room_2.x + 1;
+            }
+            if (demon_verify == 1)
+            {
+                print_enemy(demon, demon.x, demon.y);
+            }
 
-            }
+            print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
 
             if (ch == 97)
             {
@@ -412,13 +415,15 @@ int main()
             printHorizontalHall(27, 32, 11, 14);
             printHorizontalHall(44, 48, 16, 19);
 
-            printRooms(34, 44, 8, 20, 8, 2);
-            print_Player(newX, newY);
-            if (newX == skeleton.enemy_x && newY == skeleton.enemy_y)
+            printRooms(start_i_room2, finish_i_room2, start_j_room2, finish_j_room2, 2);
+            print_player(newX, newY);
+
+            if (newX == skeleton.x && newY == skeleton.y)
             {
                 skull_verify = 0;
             }
-            if (newX == demon.enemy_x && newY == demon.enemy_y){
+            if (newX == demon.x && newY == demon.y)
+            {
                 demon_verify = 0;
             }
 
@@ -436,7 +441,6 @@ int main()
                 screenGotoxy(MINX + 15, MINY + 4);
                 printf("┗━━━┛");
             }
-
 
             // Updating screen
             printKey(ch);
