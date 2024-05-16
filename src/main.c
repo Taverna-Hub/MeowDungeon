@@ -59,16 +59,19 @@ struct enemy_obj
     int y;
     int is_dead;
     int inc_x;
+    char *emoji;
 };
 
-void print_enemy(struct enemy_obj skull, int new_enemy_x, int new_enemy_y)
+void print_enemy(struct enemy_obj enemy, int new_enemy_x, int new_enemy_y)
 {
-    screenGotoxy(skull.x, skull.y);
+    srand(time(NULL));
+    int rand_emoji = (rand()%4);
+    screenGotoxy(enemy.x, enemy.y);
     printf(" ");
-    skull.x = new_enemy_x;
-    skull.y = new_enemy_y;
-    screenGotoxy(skull.x, skull.y);
-    printf("💀");
+    enemy.x = new_enemy_x;
+    enemy.y = new_enemy_y;
+    screenGotoxy(enemy.x, enemy.y);
+    printf("%s", enemies[rand_emoji]);
 }
 
 void print_player(int nextX, int nextY)
