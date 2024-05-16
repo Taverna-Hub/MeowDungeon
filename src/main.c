@@ -43,6 +43,8 @@ struct enemy_obj
 {
     int x;
     int y;
+    int is_dead;
+    int inc_x;
 };
 
 void print_enemy(struct enemy_obj skull, int new_enemy_x, int new_enemy_y)
@@ -170,15 +172,21 @@ void printKey(int ch)
 int main()
 {
     static int ch = 0;
-    struct enemy_obj skeleton;
-    struct enemy_obj demon;
     struct player player;
+    struct enemy_obj skeleton;
+    struct enemy_obj enemy_room_2;
+
+    skeleton.x = 22;
+    skeleton.y = 10;
+
+    enemy_room_2.x = 36;
+    enemy_room_2.y = 10;
+    enemy_room_2.inc_x = 1;
 
     player.sword = 0;
     player.shield = 0;
     player.steps = 0;
     player.score = 0;
-    struct enemy_obj enemy_room_2;
 
     screenInit(1);
     keyboardInit();
@@ -186,8 +194,8 @@ int main()
 
     screenGotoxy(MINX + 1, MINY + 1);
     printf("🐱🐱🐱");
-    printf("\t| Iventory |");
 
+    printf("\t| Iventory |");
     if (player.shield == 0)
     {
         screenGotoxy(MINX + 22, MINY + 2);
@@ -199,16 +207,6 @@ int main()
     }
 
     print_player(player_x, player_y);
-    screenGotoxy(player_x, player_y - 5);
-
-    skeleton.x = 22;
-    skeleton.y = 10;
-
-    demon.x = 39;
-    demon.y = 11;
-
-    enemy_room_2.x = 36;
-    enemy_room_2.y = 10;
 
     screenGotoxy(player_x, player_y - 5);
     printf("🗡️");
@@ -219,8 +217,6 @@ int main()
     print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
     screenUpdate();
 
-    int skull_verify = 1;
-    int demon_verify = 1;
     while (ch != 10)
     {
         if (keyhit())
@@ -236,8 +232,8 @@ int main()
         // Update game state (move elements, verify collision, etc)
         if (timerTimeOver() == 1)
         {
-
             int newX = player_x, newY = player_y;
+            enemy_room_2.x = enemy_room_2.x + enemy_room_2.inc_x;
 
             int collisionXRoom1 = newY > start_j_room1 - 1 && newY < finish_j_room1;
             int collisionYRoom1 = newX >= start_i_room1 && newX < finish_i_room1;
@@ -247,20 +243,10 @@ int main()
 
             int collisionYHall = newX >= finish_i_room1 - strlen("🐱") && newX <= finish_i_hall + 1;
 
-            if (enemy_room_2.x >= finish_i_room2 - strlen("🐱") - 1)
+            if (enemy_room_2.x >= finish_i_room2 - strlen("    ") || enemy_room_2.x - 2 < start_i_room2)
             {
-                enemy_room_2.x = enemy_room_2.x - 1;
+                enemy_room_2.inc_x = -enemy_room_2.inc_x;
             }
-            else
-            {
-                enemy_room_2.x = enemy_room_2.x + 1;
-            }
-            if (demon_verify == 1)
-            {
-                print_enemy(demon, demon.x, demon.y);
-            }
-
-            print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
 
             if (ch == 97)
             {
@@ -417,15 +403,7 @@ int main()
 
             printRooms(start_i_room2, finish_i_room2, start_j_room2, finish_j_room2, 2);
             print_player(newX, newY);
-
-            if (newX == skeleton.x && newY == skeleton.y)
-            {
-                skull_verify = 0;
-            }
-            if (newX == demon.x && newY == demon.y)
-            {
-                demon_verify = 0;
-            }
+            print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
 
             if (newX == 16 && newY == 9)
             {
