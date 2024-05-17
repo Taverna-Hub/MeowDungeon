@@ -43,7 +43,7 @@
 #define DOORI2 43
 #define DOORJ2 17
 
-char *enemies[] = {"💀", "👿", "👹", "👻"};
+char *enemies[] = {"💀", "👿", "👹", "👻", "👽", "🧟", "🧛"};
 
 int incX = 1, incY = 1;
 
@@ -70,7 +70,7 @@ struct enemy_obj
 void print_enemy(struct enemy_obj enemy, int new_enemy_x, int new_enemy_y)
 {
     srand(time(NULL));
-    int rand_emoji = (rand()%4);
+    int rand_emoji = (rand()%7);
     screenGotoxy(enemy.x, enemy.y);
     printf(" ");
     enemy.x = new_enemy_x;
@@ -269,7 +269,7 @@ int main()
     skeleton.y = 10;
 
     enemy_room_2.x = 36;
-    enemy_room_2.y = 10;
+    enemy_room_2.y = 17;
     enemy_room_2.inc_x = 1;
     enemy_room_2.is_dead = 1;
 
@@ -382,7 +382,7 @@ int main()
             if (ch == 100)
             {
                 newX = player_x + incX;
-                if (newY != DOORJ1 && (newX == FINISHIROOM1 - 4 && collisionXRoom1))
+                if (newY != DOORJ1 && (newX == FINISHIROOM1 - 2 && collisionXRoom1))
                 {
                     newX -= 1;
                 }
@@ -391,7 +391,7 @@ int main()
                     newX -= 1;
                 }
 
-                if (newX == FINISHIROOM2 - 4 && collisionXRoom2)
+                if (newX == FINISHIROOM2 - 2 && collisionXRoom2)
                 {
                     newX -= 1;
                 }
@@ -505,7 +505,7 @@ int main()
             print_player(newX, newY);
 
             if (enemy_room_2.x == newX && enemy_room_2.y == newY){
-                player.hp--; // mudar
+                player.hp--;
                 printHp(player.hp);
             }
             print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
