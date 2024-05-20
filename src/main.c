@@ -40,15 +40,14 @@
 #define DOORI1 26
 #define DOORJ1 12
 
-#define DOORI2 43
-#define DOORJ2 17
-
 char *enemies[] = {"💀", "👿", "👹", "👻", "👽", "🧟", "🧛"};
 
 int incX = 1, incY = 1;
 
 int player_x = 16, player_y = 14;
 
+int sala0 = 1; //so pra função funcionar
+int sala1 = 0;
 struct player
 {
     int sword;
@@ -90,12 +89,18 @@ void print_player(int nextX, int nextY)
     printf("🐱");
 }
 
+/* animação de ataque em area (ou blik)
+ \ | /
+--🐱--
+ / | \
+*/
+// void print_sword()
+
 void print_sword(int pos_X ,int pos_Y)
-{
-    int cont = 55;
+{   
+    int cont = 8;
     while (cont > 0)
     {
-        screenSetColor(YELLOW, DARKGRAY);
         screenGotoxy(pos_X - 1, pos_Y - 1);
         printf("╲");
         printf(" ");
@@ -121,43 +126,42 @@ void print_sword(int pos_X ,int pos_Y)
         printf("╲");
         printf(" ");
         
-        usleep(5000);
-        // print_player(pos_X, pos_Y);
+        usleep(5000); // AQUI ANA CLAUDIA
 
         screenGotoxy(pos_X - 1, pos_Y - 1);
-        printf(" ");
+        printf("  ");
         screenGotoxy(pos_X, pos_Y - 1);
-        printf(" ");
+        printf("  ");
         screenGotoxy(pos_X + 1, pos_Y - 1);
-        printf(" ");
+        printf("  ");
         screenGotoxy(pos_X - 1, pos_Y);
-        printf(" ");
+        printf("  ");
         screenGotoxy(pos_X + 1, pos_Y);
         printf("  ");
         screenGotoxy(pos_X - 1, pos_Y + 1);
-        printf(" ");
+        printf("  ");
         screenGotoxy(pos_X, pos_Y + 1);
-        printf(" ");
+        printf("  ");
         screenGotoxy(pos_X + 1, pos_Y + 1);
-        printf(" ");
-        // print_player(pos_X, pos_Y);
+        printf("  ");
 
         cont--;
     }
-
+    
 }
 
-void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int door_i, int door_j,  int room)
+void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int room, int *room_enemies)
 {
     screenSetColor(CYAN, DARKGRAY);
     int last_j = start_j_room;
     if ((player_x + 1 == start_i_room) && (room != 0))
     {
+        *room_enemies = 1;
         for (int i = start_i_room; i < finish_i_room; i++)
         {
             for (int j = start_j_room; j < finish_j_room; j++)
             {
-                if (i == door_i && j == door_j)
+                if (i == DOORI1 && j == DOORJ1)
                 {
                     screenGotoxy(i, j);
                     printf("🚪");
@@ -185,7 +189,7 @@ void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finis
         {
             for (int j = start_j_room; j < finish_j_room; j++)
             {
-                if (i == door_i && j == door_j)
+                if (i == DOORI1 && j == DOORJ1)
                 {
                     screenGotoxy(i, j);
                     printf("🚪");
@@ -271,7 +275,7 @@ int main()
     enemy_room_2.x = 36;
     enemy_room_2.y = 17;
     enemy_room_2.inc_x = 1;
-    enemy_room_2.is_dead = 1;
+    enemy_room_2.is_dead = 0;
 
     player.sword = 0;
     player.shield = 0;
@@ -286,6 +290,7 @@ int main()
     screenGotoxy(MINX + 1, MINY + 1);
     
     printHp(player.hp);
+    //printf("🐱🐱🐱");
 
     screenSetColor(WHITE, DARKGRAY);
     screenGotoxy(MINX + 35, MINY + 1);
@@ -306,10 +311,10 @@ int main()
     screenGotoxy(player_x, player_y - 5);
     printf("🗡️");
 
-    printRooms(STARTIROOM1, FINISHIROOM1, STARTJROOM1, FINISHJROOM1, DOORI1, DOORJ1, 0); // first room
+    printRooms(STARTIROOM1, FINISHIROOM1, STARTJROOM1, FINISHJROOM1, 0, &sala0); // first room
 
     print_enemy(skeleton, skeleton.x, skeleton.y);
-    print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
+    
     screenUpdate();
 
     while (ch != 10)
@@ -347,18 +352,21 @@ int main()
             {
                 newX = player_x - incX;
 
+                
+                
+
                 // Colisão room 0
                 if ((newX == FINISHIROOM1 - 1 && collisionXRoom1))
                 {
                     newX += 1;
                 }
-                else if (newY != DOORJ1 && (newX == STARTIROOM1 && collisionXRoom1))
+                else if (newY != 12 && (newX == STARTIROOM1 && collisionXRoom1))
                 {
                     newX += 1;
                 }
 
                 // Colisão room 2
-                if (newY != DOORJ1 && (newX == FINISHIROOM2 - 1 && collisionXRoom2))
+                if (newY != 12 && (newX == FINISHIROOM2 - 1 && collisionXRoom2))
                 {
                     newX += 1;
                 }
@@ -382,7 +390,7 @@ int main()
             if (ch == 100)
             {
                 newX = player_x + incX;
-                if (newY != DOORJ1 && (newX == FINISHIROOM1 - 2 && collisionXRoom1))
+                if (newY != 12 && (newX == FINISHIROOM1 - 2 && collisionXRoom1))
                 {
                     newX -= 1;
                 }
@@ -395,7 +403,7 @@ int main()
                 {
                     newX -= 1;
                 }
-                else if (newY != DOORJ1 && (newX == STARTIROOM2 - 1 && collisionXRoom2))
+                else if (newY != 12 && (newX == STARTIROOM2 - 1 && collisionXRoom2))
                 {
                     newX -= 1;
                 }
@@ -496,19 +504,23 @@ int main()
             {
                 print_sword(newX, newY);
                 ch = 0;
+                
+                
             }
 
             printHorizontalHall(STARTIHALL1, FINISHIHALL1, STARTJHALL1, FINISHJHALL1);
             printHorizontalHall(STARTIHALL2, FINISHIHALL2, STARTJHALL2, FINISHJHALL2);
 
-            printRooms(STARTIROOM2, FINISHIROOM2, STARTJROOM2, FINISHJROOM2, DOORI2, DOORJ2, 2);
+            printRooms(STARTIROOM2, FINISHIROOM2, STARTJROOM2, FINISHJROOM2, 2, &sala1);
             print_player(newX, newY);
 
             if (enemy_room_2.x == newX && enemy_room_2.y == newY){
                 player.hp--;
                 printHp(player.hp);
             }
-            print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
+            if (sala1 == 1 && enemy_room_2.is_dead == 0){
+                print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
+            }
             
 
             if ((newX == 16 || newX == 15) && newY == 9)
