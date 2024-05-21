@@ -22,11 +22,6 @@
 #define STARTJROOM1 8
 #define FINISHJROOM1 16
 
-#define STARTIROOM2 34
-#define FINISHIROOM2 44
-#define STARTJROOM2 8
-#define FINISHJROOM2 20
-
 #define DOORI1 26
 #define DOORJ1 12
 
@@ -34,6 +29,11 @@
 #define FINISHIHALL1 32
 #define STARTJHALL1 11
 #define FINISHJHALL1 14
+
+#define STARTIROOM2 34
+#define FINISHIROOM2 44
+#define STARTJROOM2 8
+#define FINISHJROOM2 20
 
 #define DOORI2 38
 #define DOORJ2 19
@@ -415,7 +415,7 @@ int main()
                 enemy_room_2.inc_x = -enemy_room_2.inc_x;
             }
 
-            if (ch == 97) //left
+            if ((ch == 97) || (ch == 65)) //left
             {
                 newX = player_x - incX;                
 
@@ -451,7 +451,7 @@ int main()
                 ch = 0;
             }
 
-            if (ch == 100) //right
+            if ((ch == 100) || (ch == 68)) //right
             {
                 newX = player_x + incX;
 
@@ -487,7 +487,7 @@ int main()
                 ch = 0;
             }
 
-            if (ch == 115)
+            if ((ch == 115) || (ch == 83))
             {
                 newY = player_y + incY;
 
@@ -527,7 +527,7 @@ int main()
                 ch = 0;
             }
 
-            if (ch == 119)
+            if ((ch == 119) || (ch == 87))
             {
                 newY = player_y - incY;
 
@@ -568,14 +568,14 @@ int main()
                 ch = 0;
             }
 
-            if (ch == 106 && player.sword == 1) 
+            if (((ch == 106) || (ch == 74)) && (player.sword == 1))
             {
                 print_sword(newX, newY);
                 ch = 0;
                 
             }
 
-            if (ch == 107)
+            if (((ch == 107) || (ch == 75)) && (player.shield == 0)) //falta adicionar o escudo no mapa
             {
                 print_shield(newX, newY);
                 ch = 0;
