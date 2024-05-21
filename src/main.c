@@ -574,15 +574,7 @@ int main()
             if (ch == 106 && player.sword == 1)
             {
                 print_sword(newX, newY);
-                // if ((abs(newX - enemy_room_2.x) + abs(newY - enemy_room_2.y)) == 1)
-                // {
-                //     enemy_room_2.is_dead = 1;
-                // }
-
-                if ((newX + 1 == enemy_room_2.x) || (newX - 1 == enemy_room_2.x) || (newY + 1 == enemy_room_2.y) || (newY - 1 == enemy_room_2.y) || (newX + 1 == enemy_room_2.x && newY + 1 == enemy_room_2.y) ||
-                    (newX - 1 == enemy_room_2.x && newY + 1 == enemy_room_2.y) ||
-                    (newX - 1 == enemy_room_2.x && newY - 1 == enemy_room_2.y) ||
-                    (newX + 1 == enemy_room_2.x && newY - 1 == enemy_room_2.y))
+                if (abs(newX - enemy_room_2.x) == 1 || abs(newY - enemy_room_2.y) == 1)
                 {
                     enemy_room_2.is_dead = 1;
                 }
