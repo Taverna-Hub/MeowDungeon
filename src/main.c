@@ -12,6 +12,7 @@
 #include <time.h>
 #include <time.h>
 #include <unistd.h>
+#include <math.h>
 
 #include "screen.h"
 #include "keyboard.h"
@@ -573,6 +574,19 @@ int main()
             if (ch == 106 && player.sword == 1)
             {
                 print_sword(newX, newY);
+                // if ((abs(newX - enemy_room_2.x) + abs(newY - enemy_room_2.y)) == 1)
+                // {
+                //     enemy_room_2.is_dead = 1;
+                // }
+
+                if ((newX + 1 == enemy_room_2.x) || (newX - 1 == enemy_room_2.x) || (newY + 1 == enemy_room_2.y) || (newY - 1 == enemy_room_2.y) || (newX + 1 == enemy_room_2.x && newY + 1 == enemy_room_2.y) ||
+                    (newX - 1 == enemy_room_2.x && newY + 1 == enemy_room_2.y) ||
+                    (newX - 1 == enemy_room_2.x && newY - 1 == enemy_room_2.y) ||
+                    (newX + 1 == enemy_room_2.x && newY - 1 == enemy_room_2.y))
+                {
+                    enemy_room_2.is_dead = 1;
+                }
+
                 ch = 0;
             }
 
@@ -588,11 +602,12 @@ int main()
             printRooms(STARTIROOM2, FINISHIROOM2, STARTJROOM2, FINISHJROOM2, 2, &sala1, DOORI2, DOORJ2);
             print_player(newX, newY);
 
-            if (enemy_room_2.x == newX && enemy_room_2.y == newY)
+            if (enemy_room_2.x == newX && enemy_room_2.y == newY && !enemy_room_2.is_dead)
             {
                 player.hp--;
                 printHp(player.hp);
             }
+
             if (sala1 == 1 && enemy_room_2.is_dead == 0)
             {
                 print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
