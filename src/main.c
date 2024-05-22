@@ -17,6 +17,7 @@
 #include "screen.h"
 #include "keyboard.h"
 #include "timer.h"
+#include "logo.h"
 //1
 #define STARTIROOM1 8
 #define FINISHIROOM1 27
@@ -313,6 +314,23 @@ void printVerticalHall(int start_i_hall, int finish_i_hall, int start_j_hall, in
     }
 }
 
+void printHp(int health)
+{
+    screenGotoxy(MINX + 1, MINY + 1);
+    printf("      ");
+    for (int h = 1; h < health + 1; h++)
+    {
+        screenGotoxy(MINX + h + h, MINY + 1);
+        screenSetColor(RED, DARKGRAY);
+        printf("♥");
+        screenSetColor(CYAN, DARKGRAY);
+    }
+    if (health == 0)
+    {
+        printf("☠️ You died! ☠️");
+    }
+}
+
 void printKey(int ch)
 {
     screenSetColor(YELLOW, DARKGRAY);
@@ -334,25 +352,31 @@ void printKey(int ch)
     }
 }
 
-void printHp(int health)
-{
-    screenGotoxy(MINX + 1, MINY + 1);
-    printf("      ");
-    for (int h = 1; h < health + 1; h++)
-    {
-        screenGotoxy(MINX + h + h, MINY + 1);
-        screenSetColor(RED, DARKGRAY);
-        printf("♥");
-        screenSetColor(CYAN, DARKGRAY);
-    }
-    if (health == 0)
-    {
-        printf("☠️ You died! ☠️");
-    }
+void initialScreen(){
+
+    screenSetColor(LIGHTMAGENTA, DARKGRAY);
+    screenGotoxy(51, 9);
+    printf("%s", logo_1);
+
+    screenGotoxy(51, 10);
+    printf("%s", logo_2);
+
+    screenGotoxy(51, 11);
+    printf("%s", logo_3);
+
+    screenGotoxy(51, 12);
+    printf("%s", logo_4);
+
+    screenGotoxy(51, 13);
+    printf("%s", logo_5);
+
+    screenGotoxy(51, 14);
+    printf("%s", logo_6);
+
 }
 
 int main()
-{
+{   
     static int ch = 0;
     struct player player;
     struct enemy_obj skeleton;
@@ -372,8 +396,113 @@ int main()
     player.score = 0;
     player.hp = 3;
 
-    screenInit(1);
+    //initial screen display
+    screenInit(0);
     keyboardInit();
+
+    screenGotoxy(67, 19);
+    printf("START GAME");
+
+    screenGotoxy(69, 21);
+    printf("SCORES");
+
+    screenGotoxy(70, 23);
+    printf("EXIT");
+    
+    initialScreen();
+
+    int menu_cont = 0;
+    while (ch != 32)
+    {
+        if (keyhit())
+        {
+            ch = readch();
+        }
+
+        if ((ch == 115) || (ch == 83))
+        {
+            menu_cont++;
+
+            if(menu_cont == 3)
+            {
+                menu_cont = 0;
+            }
+
+            ch = 0;
+        }
+
+        if ((ch == 119) || (ch == 87))
+        {   
+            menu_cont--;
+
+            if(menu_cont < 0)
+            {
+                menu_cont = 2;
+            }
+
+            ch = 0;
+        }
+
+        if (menu_cont == 0)
+        {
+            screenGotoxy(65, 19);
+            printf(">");
+            screenGotoxy(78, 19);
+            printf("<");
+            screenGotoxy(67, 21);
+            printf(" ");
+            screenGotoxy(76, 21);
+            printf(" ");
+            screenGotoxy(68, 23);
+            printf(" ");
+            screenGotoxy(75, 23);
+            printf(" ");
+        }
+
+        if (menu_cont == 1)
+        {
+            screenGotoxy(65, 19);
+            printf(" ");
+            screenGotoxy(78, 19);
+            printf(" ");
+            screenGotoxy(67, 21);
+            printf(">");
+            screenGotoxy(76, 21);
+            printf("<");
+            screenGotoxy(68, 23);
+            printf(" ");
+            screenGotoxy(75, 23);
+            printf(" ");
+        }
+
+        if (menu_cont == 2)
+        {
+            screenGotoxy(65, 19);
+            printf(" ");
+            screenGotoxy(78, 19);
+            printf(" ");
+            screenGotoxy(67, 21);
+            printf(" ");
+            screenGotoxy(76, 21);
+            printf(" ");
+            screenGotoxy(68, 23);
+            printf(">");
+            screenGotoxy(75, 23);
+            printf("<");
+        }
+    }
+    ch = 0;
+
+    if (menu_cont == 2)
+    {   
+        printf("\n");
+        keyboardDestroy();
+        screenDestroy();
+        return 0;
+    }
+
+    screenSetColor(LIGHTGRAY, DARKGRAY);
+    screenInit(1);
     timerInit(150);
 
     screenGotoxy(MINX + 1, MINY + 1);
@@ -405,7 +534,7 @@ int main()
 
     screenUpdate();
 
-    while (ch != 10)
+    while (ch != 32)
     {
         if (keyhit())
         {
@@ -519,7 +648,7 @@ int main()
                 ch = 0;
             }
 
-            if ((ch == 115) || (ch == 83))
+            if ((ch == 115) || (ch == 83)) //down
             {
                 newY = player_y + incY;
 
@@ -559,7 +688,7 @@ int main()
                 ch = 0;
             }
 
-            if ((ch == 119) || (ch == 87))
+            if ((ch == 119) || (ch == 87)) //up
             {
                 newY = player_y - incY;
 
