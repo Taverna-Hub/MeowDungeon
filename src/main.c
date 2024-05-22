@@ -17,7 +17,7 @@
 #include "screen.h"
 #include "keyboard.h"
 #include "timer.h"
-
+//1
 #define STARTIROOM1 8
 #define FINISHIROOM1 27
 #define STARTJROOM1 8
@@ -30,7 +30,7 @@
 #define FINISHIHALL1 32
 #define STARTJHALL1 11
 #define FINISHJHALL1 14
-
+// 2
 #define STARTIROOM2 34
 #define FINISHIROOM2 44
 #define STARTJROOM2 8
@@ -43,6 +43,30 @@
 #define FINISHIHALL2 41
 #define STARTJHALL2 20
 #define FINISHJHALL2 24
+// 3
+#define STARTIROOM3 27
+#define FINISHIROOM3 85
+#define STARTJROOM3 24
+#define FINISHJROOM3 32
+
+#define DOORI3 38
+#define DOORJ3 24
+// 4
+#define STARTIROOM4 94
+#define FINISHIROOM4 112
+#define STARTJROOM4 10
+#define FINISHJROOM4 32
+
+#define DOORI4 83
+#define DOORJ4 28
+// 5 (boos entrance)
+#define STARTIROOM5 50
+#define FINISHIROOM5 80
+#define STARTJROOM5  7
+#define FINISHJROOM5 20
+
+#define DOORI5 94
+#define DOORJ5 13
 
 char *enemies[] = {"💀", "👿", "👹", "👻", "👽", "🧟", "🧛"};
 
@@ -50,8 +74,11 @@ int incX = 1, incY = 1;
 
 int player_x = 16, player_y = 14;
 
-int sala0 = 1; // so pra função funcionar
-int sala1 = 0;
+int enemies1 = 1; 
+int enemies2 = 0;
+int enemies3 = 0;
+int enemies4 = 0;
+int enemies5 = 0;
 struct player
 {
     int sword;
@@ -204,8 +231,9 @@ void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finis
 {
     screenSetColor(CYAN, DARKGRAY);
     int last_j = start_j_room;
-    if ((player_x + 1 == start_i_room) && (room != 0))
+    if (((player_x + 1 == start_i_room) || (player_y - 1 == start_j_room)) && (room != 0))
     {
+        
         *room_enemies = 1;
         for (int i = start_i_room; i < finish_i_room; i++)
         {
@@ -371,7 +399,7 @@ int main()
     screenGotoxy(player_x, player_y - 5);
     printf("🗡️");
 
-    printRooms(STARTIROOM1, FINISHIROOM1, STARTJROOM1, FINISHJROOM1, 0, &sala0, DOORI1, DOORJ1); // first room
+    printRooms(STARTIROOM1, FINISHIROOM1, STARTJROOM1, FINISHJROOM1, 0, &enemies1, DOORI1, DOORJ1); // first room
 
     print_enemy(skeleton, skeleton.x, skeleton.y);
 
@@ -591,7 +619,10 @@ int main()
             printHorizontalHall(STARTIHALL1, FINISHIHALL1, STARTJHALL1, FINISHJHALL1);
             printVerticalHall(STARTIHALL2, FINISHIHALL2, STARTJHALL2, FINISHJHALL2);
 
-            printRooms(STARTIROOM2, FINISHIROOM2, STARTJROOM2, FINISHJROOM2, 2, &sala1, DOORI2, DOORJ2);
+            printRooms(STARTIROOM2, FINISHIROOM2, STARTJROOM2, FINISHJROOM2, 2, &enemies2, DOORI2, DOORJ2);
+            printRooms(STARTIROOM3, FINISHIROOM3, STARTJROOM3, FINISHJROOM3, 3, &enemies3, DOORI3, DOORJ3);
+            printRooms(STARTIROOM4, FINISHIROOM4, STARTJROOM4, FINISHJROOM4, 4, &enemies4, DOORI4, DOORJ4);
+            printRooms(STARTIROOM5, FINISHIROOM5, STARTJROOM5, FINISHJROOM5, 5, &enemies5, DOORI5, DOORJ5);
             print_player(newX, newY);
 
             if (enemy_room_2.x == newX && enemy_room_2.y == newY && !enemy_room_2.is_dead)
@@ -600,7 +631,7 @@ int main()
                 printHp(player.hp);
             }
 
-            if (sala1 == 1 && enemy_room_2.is_dead == 0)
+            if (enemies2 == 1 && enemy_room_2.is_dead == 0)
             {
                 print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
             }
