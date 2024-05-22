@@ -132,12 +132,13 @@ struct trap_obj
     int inc_x;
     int inc_y;
 };
-void print_trap(struct trap_obj trap, int new_shot_x, int new_shot_y)
+
+void print_trap(struct trap_obj trap, int new_trap_x, int new_trap_y)
 {
     screenGotoxy(trap.previous_x, trap.previous_y);
     printf(" ");
-    trap.x = new_shot_x;
-    trap.y = new_shot_y;
+    trap.x = new_trap_x;
+    trap.y = new_trap_y;
     screenGotoxy(trap.x, trap.y);
     printf("*");
 }
@@ -435,7 +436,11 @@ int main()
     struct enemy_obj enemy_room_1;
     struct enemy_obj enemy_room_2;
 
-    struct trap_obj trap1;
+    struct trap_obj shot;
+    struct trap_obj shot2;
+    struct trap_obj shot3;
+    struct trap_obj shot4;
+    struct trap_obj shot5;
 
     enemy_room_1.x = 22;
     enemy_room_1.y = 10;
@@ -453,18 +458,42 @@ int main()
     player.score = 0;
     player.hp = 3;
 
-    // sala 3
-    trap1.x = 40;
-    trap1.y = FINISHJROOM3 - 1;
-    trap1.previous_x = 40;
-    trap1.previous_y = FINISHJROOM3 - 1;
-    trap1.inc_y = -1;
+    // Room 3 traps
+    shot.x = 40;
+    shot.y = FINISHJROOM3 - 2;
+    shot.previous_x = shot.x;
+    shot.previous_y = FINISHJROOM3 - 2;
+    shot.inc_y = -1;
+
+    shot2.x = 50;
+    shot2.y = STARTJROOM3 + 1;
+    shot2.previous_x = shot2.x;
+    shot2.previous_y = STARTJROOM3 + 1;
+    shot2.inc_y = 1;
+
+    shot3.x = 60;
+    shot3.y = FINISHJROOM3 - 2;
+    shot3.previous_x = shot3.x;
+    shot3.previous_y = FINISHJROOM3 - 2;
+    shot3.inc_y = -1;
+
+    shot4.x = 70;
+    shot4.y = STARTJROOM3 + 1;
+    shot4.previous_x = shot4.x;
+    shot4.previous_y = STARTJROOM3 + 1;
+    shot4.inc_y = 1;
+
+    shot5.x = 80;
+    shot5.y = FINISHJROOM3 - 2;
+    shot5.previous_x = shot5.x;
+    shot5.previous_y = FINISHJROOM3 - 2;
+    shot5.inc_y = -1;
 
     // initial screen display
     screenInit(0);
     keyboardInit();
 
-    screenSetColor(RED, DARKGRAY);
+    screenSetColor(LIGHTRED, DARKGRAY);
     asciiPrint();
 
     screenSetColor(LIGHTGRAY, DARKGRAY);
@@ -479,7 +508,7 @@ int main()
     printf("EXIT");
 
     int menu_cont = 0;
-    screenSetColor(RED, DARKGRAY);
+    screenSetColor(LIGHTRED, DARKGRAY);
 
     while (ch != 32)
     {
@@ -936,14 +965,39 @@ int main()
 
             if (enemies3 == 1)
             {
-                trap1.previous_y = trap1.y;
-                trap1.y = trap1.y + trap1.inc_y;
-                if (trap1.y == STARTJROOM3)
+                shot.previous_y = shot.y;
+                shot.y = shot.y + shot.inc_y;
+
+                shot2.previous_y = shot2.y;
+                shot2.y = shot2.y + shot2.inc_y;
+
+                shot3.previous_y = shot3.y;
+                shot3.y = shot3.y + shot3.inc_y;
+
+                shot4.previous_y = shot4.y;
+                shot4.y = shot4.y + shot4.inc_y;
+
+                shot5.previous_y = shot5.y;
+                shot5.y = shot5.y + shot5.inc_y;
+
+                if (shot.y == STARTJROOM3 || shot3.y == STARTJROOM3 || shot5.y == STARTJROOM3)
                 {
-                    trap1.y = FINISHJROOM3 - 2;
+                    shot.y = FINISHJROOM3 - 2;
+                    shot3.y = FINISHJROOM3 - 2;
+                    shot5.y = FINISHJROOM3 - 2;
                 }
 
-                print_trap(trap1, trap1.x, trap1.y);
+                if (shot2.y == FINISHJROOM3 - 1 || shot4.y == FINISHJROOM3 - 1)
+                {
+                    shot2.y = STARTJROOM3 + 1;
+                    shot4.y = STARTJROOM3 + 1;
+                }
+
+                print_trap(shot, shot.x, shot.y);
+                print_trap(shot2, shot2.x, shot2.y);
+                print_trap(shot3, shot3.x, shot3.y);
+                print_trap(shot4, shot4.x, shot4.y);
+                print_trap(shot5, shot5.x, shot5.y);
             }
 
             if ((newX == 16 || newX == 15) && newY == 9)
