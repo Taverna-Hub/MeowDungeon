@@ -18,7 +18,7 @@
 #include "keyboard.h"
 #include "timer.h"
 
-//1
+// 1
 #define STARTIROOM1 8
 #define FINISHIROOM1 27
 #define STARTJROOM1 8
@@ -31,43 +31,69 @@
 #define FINISHIHALL1 32
 #define STARTJHALL1 11
 #define FINISHJHALL1 14
+
 // 2
 #define STARTIROOM2 34
 #define FINISHIROOM2 44
 #define STARTJROOM2 8
 #define FINISHJROOM2 20
 
-#define DOORI2 38
-#define DOORJ2 19
+#define ENTERDOORI2 34
+#define ENTERDOORJ2 12
+
+#define EXITDOORI2 38
+#define EXITDOORJ2 19
 
 #define STARTIHALL2 36
 #define FINISHIHALL2 41
 #define STARTJHALL2 20
 #define FINISHJHALL2 24
+
 // 3
 #define STARTIROOM3 27
 #define FINISHIROOM3 85
 #define STARTJROOM3 24
 #define FINISHJROOM3 32
 
-#define DOORI3 38
-#define DOORJ3 24
+#define ENTERDOORI3 38
+#define ENTERDOORJ3 24
+
+#define EXITDOORI3 84
+#define EXITDOORJ3 28
+
+#define STARTIHALL3 85
+#define FINISHIHALL3 92
+#define STARTJHALL3 27
+#define FINISHJHALL3 30
+
 // 4
 #define STARTIROOM4 94
 #define FINISHIROOM4 112
 #define STARTJROOM4 10
 #define FINISHJROOM4 32
 
-#define DOORI4 83
-#define DOORJ4 28
+#define ENTERDOORI4 94
+#define ENTERDOORJ4 28
+
+#define EXITDOORI4 94
+#define EXITDOORJ4 13
+
+#define STARTIHALL4 92
+#define FINISHIHALL4 80
+#define STARTJHALL4 12
+#define FINISHJHALL4 15
+
 // 5 (boos entrance)
 #define STARTIROOM5 50
 #define FINISHIROOM5 80
-#define STARTJROOM5  7
+#define STARTJROOM5 7
 #define FINISHJROOM5 20
 
-#define DOORI5 94
-#define DOORJ5 13
+#define ENTERDOORI5 94
+#define ENTERDOORJ5 13
+
+#define EXITDOORI5 94
+#define EXITDOORJ5 13
 
 char *enemies[] = {"💀", "👿", "👹", "👻", "👽", "🧟", "🧛"};
 
@@ -75,7 +101,7 @@ int incX = 1, incY = 1;
 
 int player_x = 16, player_y = 14;
 
-int enemies1 = 1; 
+int enemies1 = 1;
 int enemies2 = 0;
 int enemies3 = 0;
 int enemies4 = 0;
@@ -242,19 +268,20 @@ void print_shield(int pos_X, int pos_Y)
     }
 }
 
-void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int room, int *room_enemies, int door_i, int door_j)
+void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int room, int *room_enemies, int enter_door_i, int enter_door_j, int exit_door_i, int exit_door_j)
 {
+    int roomRange = (player_x + 1 >= start_i_room) && (player_x <= finish_i_room) && (player_y - 1 >= start_j_room) && (player_y <= finish_j_room);
+
     screenSetColor(CYAN, DARKGRAY);
     int last_j = start_j_room;
-    if (((player_x + 1 == start_i_room) || (player_y - 1 == start_j_room)) && (room != 0))
+    if (roomRange && (room != 0))
     {
-        
         *room_enemies = 1;
         for (int i = start_i_room; i < finish_i_room; i++)
         {
             for (int j = start_j_room; j < finish_j_room; j++)
             {
-                if (i == door_i && j == door_j)
+                if ((i == enter_door_i && j == enter_door_j) || (i == exit_door_i && j == exit_door_j))
                 {
                     screenGotoxy(i, j);
                     printf("🚪");
@@ -282,7 +309,7 @@ void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finis
         {
             for (int j = start_j_room; j < finish_j_room; j++)
             {
-                if (i == door_i && j == door_j)
+                if (i == enter_door_i && j == enter_door_j)
                 {
                     screenGotoxy(i, j);
                     printf("🚪");
@@ -308,7 +335,7 @@ void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finis
 
 void printHorizontalHall(int start_i_hall, int finish_i_hall, int start_j_hall, int finish_j_hall)
 {
-    if (player_x >= start_i_hall - 2 && player_x < finish_i_hall)
+    if (player_x >= start_i_hall - 2 && player_x < finish_i_hall && player_y > start_j_hall && player_y < finish_j_hall)
     {
         screenGotoxy(player_x + 2, start_j_hall);
         printf("═");
@@ -366,7 +393,16 @@ void printKey(int ch)
     }
 }
 
+void printSteps(struct player p)
+{
+    screenSetColor(YELLOW, DARKGRAY);
+    screenGotoxy(130, 2);
+    printf("Steps:");
 
+    screenGotoxy(129, 3);
+    printf("    ");
+    printf("%d", p.steps);
+}
 
 void asciiPrint()
 {
@@ -381,7 +417,7 @@ void asciiPrint()
         return;
     }
 
-    while(fgets(string, sizeof(string), file) != NULL)
+    while (fgets(string, sizeof(string), file) != NULL)
     {
         printf("%s", string);
     }
@@ -390,18 +426,18 @@ void asciiPrint()
 }
 
 int main()
-{   
+{
     static int ch = 0;
     struct player player;
-    struct enemy_obj skeleton;
+    struct enemy_obj enemy_room_1;
     struct enemy_obj enemy_room_2;
 
     struct trap_obj trap1;
 
-    skeleton.x = 22;
-    skeleton.y = 10;
-    skeleton.image = enemies[(rand() % 7)];
-    
+    enemy_room_1.x = 22;
+    enemy_room_1.y = 10;
+    enemy_room_1.image = enemies[(rand() % 7)];
+
     enemy_room_2.x = 36;
     enemy_room_2.y = 17;
     enemy_room_2.inc_x = 1;
@@ -435,9 +471,10 @@ int main()
 
     screenGotoxy(63, 23);
     printf("EXIT");
-    
-    int menu_cont = 0;    
+
+    int menu_cont = 0;
     screenSetColor(LIGHTMAGENTA, DARKGRAY);
+
     while (ch != 32)
     {
         if (keyhit())
@@ -449,7 +486,7 @@ int main()
         {
             menu_cont++;
 
-            if(menu_cont == 3)
+            if (menu_cont == 3)
             {
                 menu_cont = 0;
             }
@@ -458,10 +495,10 @@ int main()
         }
 
         if ((ch == 119) || (ch == 87))
-        {   
+        {
             menu_cont--;
 
-            if(menu_cont < 0)
+            if (menu_cont < 0)
             {
                 menu_cont = 2;
             }
@@ -520,7 +557,7 @@ int main()
     ch = 0;
 
     if (menu_cont == 2)
-    {   
+    {
         printf("\n");
         keyboardDestroy();
         screenDestroy();
@@ -554,9 +591,9 @@ int main()
     screenGotoxy(player_x, player_y - 5);
     printf("🗡️");
 
-    printRooms(STARTIROOM1, FINISHIROOM1, STARTJROOM1, FINISHJROOM1, 0, &enemies1, DOORI1, DOORJ1); // first room
+    printRooms(STARTIROOM1, FINISHIROOM1, STARTJROOM1, FINISHJROOM1, 0, &enemies1, DOORI1, DOORJ1, DOORI1, DOORJ1); // first room
 
-    print_enemy(skeleton, skeleton.x, skeleton.y);
+    print_enemy(enemy_room_1, enemy_room_1.x, enemy_room_1.y);
 
     screenUpdate();
 
@@ -584,24 +621,33 @@ int main()
             int collisionXRoom2 = newY > STARTJROOM2 - 1 && newY < FINISHJROOM2;
             int collisionYRoom2 = newX >= STARTIROOM2 && newX < FINISHIROOM2;
 
-            int collisionYHall1 = newX >= FINISHIROOM1 - strlen("🐱") && newX <= FINISHIHALL1 + 1;
-            int collisionXHall2 = newY >= FINISHJROOM2 && newY <= FINISHJHALL2 + 1;
+            int collisionXRoom3 = newY > STARTJROOM3 - 1 && newY < FINISHJROOM3;
+            int collisionYRoom3 = newX >= STARTIROOM3 && newX < FINISHIROOM3;
+
+            int collisionXRoom4 = newY > STARTJROOM4 - 1 && newY < FINISHJROOM4;
+            int collisionYRoom4 = newX >= STARTIROOM4 && newX < FINISHIROOM4;
+
+            int collisionYHall1 = newX >= FINISHIROOM1 - strlen("🐱") && newX <= FINISHIHALL1 + 1 && newY > STARTJHALL1 && newY < FINISHJHALL1;
+            int collisionXHall2 = newY >= FINISHJROOM2 && newY <= FINISHJHALL2 + 1 && newX > STARTIHALL2 && newX < FINISHIHALL2;
+            int collisionYHall3 = newX >= FINISHIROOM3 - strlen("🐱") && newX <= FINISHIHALL3 + 1 && newY > STARTJHALL3 && newY < FINISHJHALL3;
+            int collisionYHall4 = newX < STARTIHALL4 + strlen("🐱") && newX >= FINISHIHALL4 - 1 && newY > STARTJHALL4 && newY < FINISHJHALL4;
 
             if (enemy_room_2.x >= FINISHIROOM2 - strlen("    ") || enemy_room_2.x - 2 < STARTIROOM2)
             {
                 enemy_room_2.inc_x = -enemy_room_2.inc_x;
             }
 
-            if ((ch == 97) || (ch == 65)) //left
+            if ((ch == 97) || (ch == 65)) // left
             {
                 newX = player_x - incX;
+                player.steps++;
 
-                // Colisão room 0
+                // Colisão room 1
                 if ((newX == FINISHIROOM1 - 1 && collisionXRoom1))
                 {
                     newX += 1;
                 }
-                else if (newY != 12 && newX == STARTIROOM1 && collisionXRoom1)
+                else if (newY != DOORJ1 && newX == STARTIROOM1 && collisionXRoom1)
                 {
                     newX += 1;
                 }
@@ -612,6 +658,26 @@ int main()
                     newX += 1;
                 }
                 else if (newX == STARTIROOM2 && collisionXRoom2)
+                {
+                    newX += 1;
+                }
+
+                // Colisão room 3
+                if (newX == FINISHIROOM3 - 1 && collisionXRoom3)
+                {
+                    newX += 1;
+                }
+                else if (newX == STARTIROOM3 && collisionXRoom3)
+                {
+                    newX += 1;
+                }
+
+                // Colisão room 4
+                if (newX == FINISHIROOM4 - 1 && collisionXRoom4)
+                {
+                    newX += 1;
+                }
+                else if (newY != EXITDOORJ4 && newX == STARTIROOM4 && collisionXRoom4)
                 {
                     newX += 1;
                 }
@@ -633,9 +699,10 @@ int main()
                 ch = 0;
             }
 
-            if ((ch == 100) || (ch == 68)) //right
+            if ((ch == 100) || (ch == 68)) // right
             {
                 newX = player_x + incX;
+                player.steps++;
 
                 // ROOM 0
                 if (newY != DOORJ1 && (newX == FINISHIROOM1 - 2 && collisionXRoom1))
@@ -657,6 +724,26 @@ int main()
                     newX -= 1;
                 }
 
+                // ROOM 3
+                if (newY != EXITDOORJ3 && newX == FINISHIROOM3 - 2 && collisionXRoom3)
+                {
+                    newX -= 1;
+                }
+                else if (newX == STARTIROOM3 - 1 && collisionXRoom3)
+                {
+                    newX -= 1;
+                }
+
+                // ROOM 4
+                if (newX == FINISHIROOM4 - 2 && collisionXRoom4)
+                {
+                    newX -= 1;
+                }
+                else if (newY != ENTERDOORJ4 && newX == STARTIROOM4 - 1 && collisionXRoom4)
+                {
+                    newX -= 1;
+                }
+
                 if (collisionXHall2)
                 {
                     newX -= 1;
@@ -674,10 +761,12 @@ int main()
                 ch = 0;
             }
 
-            if ((ch == 115) || (ch == 83)) //down
+            if ((ch == 115) || (ch == 83)) // down
             {
                 newY = player_y + incY;
+                player.steps++;
 
+                // Colisão room 1
                 if (newY == STARTJROOM1 && collisionYRoom1)
                 {
                     newY -= 1;
@@ -687,16 +776,37 @@ int main()
                     newY -= 1;
                 }
 
+                // Colisão room 2
                 if (newY == STARTJROOM2 && collisionYRoom2)
                 {
                     newY -= 1;
                 }
-                else if (newX != DOORI2 && newY == FINISHJROOM2 - 1 && collisionYRoom2)
+                else if (newX != EXITDOORI2 && newY == FINISHJROOM2 - 1 && collisionYRoom2)
                 {
                     newY -= 1;
                 }
 
-                if (collisionYHall1)
+                // Colisão room 3
+                if (newY != ENTERDOORJ3 && newY == STARTJROOM3 && collisionYRoom3)
+                {
+                    newY -= 1;
+                }
+                else if (newY == FINISHJROOM3 - 1 && collisionYRoom3)
+                {
+                    newY -= 1;
+                }
+
+                // Colisão room 4
+                if (newY != ENTERDOORJ4 && newY == STARTJROOM4 && collisionYRoom4)
+                {
+                    newY -= 1;
+                }
+                else if (newY == FINISHJROOM4 - 1 && collisionYRoom4)
+                {
+                    newY -= 1;
+                }
+
+                if (collisionYHall1 || collisionYHall3 || collisionYHall4)
                 {
                     newY -= 1;
                 }
@@ -714,10 +824,12 @@ int main()
                 ch = 0;
             }
 
-            if ((ch == 119) || (ch == 87)) //up
+            if ((ch == 119) || (ch == 87)) // up
             {
                 newY = player_y - incY;
+                player.steps++;
 
+                // Colisão room 1
                 if (newY == STARTJROOM1 && collisionYRoom1)
                 {
                     newY += 1;
@@ -727,6 +839,7 @@ int main()
                     newY += 1;
                 }
 
+                // Colisão room 2
                 if (newY == STARTJROOM2 && collisionYRoom2)
                 {
                     newY += 1;
@@ -736,7 +849,27 @@ int main()
                     newY += 1;
                 }
 
-                if (collisionYHall1)
+                // Colisão room 3
+                if (newY == STARTJROOM3 && collisionYRoom3)
+                {
+                    newY += 1;
+                }
+                else if (newY == FINISHJROOM3 && collisionYRoom3)
+                {
+                    newY += 1;
+                }
+
+                // Colisão room 4
+                if (newY == STARTJROOM4 && collisionYRoom4)
+                {
+                    newY += 1;
+                }
+                else if (newY == FINISHJROOM4 && collisionYRoom4)
+                {
+                    newY += 1;
+                }
+
+                if (collisionYHall1 || collisionYHall3 || collisionYHall4)
                 {
                     newY += 1;
                 }
@@ -765,20 +898,24 @@ int main()
                 ch = 0;
             }
 
-            if (((ch == 107) || (ch == 75)) && (player.shield == 0)) //falta adicionar o escudo no mapa
+            if (((ch == 107) || (ch == 75)) && (player.shield == 0)) // falta adicionar o escudo no mapa
             {
                 print_shield(newX, newY);
                 ch = 0;
             }
 
             printHorizontalHall(STARTIHALL1, FINISHIHALL1, STARTJHALL1, FINISHJHALL1);
+            printHorizontalHall(STARTIHALL3, FINISHIHALL3, STARTJHALL3, FINISHJHALL3);
+            printHorizontalHall(FINISHIHALL4, STARTIHALL4, STARTJHALL4, FINISHJHALL4);
             printVerticalHall(STARTIHALL2, FINISHIHALL2, STARTJHALL2, FINISHJHALL2);
 
-            printRooms(STARTIROOM2, FINISHIROOM2, STARTJROOM2, FINISHJROOM2, 2, &enemies2, DOORI2, DOORJ2);
-            printRooms(STARTIROOM3, FINISHIROOM3, STARTJROOM3, FINISHJROOM3, 3, &enemies3, DOORI3, DOORJ3);
-            printRooms(STARTIROOM4, FINISHIROOM4, STARTJROOM4, FINISHJROOM4, 4, &enemies4, DOORI4, DOORJ4);
-            printRooms(STARTIROOM5, FINISHIROOM5, STARTJROOM5, FINISHJROOM5, 5, &enemies5, DOORI5, DOORJ5);
+            printRooms(STARTIROOM2, FINISHIROOM2, STARTJROOM2, FINISHJROOM2, 2, &enemies2, ENTERDOORI2, ENTERDOORJ2, EXITDOORI2, EXITDOORJ2);
+            printRooms(STARTIROOM3, FINISHIROOM3, STARTJROOM3, FINISHJROOM3, 3, &enemies3, ENTERDOORI3, ENTERDOORJ3, EXITDOORI3, EXITDOORJ3);
+            printRooms(STARTIROOM4, FINISHIROOM4, STARTJROOM4, FINISHJROOM4, 4, &enemies4, ENTERDOORI4, ENTERDOORJ4, EXITDOORI4, EXITDOORJ4);
+            printRooms(STARTIROOM5, FINISHIROOM5, STARTJROOM5, FINISHJROOM5, 5, &enemies5, ENTERDOORI5, ENTERDOORJ5, EXITDOORI5, EXITDOORJ5);
+
             print_player(newX, newY);
+            printSteps(player);
 
             if (enemy_room_2.x == newX && enemy_room_2.y == newY && !enemy_room_2.is_dead)
             {
