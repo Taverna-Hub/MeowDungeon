@@ -352,6 +352,16 @@ void printKey(int ch)
     }
 }
 
+void printSteps(struct player p)
+{
+    screenSetColor(YELLOW, DARKGRAY);
+    screenGotoxy(130, 2);
+    printf("Steps:");
+
+    screenGotoxy(129, 3);
+    printf("    ");
+    printf("%d", p.steps);
+}
 
 void asciiPrint()
 {
@@ -417,6 +427,7 @@ int main()
     
     int menu_cont = 0;    
     screenSetColor(LIGHTMAGENTA, DARKGRAY);
+
     while (ch != 32)
     {
         if (keyhit())
@@ -574,6 +585,7 @@ int main()
             if ((ch == 97) || (ch == 65)) //left
             {
                 newX = player_x - incX;
+                player.steps++;
 
                 // Colisão room 0
                 if ((newX == FINISHIROOM1 - 1 && collisionXRoom1))
@@ -615,6 +627,7 @@ int main()
             if ((ch == 100) || (ch == 68)) //right
             {
                 newX = player_x + incX;
+                player.steps++;
 
                 // ROOM 0
                 if (newY != DOORJ1 && (newX == FINISHIROOM1 - 2 && collisionXRoom1))
@@ -656,6 +669,7 @@ int main()
             if ((ch == 115) || (ch == 83)) //down
             {
                 newY = player_y + incY;
+                player.steps++;
 
                 if (newY == STARTJROOM1 && collisionYRoom1)
                 {
@@ -696,6 +710,7 @@ int main()
             if ((ch == 119) || (ch == 87)) //up
             {
                 newY = player_y - incY;
+                player.steps++;
 
                 if (newY == STARTJROOM1 && collisionYRoom1)
                 {
@@ -758,6 +773,8 @@ int main()
             printRooms(STARTIROOM4, FINISHIROOM4, STARTJROOM4, FINISHJROOM4, 4, &enemies4, DOORI4, DOORJ4);
             printRooms(STARTIROOM5, FINISHIROOM5, STARTJROOM5, FINISHJROOM5, 5, &enemies5, DOORI5, DOORJ5);
             print_player(newX, newY);
+
+            printSteps( player);
 
             if (enemy_room_2.x == newX && enemy_room_2.y == newY && !enemy_room_2.is_dead)
             {
