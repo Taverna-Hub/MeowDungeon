@@ -96,18 +96,18 @@ struct enemy_obj
     int y;
     int is_dead;
     int inc_x;
+    char *image;
 };
 
 void print_enemy(struct enemy_obj enemy, int new_enemy_x, int new_enemy_y)
 {
     srand(time(NULL));
-    int rand_emoji = (rand() % 7);
     screenGotoxy(enemy.x, enemy.y);
     printf(" ");
     enemy.x = new_enemy_x;
     enemy.y = new_enemy_y;
     screenGotoxy(enemy.x, enemy.y);
-    printf("%s", enemies[rand_emoji]);
+    printf("%s", enemy.image);
 }
 
 void print_player(int nextX, int nextY)
@@ -383,11 +383,13 @@ int main()
 
     skeleton.x = 22;
     skeleton.y = 10;
-
+    skeleton.image = enemies[(rand() % 7)];
+    
     enemy_room_2.x = 36;
     enemy_room_2.y = 17;
     enemy_room_2.inc_x = 1;
     enemy_room_2.is_dead = 0;
+    enemy_room_2.image = enemies[(rand() % 7)];
 
     player.sword = 0;
     player.shield = 0;
