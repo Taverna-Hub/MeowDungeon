@@ -98,10 +98,24 @@ struct enemy_obj
     int inc_x;
     char *image;
 };
+struct trap_obj{
+    int x;
+    int y;
+    int position; // 1 baixo pra cima | 2 cima pra baixo | 3 esquerda pra direita | 4 direita pra esquerda
 
+};
+void print_trap(struct trap_obj trap, int new_shot_x, int new_shot_y){
+    screenGotoxy(trap.x, trap.y);
+    printf(" ");
+    trap.x = new_shot_x;
+    trap.y = new_shot_y;
+    screenGotoxy(trap.x, trap.y);
+    printf("*");
+
+
+}
 void print_enemy(struct enemy_obj enemy, int new_enemy_x, int new_enemy_y)
 {
-    srand(time(NULL));
     screenGotoxy(enemy.x, enemy.y);
     printf(" ");
     enemy.x = new_enemy_x;
@@ -353,6 +367,7 @@ void printKey(int ch)
 }
 
 
+
 void asciiPrint()
 {
     FILE *file;
@@ -381,6 +396,8 @@ int main()
     struct enemy_obj skeleton;
     struct enemy_obj enemy_room_2;
 
+    struct trap_obj trap1;
+
     skeleton.x = 22;
     skeleton.y = 10;
     skeleton.image = enemies[(rand() % 7)];
@@ -396,7 +413,11 @@ int main()
     player.steps = 0;
     player.score = 0;
     player.hp = 3;
-
+    // sala 3
+    trap1.x = 40;
+    trap1.y = 31;
+    trap1.position = 1;
+  
     //initial screen display
     screenInit(0);
     keyboardInit();
@@ -768,6 +789,14 @@ int main()
             if (enemies2 == 1 && enemy_room_2.is_dead == 0)
             {
                 print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
+            }
+            if (enemies3 == 1)
+            {
+                print_trap(trap1, trap1.x, trap1.y);
+                trap1.y = trap1.y - 1;
+                if (trap1.y == STARTJROOM3 + 1){
+                    printf(" ");
+                }
             }
 
             if ((newX == 16 || newX == 15) && newY == 9)
