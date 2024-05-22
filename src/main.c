@@ -17,8 +17,7 @@
 #include "screen.h"
 #include "keyboard.h"
 #include "timer.h"
-
-//1
+// 1
 #define STARTIROOM1 8
 #define FINISHIROOM1 27
 #define STARTJROOM1 8
@@ -63,7 +62,7 @@
 // 5 (boos entrance)
 #define STARTIROOM5 50
 #define FINISHIROOM5 80
-#define STARTJROOM5  7
+#define STARTJROOM5 7
 #define FINISHJROOM5 20
 
 #define DOORI5 94
@@ -75,7 +74,7 @@ int incX = 1, incY = 1;
 
 int player_x = 16, player_y = 14;
 
-int enemies1 = 1; 
+int enemies1 = 1;
 int enemies2 = 0;
 int enemies3 = 0;
 int enemies4 = 0;
@@ -230,11 +229,12 @@ void print_shield(int pos_X, int pos_Y)
 
 void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int room, int *room_enemies, int door_i, int door_j)
 {
+    int roomRange = (player_x + 1 >= start_i_room) && (player_x <= finish_i_room) && (player_y - 1 >= start_j_room) && (player_y <= finish_j_room);
+
     screenSetColor(CYAN, DARKGRAY);
     int last_j = start_j_room;
-    if (((player_x + 1 == start_i_room) || (player_y - 1 == start_j_room)) && (room != 0))
+    if (roomRange && (room != 0))
     {
-        
         *room_enemies = 1;
         for (int i = start_i_room; i < finish_i_room; i++)
         {
@@ -376,7 +376,7 @@ void asciiPrint()
         return;
     }
 
-    while(fgets(string, sizeof(string), file) != NULL)
+    while (fgets(string, sizeof(string), file) != NULL)
     {
         printf("%s", string);
     }
@@ -385,7 +385,7 @@ void asciiPrint()
 }
 
 int main()
-{   
+{
     static int ch = 0;
     struct player player;
     struct enemy_obj skeleton;
@@ -394,7 +394,7 @@ int main()
     skeleton.x = 22;
     skeleton.y = 10;
     skeleton.image = enemies[(rand() % 7)];
-    
+
     enemy_room_2.x = 36;
     enemy_room_2.y = 17;
     enemy_room_2.inc_x = 1;
@@ -407,7 +407,7 @@ int main()
     player.score = 0;
     player.hp = 3;
 
-    //initial screen display
+    // initial screen display
     screenInit(0);
     keyboardInit();
 
@@ -424,8 +424,8 @@ int main()
 
     screenGotoxy(63, 23);
     printf("EXIT");
-    
-    int menu_cont = 0;    
+
+    int menu_cont = 0;
     screenSetColor(LIGHTMAGENTA, DARKGRAY);
 
     while (ch != 32)
@@ -439,7 +439,7 @@ int main()
         {
             menu_cont++;
 
-            if(menu_cont == 3)
+            if (menu_cont == 3)
             {
                 menu_cont = 0;
             }
@@ -448,10 +448,10 @@ int main()
         }
 
         if ((ch == 119) || (ch == 87))
-        {   
+        {
             menu_cont--;
 
-            if(menu_cont < 0)
+            if (menu_cont < 0)
             {
                 menu_cont = 2;
             }
@@ -510,7 +510,7 @@ int main()
     ch = 0;
 
     if (menu_cont == 2)
-    {   
+    {
         printf("\n");
         keyboardDestroy();
         screenDestroy();
@@ -582,7 +582,7 @@ int main()
                 enemy_room_2.inc_x = -enemy_room_2.inc_x;
             }
 
-            if ((ch == 97) || (ch == 65)) //left
+            if ((ch == 97) || (ch == 65)) // left
             {
                 newX = player_x - incX;
                 player.steps++;
@@ -624,7 +624,7 @@ int main()
                 ch = 0;
             }
 
-            if ((ch == 100) || (ch == 68)) //right
+            if ((ch == 100) || (ch == 68)) // right
             {
                 newX = player_x + incX;
                 player.steps++;
@@ -666,7 +666,7 @@ int main()
                 ch = 0;
             }
 
-            if ((ch == 115) || (ch == 83)) //down
+            if ((ch == 115) || (ch == 83)) // down
             {
                 newY = player_y + incY;
                 player.steps++;
@@ -707,7 +707,7 @@ int main()
                 ch = 0;
             }
 
-            if ((ch == 119) || (ch == 87)) //up
+            if ((ch == 119) || (ch == 87)) // up
             {
                 newY = player_y - incY;
                 player.steps++;
@@ -759,7 +759,7 @@ int main()
                 ch = 0;
             }
 
-            if (((ch == 107) || (ch == 75)) && (player.shield == 0)) //falta adicionar o escudo no mapa
+            if (((ch == 107) || (ch == 75)) && (player.shield == 0)) // falta adicionar o escudo no mapa
             {
                 print_shield(newX, newY);
                 ch = 0;
@@ -772,8 +772,8 @@ int main()
             printRooms(STARTIROOM3, FINISHIROOM3, STARTJROOM3, FINISHJROOM3, 3, &enemies3, DOORI3, DOORJ3);
             printRooms(STARTIROOM4, FINISHIROOM4, STARTJROOM4, FINISHJROOM4, 4, &enemies4, DOORI4, DOORJ4);
             printRooms(STARTIROOM5, FINISHIROOM5, STARTJROOM5, FINISHJROOM5, 5, &enemies5, DOORI5, DOORJ5);
+            
             print_player(newX, newY);
-
             printSteps( player);
 
             if (enemy_room_2.x == newX && enemy_room_2.y == newY && !enemy_room_2.is_dead)
