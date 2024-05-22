@@ -17,7 +17,7 @@
 #include "screen.h"
 #include "keyboard.h"
 #include "timer.h"
-#include "logo.h"
+
 //1
 #define STARTIROOM1 8
 #define FINISHIROOM1 27
@@ -352,27 +352,26 @@ void printKey(int ch)
     }
 }
 
-void initialScreen(){
 
-    screenSetColor(LIGHTMAGENTA, DARKGRAY);
-    screenGotoxy(51, 9);
-    printf("%s", logo_1);
+void asciiPrint()
+{
+    FILE *file;
+    char string[128];
 
-    screenGotoxy(51, 10);
-    printf("%s", logo_2);
+    file = fopen("src/sprite.txt", "r+");
 
-    screenGotoxy(51, 11);
-    printf("%s", logo_3);
+    if (file == NULL)
+    {
+        perror("Error opening file");
+        return;
+    }
 
-    screenGotoxy(51, 12);
-    printf("%s", logo_4);
+    while(fgets(string, sizeof(string), file) != NULL)
+    {
+        printf("%s", string);
+    }
 
-    screenGotoxy(51, 13);
-    printf("%s", logo_5);
-
-    screenGotoxy(51, 14);
-    printf("%s", logo_6);
-
+    fclose(file);
 }
 
 int main()
@@ -400,18 +399,22 @@ int main()
     screenInit(0);
     keyboardInit();
 
-    screenGotoxy(67, 19);
+    screenSetColor(LIGHTMAGENTA, DARKGRAY);
+    asciiPrint();
+
+    screenSetColor(LIGHTGRAY, DARKGRAY);
+
+    screenGotoxy(60, 19);
     printf("START GAME");
 
-    screenGotoxy(69, 21);
+    screenGotoxy(62, 21);
     printf("SCORES");
 
-    screenGotoxy(70, 23);
+    screenGotoxy(63, 23);
     printf("EXIT");
     
-    initialScreen();
-
-    int menu_cont = 0;
+    int menu_cont = 0;    
+    screenSetColor(LIGHTMAGENTA, DARKGRAY);
     while (ch != 32)
     {
         if (keyhit())
@@ -445,49 +448,49 @@ int main()
 
         if (menu_cont == 0)
         {
-            screenGotoxy(65, 19);
+            screenGotoxy(58, 19);
             printf(">");
-            screenGotoxy(78, 19);
+            screenGotoxy(71, 19);
             printf("<");
-            screenGotoxy(67, 21);
+            screenGotoxy(60, 21);
             printf(" ");
-            screenGotoxy(76, 21);
+            screenGotoxy(69, 21);
+            printf(" ");
+            screenGotoxy(61, 23);
             printf(" ");
             screenGotoxy(68, 23);
-            printf(" ");
-            screenGotoxy(75, 23);
             printf(" ");
         }
 
         if (menu_cont == 1)
         {
-            screenGotoxy(65, 19);
+            screenGotoxy(58, 19);
             printf(" ");
-            screenGotoxy(78, 19);
+            screenGotoxy(71, 19);
             printf(" ");
-            screenGotoxy(67, 21);
+            screenGotoxy(60, 21);
             printf(">");
-            screenGotoxy(76, 21);
+            screenGotoxy(69, 21);
             printf("<");
-            screenGotoxy(68, 23);
+            screenGotoxy(61, 23);
             printf(" ");
-            screenGotoxy(75, 23);
+            screenGotoxy(68, 23);
             printf(" ");
         }
 
         if (menu_cont == 2)
         {
-            screenGotoxy(65, 19);
+            screenGotoxy(58, 19);
             printf(" ");
-            screenGotoxy(78, 19);
+            screenGotoxy(71, 19);
             printf(" ");
-            screenGotoxy(67, 21);
+            screenGotoxy(60, 21);
             printf(" ");
-            screenGotoxy(76, 21);
+            screenGotoxy(69, 21);
             printf(" ");
-            screenGotoxy(68, 23);
+            screenGotoxy(61, 23);
             printf(">");
-            screenGotoxy(75, 23);
+            screenGotoxy(68, 23);
             printf("<");
         }
     }
