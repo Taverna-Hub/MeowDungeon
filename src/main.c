@@ -415,12 +415,12 @@ int main()
 {
     static int ch = 0;
     struct player player;
-    struct enemy_obj skeleton;
+    struct enemy_obj enemy_room_1;
     struct enemy_obj enemy_room_2;
 
-    skeleton.x = 22;
-    skeleton.y = 10;
-    skeleton.image = enemies[(rand() % 7)];
+    enemy_room_1.x = 22;
+    enemy_room_1.y = 10;
+    enemy_room_1.image = enemies[(rand() % 7)];
 
     enemy_room_2.x = 36;
     enemy_room_2.y = 17;
@@ -573,7 +573,7 @@ int main()
 
     printRooms(STARTIROOM1, FINISHIROOM1, STARTJROOM1, FINISHJROOM1, 0, &enemies1, DOORI1, DOORJ1, DOORI1, DOORJ1); // first room
 
-    print_enemy(skeleton, skeleton.x, skeleton.y);
+    print_enemy(enemy_room_1, enemy_room_1.x, enemy_room_1.y);
 
     screenUpdate();
 
