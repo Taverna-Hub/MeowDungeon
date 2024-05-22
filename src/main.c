@@ -436,11 +436,21 @@ int main()
     struct enemy_obj enemy_room_1;
     struct enemy_obj enemy_room_2;
 
-    struct trap_obj shot;
-    struct trap_obj shot2;
-    struct trap_obj shot3;
-    struct trap_obj shot4;
-    struct trap_obj shot5;
+    struct trap_obj traps_room_3[5];
+
+    int traps_room_3_x_values[] = {40, 50, 60, 70, 80};
+    int traps_room_3_y_values[] = {FINISHJROOM3 - 2, STARTJROOM3 + 1};
+    int inc_values[] = {-1, 1};
+
+    // Room 3 traps
+    for (int i = 0; i < 5; i++)
+    {
+        traps_room_3[i].x = traps_room_3_x_values[i];
+        traps_room_3[i].y = traps_room_3_y_values[i % 2];
+        traps_room_3[i].previous_x = traps_room_3_x_values[i];
+        traps_room_3[i].previous_y = traps_room_3_y_values[i % 2];
+        traps_room_3[i].inc_y = inc_values[i % 2];
+    }
 
     enemy_room_1.x = 22;
     enemy_room_1.y = 10;
@@ -457,37 +467,6 @@ int main()
     player.steps = 0;
     player.score = 0;
     player.hp = 3;
-
-    // Room 3 traps
-    shot.x = 40;
-    shot.y = FINISHJROOM3 - 2;
-    shot.previous_x = shot.x;
-    shot.previous_y = FINISHJROOM3 - 2;
-    shot.inc_y = -1;
-
-    shot2.x = 50;
-    shot2.y = STARTJROOM3 + 1;
-    shot2.previous_x = shot2.x;
-    shot2.previous_y = STARTJROOM3 + 1;
-    shot2.inc_y = 1;
-
-    shot3.x = 60;
-    shot3.y = FINISHJROOM3 - 2;
-    shot3.previous_x = shot3.x;
-    shot3.previous_y = FINISHJROOM3 - 2;
-    shot3.inc_y = -1;
-
-    shot4.x = 70;
-    shot4.y = STARTJROOM3 + 1;
-    shot4.previous_x = shot4.x;
-    shot4.previous_y = STARTJROOM3 + 1;
-    shot4.inc_y = 1;
-
-    shot5.x = 80;
-    shot5.y = FINISHJROOM3 - 2;
-    shot5.previous_x = shot5.x;
-    shot5.previous_y = FINISHJROOM3 - 2;
-    shot5.inc_y = -1;
 
     // initial screen display
     screenInit(0);
@@ -965,39 +944,37 @@ int main()
 
             if (enemies3 == 1)
             {
-                shot.previous_y = shot.y;
-                shot.y = shot.y + shot.inc_y;
-
-                shot2.previous_y = shot2.y;
-                shot2.y = shot2.y + shot2.inc_y;
-
-                shot3.previous_y = shot3.y;
-                shot3.y = shot3.y + shot3.inc_y;
-
-                shot4.previous_y = shot4.y;
-                shot4.y = shot4.y + shot4.inc_y;
-
-                shot5.previous_y = shot5.y;
-                shot5.y = shot5.y + shot5.inc_y;
-
-                if (shot.y == STARTJROOM3 || shot3.y == STARTJROOM3 || shot5.y == STARTJROOM3)
+                for (int i = 0; i < 5; i++)
                 {
-                    shot.y = FINISHJROOM3 - 2;
-                    shot3.y = FINISHJROOM3 - 2;
-                    shot5.y = FINISHJROOM3 - 2;
+                    traps_room_3[i].previous_y = traps_room_3[i].y;
+                    traps_room_3[i].y = traps_room_3[i].y + traps_room_3[i].inc_y;
                 }
 
-                if (shot2.y == FINISHJROOM3 - 1 || shot4.y == FINISHJROOM3 - 1)
+                if (traps_room_3[0].y == STARTJROOM3 || traps_room_3[2].y == STARTJROOM3 || traps_room_3[4].y == STARTJROOM3)
                 {
-                    shot2.y = STARTJROOM3 + 1;
-                    shot4.y = STARTJROOM3 + 1;
+                    traps_room_3[0].y = FINISHJROOM3 - 2;
+                    traps_room_3[2].y = FINISHJROOM3 - 2;
+                    traps_room_3[4].y = FINISHJROOM3 - 2;
                 }
 
-                print_trap(shot, shot.x, shot.y);
-                print_trap(shot2, shot2.x, shot2.y);
-                print_trap(shot3, shot3.x, shot3.y);
-                print_trap(shot4, shot4.x, shot4.y);
-                print_trap(shot5, shot5.x, shot5.y);
+                if (traps_room_3[1].y == FINISHJROOM3 - 1 || traps_room_3[3].y == FINISHJROOM3 - 1)
+                {
+                    traps_room_3[1].y = STARTJROOM3 + 1;
+                    traps_room_3[3].y = STARTJROOM3 + 1;
+                }
+
+                for (int i = 0; i < 5; i++)
+                {
+                    print_trap(traps_room_3[i], traps_room_3[i].x, traps_room_3[i].y);
+                    int playerTrapDistanceX = abs(player_x - traps_room_3[i].x);
+                    int playerTrapDistanceY = abs(player_y - traps_room_3[i].y);
+
+                    if ((playerTrapDistanceX == 0 && playerTrapDistanceY == 0) || (playerTrapDistanceX == 1 && playerTrapDistanceY == 1))
+                    {
+                        player.hp--;
+                        printHp(player.hp);
+                    }
+                }
             }
 
             if ((newX == 16 || newX == 15) && newY == 9)
