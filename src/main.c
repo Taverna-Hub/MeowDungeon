@@ -409,7 +409,7 @@ void asciiPrint()
     FILE *file;
     char string[128];
 
-    file = fopen("src/sprite.txt", "r+");
+    file = fopen("src/files/menu.txt", "r+");
 
     if (file == NULL)
     {
