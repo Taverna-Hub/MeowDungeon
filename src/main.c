@@ -10,7 +10,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include <time.h>
 #include <unistd.h>
 #include <math.h>
 
@@ -124,22 +123,25 @@ struct enemy_obj
     int inc_x;
     char *image;
 };
-struct trap_obj{
+struct trap_obj
+{
     int x;
     int y;
-    int position; // 1 baixo pra cima | 2 cima pra baixo | 3 esquerda pra direita | 4 direita pra esquerda
-
+    int previous_x;
+    int previous_y;
+    int inc_x;
+    int inc_y;
 };
-void print_trap(struct trap_obj trap, int new_shot_x, int new_shot_y){
-    screenGotoxy(trap.x, trap.y);
+void print_trap(struct trap_obj trap, int new_shot_x, int new_shot_y)
+{
+    screenGotoxy(trap.previous_x, trap.previous_y);
     printf(" ");
     trap.x = new_shot_x;
     trap.y = new_shot_y;
     screenGotoxy(trap.x, trap.y);
     printf("*");
-
-
 }
+
 void print_enemy(struct enemy_obj enemy, int new_enemy_x, int new_enemy_y)
 {
     screenGotoxy(enemy.x, enemy.y);
@@ -427,6 +429,7 @@ void asciiPrint()
 
 int main()
 {
+    srand(time(NULL));
     static int ch = 0;
     struct player player;
     struct enemy_obj enemy_room_1;
@@ -449,16 +452,19 @@ int main()
     player.steps = 0;
     player.score = 0;
     player.hp = 3;
+
     // sala 3
     trap1.x = 40;
-    trap1.y = 31;
-    trap1.position = 1;
-  
-    //initial screen display
+    trap1.y = FINISHJROOM3 - 1;
+    trap1.previous_x = 40;
+    trap1.previous_y = FINISHJROOM3 - 1;
+    trap1.inc_y = -1;
+
+    // initial screen display
     screenInit(0);
     keyboardInit();
 
-    screenSetColor(LIGHTMAGENTA, DARKGRAY);
+    screenSetColor(RED, DARKGRAY);
     asciiPrint();
 
     screenSetColor(LIGHTGRAY, DARKGRAY);
@@ -473,7 +479,7 @@ int main()
     printf("EXIT");
 
     int menu_cont = 0;
-    screenSetColor(LIGHTMAGENTA, DARKGRAY);
+    screenSetColor(RED, DARKGRAY);
 
     while (ch != 32)
     {
@@ -927,13 +933,17 @@ int main()
             {
                 print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
             }
+
             if (enemies3 == 1)
             {
-                print_trap(trap1, trap1.x, trap1.y);
-                trap1.y = trap1.y - 1;
-                if (trap1.y == STARTJROOM3 + 1){
-                    printf(" ");
+                trap1.previous_y = trap1.y;
+                trap1.y = trap1.y + trap1.inc_y;
+                if (trap1.y == STARTJROOM3)
+                {
+                    trap1.y = FINISHJROOM3 - 2;
                 }
+
+                print_trap(trap1, trap1.x, trap1.y);
             }
 
             if ((newX == 16 || newX == 15) && newY == 9)
