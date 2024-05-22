@@ -966,10 +966,8 @@ int main()
                 for (int i = 0; i < 5; i++)
                 {
                     print_trap(traps_room_3[i], traps_room_3[i].x, traps_room_3[i].y);
-                    int playerTrapDistanceX = abs(player_x - traps_room_3[i].x);
-                    int playerTrapDistanceY = abs(player_y - traps_room_3[i].y);
 
-                    if ((playerTrapDistanceX == 0 && playerTrapDistanceY == 0) || (playerTrapDistanceX == 1 && playerTrapDistanceY == 1))
+                    if ((player_x == traps_room_3[i].x && player_y == traps_room_3[i].y) || (player_x + 1 == traps_room_3[i].x && player_y == traps_room_3[i].y))
                     {
                         player.hp--;
                         printHp(player.hp);
