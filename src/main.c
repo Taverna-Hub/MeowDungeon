@@ -639,6 +639,7 @@ int main()
 
     enemy_room_1.x = 22;
     enemy_room_1.y = 10;
+    enemy_room_1.is_dead = 0;
     enemy_room_1.sprite = enemies[(rand() % 7)];
 
     enemy_room_2.x = 36;
@@ -702,14 +703,6 @@ int main()
             add_score(&list, int_points, name);
         }
 
-        // printf("Digite o nome e a pontuacao: ");
-        // scanf("%s %s", name, points);
-        // int int_points = atoi(points);
-
-        // fprintf(file, "%s ", name);
-        // fprintf(file, "%s\n", points);
-
-        // add_score(&list, int_points, name);
 
         fclose(file);
 
@@ -766,7 +759,6 @@ int main()
 
         print_rooms(STARTIROOM1, FINISHIROOM1, STARTJROOM1, FINISHJROOM1, 0, &enemies1, DOORI1, DOORJ1, DOORI1, DOORJ1); // first room
 
-        print_enemy(enemy_room_1);
 
         screenUpdate();
 
@@ -816,6 +808,11 @@ int main()
                 {
                     cont1++;
                     enemies_cont++;
+                }
+                if (enemy_room_2.x == newX && enemy_room_2.y == newY && !enemy_room_2.is_dead)
+                {
+                    player.hp--;
+                    print_hp(player.hp);
                 }
 
                 if (enemy_room_2.x >= FINISHIROOM2 - strlen("    ") || enemy_room_2.x - 2 < STARTIROOM2)
@@ -1163,6 +1160,10 @@ int main()
                     {
                         enemy_room_2.is_dead = 1;
                     }
+                    if (abs(newX - enemy_room_1.x) == 1 || abs(newY - enemy_room_1.y) == 1)
+                    {
+                        enemy_room_1.is_dead = 1;
+                    }
 
                     ch = 0;
                 }
@@ -1249,7 +1250,7 @@ int main()
                     }
                 }
 
-                if (enemies4)
+                if (enemies4) // TODO
                 {
                     for (int i = 0; i < ENEMIES4LENGTH; i++)
                     {
