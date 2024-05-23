@@ -133,20 +133,37 @@ struct trap_obj
     int inc_y;
 };
 
-struct score {
+struct score
+{
     int points;
     char *name;
     struct score *next;
 };
 
-void print_trap(struct trap_obj trap, int new_trap_x, int new_trap_y)
+void print_trap(struct trap_obj trap, int new_trap_x, int new_trap_y, int direction)
 {
     screenGotoxy(trap.previous_x, trap.previous_y);
     printf(" ");
     trap.x = new_trap_x;
     trap.y = new_trap_y;
     screenGotoxy(trap.x, trap.y);
-    printf("*");
+    switch (direction)
+    {
+    case 1:
+        printf("↑");
+        break;
+    case 2:
+        printf("↓");
+        break;
+
+    case 3:
+        printf("←");
+        break;
+
+    case 4:
+        printf("→");
+        break;
+    }
 }
 
 void print_enemy(struct enemy_obj enemy, int new_enemy_x, int new_enemy_y)
@@ -434,32 +451,31 @@ void asciiPrint(char *path)
     fclose(file);
 }
 
-
-void add_score(struct score **head, int points, char *nome) 
+void add_score(struct score **head, int points, char *nome)
 {
     struct score *node = *head;
-    struct score *new = (struct score *) malloc(sizeof(struct score));
+    struct score *new = (struct score *)malloc(sizeof(struct score));
 
     new->points = points;
-    new->name = (char *) malloc((strlen(nome) + 1) * sizeof(char));
+    new->name = (char *)malloc((strlen(nome) + 1) * sizeof(char));
     new->next = NULL;
 
     strcpy(new->name, nome);
 
-    if (*head == NULL) 
+    if (*head == NULL)
     {
         *head = new;
-    } 
-    
-    else if ((*head)->points < points) 
+    }
+
+    else if ((*head)->points < points)
     {
         new->next = *head;
         *head = new;
-    } 
-    
-    else 
+    }
+
+    else
     {
-        while (node->next != NULL && node->next->points > points) 
+        while (node->next != NULL && node->next->points > points)
         {
             node = node->next;
         }
@@ -469,7 +485,8 @@ void add_score(struct score **head, int points, char *nome)
     }
 }
 
-void print_score(struct score *head) {
+void print_score(struct score *head)
+{
     struct score *node = head;
     int cont = 1, y = 11;
 
@@ -480,14 +497,17 @@ void print_score(struct score *head) {
         y++;
         node = node->next;
 
-        if (cont == 11) break;
+        if (cont == 11)
+            break;
     }
 }
 
-void free_score(struct score *head) {
+void free_score(struct score *head)
+{
     struct score *temp;
 
-    while (head != NULL) {
+    while (head != NULL)
+    {
         temp = head;
         head = head->next;
         free(temp->name);
@@ -497,7 +517,7 @@ void free_score(struct score *head) {
 
 int menu_cont = 0;
 void menu()
-{   
+{
     static int ch = 0;
 
     screenSetColor(LIGHTRED, DARKGRAY);
@@ -604,9 +624,14 @@ int main()
     struct enemy_obj enemy_room_2;
 
     struct trap_obj traps_room_3[5];
+    struct trap_obj traps_room_4[4];
 
     int traps_room_3_x_values[] = {40, 50, 60, 70, 80};
-    int traps_room_3_y_values[] = {FINISHJROOM3 - 2, STARTJROOM3 + 1};
+    int traps_room_3_y_values[] = {FINISHJROOM3 - 1, STARTJROOM3 + 1};
+
+    int traps_room_4_x_values[] = {FINISHIROOM4 - 2, STARTIROOM4 + 1};
+    int traps_room_4_y_values[] = {26, 23, 20, 17, 14};
+
     int inc_values[] = {-1, 1};
 
     // Room 3 traps
@@ -617,6 +642,16 @@ int main()
         traps_room_3[i].previous_x = traps_room_3_x_values[i];
         traps_room_3[i].previous_y = traps_room_3_y_values[i % 2];
         traps_room_3[i].inc_y = inc_values[i % 2];
+    }
+
+    // Room 4 traps
+    for (int i = 0; i < 4; i++)
+    {
+        traps_room_4[i].x = traps_room_4_x_values[i % 2];
+        traps_room_4[i].y = traps_room_4_y_values[i];
+        traps_room_4[i].previous_x = traps_room_4_x_values[i % 2];
+        traps_room_4[i].previous_y = traps_room_4_y_values[i];
+        traps_room_4[i].inc_x = inc_values[i % 2];
     }
 
     enemy_room_1.x = 22;
@@ -639,7 +674,6 @@ int main()
     screenInit(0);
     keyboardInit();
 
-    
     menu();
     ch = 0;
 
@@ -664,31 +698,31 @@ int main()
         FILE *file;
         file = fopen("src/files/score.txt", "r+");
 
-        if (file == NULL) 
+        if (file == NULL)
         {
             perror("File not found");
-            return 1; 
+            return 1;
         }
 
         char readLine[128], name[6], points[10];
 
-        while (fgets(readLine, sizeof(readLine), file) != NULL) 
+        while (fgets(readLine, sizeof(readLine), file) != NULL)
         {
             token = strtok(readLine, " ");
             strncpy(name, token, 5);
-            name[5] = '\0'; 
+            name[5] = '\0';
 
             token = strtok(NULL, " ");
             strncpy(points, token, 9);
-            points[9] = '\0'; 
+            points[9] = '\0';
 
-            int int_points = atoi(points); 
+            int int_points = atoi(points);
             add_score(&list, int_points, name);
         }
 
         // printf("Digite o nome e a pontuacao: ");
         // scanf("%s %s", name, points);
-        // int int_points = atoi(points); 
+        // int int_points = atoi(points);
 
         // fprintf(file, "%s ", name);
         // fprintf(file, "%s\n", points);
@@ -730,10 +764,9 @@ int main()
     }
 
         
-    
+
     else
     {
-    
         screenSetColor(LIGHTGRAY, DARKGRAY);
         screenInit(1);
         timerInit(150);
@@ -1098,7 +1131,7 @@ int main()
                     print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
                 }
 
-                if (enemies3 == 1)
+                if (enemies3)
                 {
                     for (int i = 0; i < 5; i++)
                     {
@@ -1121,9 +1154,55 @@ int main()
 
                     for (int i = 0; i < 5; i++)
                     {
-                        print_trap(traps_room_3[i], traps_room_3[i].x, traps_room_3[i].y);
+                        if (i % 2 == 0)
+                        {
+                            print_trap(traps_room_3[i], traps_room_3[i].x, traps_room_3[i].y, 1);
+                        }
+                        else
+                        {
+                            print_trap(traps_room_3[i], traps_room_3[i].x, traps_room_3[i].y, 2);
+                        }
 
                         if ((player_x == traps_room_3[i].x && player_y == traps_room_3[i].y) || (player_x + 1 == traps_room_3[i].x && player_y == traps_room_3[i].y))
+                        {
+                            player.hp--;
+                            printHp(player.hp);
+                        }
+                    }
+                }
+
+                if (enemies4)
+                {
+                    for (int i = 0; i < 4; i++)
+                    {
+                        traps_room_4[i].previous_x = traps_room_4[i].x;
+                        traps_room_4[i].x = traps_room_4[i].x + traps_room_4[i].inc_x;
+                    }
+
+                    if (traps_room_4[0].x == STARTIROOM4 + 1 || traps_room_4[2].x == STARTIROOM4 + 1)
+                    {
+                        traps_room_4[0].x = FINISHIROOM4 - 2;
+                        traps_room_4[2].x = FINISHIROOM4 - 2;
+                    }
+
+                    if (traps_room_4[1].x == FINISHIROOM4 - 1 || traps_room_4[3].x == FINISHIROOM4 - 1)
+                    {
+                        traps_room_4[1].x = STARTIROOM4 + 2;
+                        traps_room_4[3].x = STARTIROOM4 + 2;
+                    }
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (i % 2 == 0)
+                        {
+                            print_trap(traps_room_4[i], traps_room_4[i].x, traps_room_4[i].y, 3);
+                        }
+                        else
+                        {
+                            print_trap(traps_room_4[i], traps_room_4[i].x, traps_room_4[i].y, 4);
+                        }
+
+                        if ((player_x == traps_room_4[i].x && player_y == traps_room_4[i].y) || (player_x + 1 == traps_room_4[i].x && player_y == traps_room_4[i].y))
                         {
                             player.hp--;
                             printHp(player.hp);
@@ -1156,9 +1235,7 @@ int main()
         keyboardDestroy();
         screenDestroy();
         timerDestroy();
-
     }
-    
-    return 0;
 
+    return 0;
 }
