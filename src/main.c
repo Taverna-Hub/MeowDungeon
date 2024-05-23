@@ -42,9 +42,12 @@ struct enemy_obj
 {
     int x;
     int y;
+    int previous_x;
+    int previous_y;
     int is_dead;
     int inc_x;
-    char *image;
+    int inc_y;
+    char *sprite;
 };
 struct trap_obj
 {
@@ -96,7 +99,7 @@ void print_enemy(struct enemy_obj enemy, int new_enemy_x, int new_enemy_y)
     enemy.x = new_enemy_x;
     enemy.y = new_enemy_y;
     screenGotoxy(enemy.x, enemy.y);
-    printf("%s", enemy.image);
+    printf("%s", enemy.sprite);
 }
 
 void print_player(int nextX, int nextY)
@@ -413,7 +416,8 @@ void print_score(struct score *head)
     struct score *node = head;
     int cont = 1, y = 11;
 
-    while (node != NULL ) {
+    while (node != NULL)
+    {
         screenGotoxy(68, y);
         printf("%d. %s - %d\n", cont, node->name, node->points);
         cont++;
@@ -540,22 +544,38 @@ void menu()
 int main()
 {
     srand(time(NULL));
+    int inc_values[] = {-1, 1};
+
     static int ch = 0;
     struct score *list = NULL;
     struct player player;
+
     struct enemy_obj enemy_room_1;
     struct enemy_obj enemy_room_2;
 
+    struct enemy_obj enemies_room_4[ENEMIES4LENGTH];
+    int enemies_room_4_x_values[] = {FINISHIROOM4 - 2, STARTIROOM4 + 1};
+    int enemies_room_4_y_values[] = {21, 17};
+
+    for (int i = 0; i < ENEMIES4LENGTH; i++)
+    {
+        enemies_room_4[i].x = enemies_room_4_x_values[i % 2];
+        enemies_room_4[i].y = enemies_room_4_y_values[i];
+        enemies_room_4[i].previous_x = enemies_room_4_x_values[i % 2];
+        enemies_room_4[i].previous_y = enemies_room_4_y_values[i];
+        enemies_room_4[i].inc_x = inc_values[i % 2];
+        enemies_room_4[i].is_dead = 0;
+        enemies_room_4[i].sprite = enemies[(rand() % 7)];
+    }
+
     struct trap_obj traps_room_3[5];
-    struct trap_obj traps_room_4[4];
+    struct trap_obj traps_room_4[TRAPS4LENGTH];
 
     int traps_room_3_x_values[] = {40, 50, 60, 70, 80};
     int traps_room_3_y_values[] = {FINISHJROOM3 - 1, STARTJROOM3 + 1};
 
     int traps_room_4_x_values[] = {FINISHIROOM4 - 2, STARTIROOM4 + 1};
-    int traps_room_4_y_values[] = {26, 23, 20, 17, 14};
-
-    int inc_values[] = {-1, 1};
+    int traps_room_4_y_values[] = {26, 24, 22, 20, 18, 16, 14};
 
     // Room 3 traps
     for (int i = 0; i < 5; i++)
@@ -568,7 +588,7 @@ int main()
     }
 
     // Room 4 traps
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < TRAPS4LENGTH; i++)
     {
         traps_room_4[i].x = traps_room_4_x_values[i % 2];
         traps_room_4[i].y = traps_room_4_y_values[i];
@@ -579,13 +599,13 @@ int main()
 
     enemy_room_1.x = 22;
     enemy_room_1.y = 10;
-    enemy_room_1.image = enemies[(rand() % 7)];
+    enemy_room_1.sprite = enemies[(rand() % 7)];
 
     enemy_room_2.x = 36;
     enemy_room_2.y = 17;
     enemy_room_2.inc_x = 1;
     enemy_room_2.is_dead = 0;
-    enemy_room_2.image = enemies[(rand() % 7)];
+    enemy_room_2.sprite = enemies[(rand() % 7)];
 
     player.sword = 0;
     player.shield = 0;
@@ -656,12 +676,12 @@ int main()
         screenSetColor(MAGENTA, DARKGRAY);
         screenGotoxy(60, 3);
         asciiPrint("src/files/topscores.txt");
-        
+
         screenGotoxy(63, 22);
         printf(">");
         screenGotoxy(87, 22);
         printf("<");
-        
+
         screenSetColor(LIGHTGRAY, DARKGRAY);
 
         screenGotoxy(65, 22);
@@ -677,7 +697,7 @@ int main()
             }
         }
         ch = 0;
-        
+
         printf("\n");
         keyboardDestroy();
         screenDestroy();
@@ -1128,25 +1148,50 @@ int main()
 
                 if (enemies4)
                 {
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < ENEMIES4LENGTH; i++)
+                    {
+                        enemies_room_4[i].previous_x = enemies_room_4[i].x;
+                        enemies_room_4[i].x = enemies_room_4[i].x + enemies_room_4[i].inc_x;
+                    }
+
+                    for (int i = 0; i < ENEMIES4LENGTH; i++)
+                    {
+                        if (enemies_room_4[i].x == STARTIROOM4 + 1 || enemies_room_4[i].x == FINISHIROOM4 - 2)
+                        {
+                            enemies_room_4[i].inc_x = -enemies_room_4[i].inc_x;
+                        }
+                    }
+
+                    for (int i = 0; i < ENEMIES4LENGTH; i++)
+                    {
+                        print_enemy(enemies_room_4[i], enemies_room_4[i].x, enemies_room_4[i].y);
+                    }
+
+                    for (int i = 0; i < TRAPS4LENGTH; i++)
                     {
                         traps_room_4[i].previous_x = traps_room_4[i].x;
                         traps_room_4[i].x = traps_room_4[i].x + traps_room_4[i].inc_x;
                     }
 
-                    if (traps_room_4[0].x == STARTIROOM4 + 1 || traps_room_4[2].x == STARTIROOM4 + 1)
+                    for (int i = 0; i < TRAPS4LENGTH; i++)
                     {
-                        traps_room_4[0].x = FINISHIROOM4 - 2;
-                        traps_room_4[2].x = FINISHIROOM4 - 2;
+                        if (i % 2 == 0)
+                        {
+                            if (traps_room_4[i].x == STARTIROOM4 + 1)
+                            {
+                                traps_room_4[i].x = FINISHIROOM4 - 2;
+                            }
+                        }
+                        else
+                        {
+                            if (traps_room_4[i].x == FINISHIROOM4 - 1)
+                            {
+                                traps_room_4[i].x = STARTIROOM4 + 2;
+                            }
+                        }
                     }
 
-                    if (traps_room_4[1].x == FINISHIROOM4 - 1 || traps_room_4[3].x == FINISHIROOM4 - 1)
-                    {
-                        traps_room_4[1].x = STARTIROOM4 + 2;
-                        traps_room_4[3].x = STARTIROOM4 + 2;
-                    }
-
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < TRAPS4LENGTH; i++)
                     {
                         if (i % 2 == 0)
                         {
