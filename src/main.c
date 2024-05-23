@@ -92,6 +92,16 @@ void print_trap(struct trap_obj trap, int new_trap_x, int new_trap_y, int direct
     }
 }
 
+int sum_score(int killed_enemies, int steps, int lifes, int itens_count)
+{
+    int total = (killed_enemies * 100) + (lifes * 500) + (itens_count * 250);
+    if (steps > 150)
+    {
+        total = total - (steps / 30);
+    }
+
+    return total;
+}
 void print_enemy(struct enemy_obj enemy)
 {
     screenGotoxy(enemy.previous_x, enemy.previous_y);
@@ -379,7 +389,7 @@ void add_score(struct score **head, int points, char *nome)
 {
     struct score *node = *head;
     struct score *new = (struct score *)malloc(sizeof(struct score));
-
+    // todo
     new->points = points;
     new->name = (char *)malloc((strlen(nome) + 1) * sizeof(char));
     new->next = NULL;
@@ -416,7 +426,7 @@ void print_score(struct score *head)
 
     while (node != NULL)
     {
-        screenGotoxy(68, y);
+        screenGotoxy(60, y);
         printf("%d. %s - %d\n", cont, node->name, node->points);
         cont++;
         y++;
@@ -577,6 +587,11 @@ int main()
     int enemies_room_5_inc_x_values[] = {-1, 0, 1, 0};
     int enemies_room_5_inc_y_values[] = {0, -1, 0, 1};
 
+    // enemies cont
+    int enemies_cont = 0;
+    int cont1 = 0;
+    int cont2 = 0;
+
     // Room 3 traps
     for (int i = 0; i < 5; i++)
     {
@@ -663,7 +678,7 @@ int main()
 
         char *token;
         FILE *file;
-        file = fopen("src/files/score.txt", "r+");
+        file = fopen("src/files/score.txt", "r");
 
         if (file == NULL)
         {
@@ -698,18 +713,18 @@ int main()
 
         fclose(file);
 
-        screenSetColor(MAGENTA, DARKGRAY);
+        screenSetColor(LIGHTRED, DARKGRAY);
         screenGotoxy(60, 3);
         ascii_print("src/files/topscores.txt");
 
-        screenGotoxy(63, 22);
+        screenGotoxy(56, 22);
         printf(">");
-        screenGotoxy(87, 22);
+        screenGotoxy(80, 22);
         printf("<");
 
         screenSetColor(LIGHTGRAY, DARKGRAY);
 
-        screenGotoxy(65, 22);
+        screenGotoxy(58, 22);
         printf("PRESS [SPACE] TO EXIT");
         print_score(list);
         free_score(list);
@@ -792,6 +807,16 @@ int main()
                 int collisionXHall2 = newY >= FINISHJROOM2 && newY <= FINISHJHALL2 + 1 && newX > STARTIHALL2 && newX < FINISHIHALL2;
                 int collisionYHall3 = newX >= FINISHIROOM3 - strlen("🐱") && newX <= FINISHIHALL3 + 1 && newY > STARTJHALL3 && newY < FINISHJHALL3;
                 int collisionYHall4 = newX < STARTIHALL4 + strlen("🐱") && newX >= FINISHIHALL4 - 1 && newY > STARTJHALL4 && newY < FINISHJHALL4;
+
+                if (enemy_room_1.is_dead == 0)
+                {
+                    print_enemy(enemy_room_1);
+                }
+                if (enemy_room_1.is_dead && cont1 == 0)
+                {
+                    cont1++;
+                    enemies_cont++;
+                }
 
                 if (enemy_room_2.x >= FINISHIROOM2 - strlen("    ") || enemy_room_2.x - 2 < STARTIROOM2)
                 {
@@ -1172,6 +1197,11 @@ int main()
                 {
                     print_enemy(enemy_room_2);
                 }
+                if (enemy_room_2.is_dead && cont2 == 0)
+                {
+                    cont2++;
+                    enemies_cont++;
+                }
 
                 if (enemies3)
                 {
@@ -1358,6 +1388,89 @@ int main()
         keyboardDestroy();
         screenDestroy();
         timerDestroy();
+
+        char *token;
+        FILE *file;
+        file = fopen("src/files/score.txt", "r+");
+
+        if (file == NULL)
+        {
+            perror("File not found");
+            return 1;
+        }
+
+        char readLine[128], name[6], points[10];
+
+        while (fgets(readLine, sizeof(readLine), file) != NULL)
+        {
+            token = strtok(readLine, " ");
+            strncpy(name, token, 5);
+            name[5] = '\0';
+
+            token = strtok(NULL, " ");
+            strncpy(points, token, 9);
+            points[9] = '\0';
+
+            int int_points = atoi(points);
+            add_score(&list, int_points, name);
+        }
+
+        // contando pontos
+        int itens = 0;
+        if (player.sword)
+        {
+            itens += 1;
+        }
+        if (player.shield)
+        {
+            itens += 1;
+        }
+
+        char nome[6];
+        printf("Digite seu nome [5]: ");
+        scanf(" %s", nome);
+
+        int int_points = sum_score(enemies_cont, player.steps, player.hp, itens);
+        sprintf(points, "%d", int_points);
+        fprintf(file, "%s ", nome);
+        fprintf(file, "%s\n", points);
+
+        add_score(&list, int_points, nome);
+
+        fclose(file);
+
+        screenInit(0);
+        keyboardInit();
+
+        screenSetColor(MAGENTA, DARKGRAY);
+        screenGotoxy(60, 3);
+        ascii_print("src/files/topscores.txt");
+
+        screenGotoxy(63, 22);
+        printf(">");
+        screenGotoxy(87, 22);
+        printf("<");
+
+        screenSetColor(LIGHTGRAY, DARKGRAY);
+
+        screenGotoxy(65, 22);
+        printf("PRESS [SPACE] TO EXIT");
+        print_score(list);
+        free_score(list);
+        ch = 0;
+        while (ch != 32)
+        {
+            if (keyhit())
+            {
+                ch = readch();
+            }
+        }
+
+        printf("\n");
+        keyboardDestroy();
+        screenDestroy();
+        printf("fechou :D\n");
+        return 0;
     }
 
     return 0;
