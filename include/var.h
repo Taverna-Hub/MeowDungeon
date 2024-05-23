@@ -2,7 +2,6 @@
 #ifndef __VAR_H__
 #define __VAR_H__
 
-
 // 1
 #define STARTIROOM1 8
 #define FINISHIROOM1 27
@@ -68,6 +67,9 @@
 #define STARTJHALL4 12
 #define FINISHJHALL4 15
 
+#define TRAPS4LENGTH 7
+#define ENEMIES4LENGTH 2
+
 // 5 (boos entrance)
 #define STARTIROOM5 50
 #define FINISHIROOM5 80
@@ -79,6 +81,5 @@
 
 #define EXITDOORI5 94
 #define EXITDOORJ5 13
-
 
 #endif /* __VAR_H__ */
