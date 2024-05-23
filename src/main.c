@@ -536,7 +536,7 @@ int main()
     struct enemy_obj enemies_room_4[ENEMIES4LENGTH];
     struct trap_obj traps_room_4[TRAPS4LENGTH];
 
-    int enemies_room_4_x_values[] = {FINISHIROOM4 - 2, STARTIROOM4 + 1};
+    int enemies_room_4_x_values[] = {FINISHIROOM4 - 4, STARTIROOM4 + 1};
     int enemies_room_4_y_values[] = {21, 17};
 
     int traps_room_4_x_values[] = {FINISHIROOM4 - 2, STARTIROOM4 + 1};
@@ -1225,7 +1225,7 @@ int main()
 
                     for (int i = 0; i < ENEMIES4LENGTH; i++)
                     {
-                        if (enemies_room_4[i].x == STARTIROOM4 + 1 || enemies_room_4[i].x == FINISHIROOM4 - 2)
+                        if (enemies_room_4[i].x == STARTIROOM4 + 1 || enemies_room_4[i].x == FINISHIROOM4 - 4)
                         {
                             enemies_room_4[i].inc_x = -enemies_room_4[i].inc_x;
                         }
