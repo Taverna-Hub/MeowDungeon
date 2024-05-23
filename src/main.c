@@ -33,6 +33,7 @@ struct player
 {
     int sword;
     int shield;
+    int shield_active;
     int score;
     int steps;
     int hp;
@@ -123,60 +124,7 @@ void print_player(int nextX, int nextY)
     printf("🐱");
 }
 
-void print_sword(int pos_X, int pos_Y)
-{
-    int cont = 55;
-    while (cont > 0)
-    {
-        screenGotoxy(pos_X - 1, pos_Y - 1);
-        printf("╲");
-        printf(" ");
-        screenGotoxy(pos_X, pos_Y - 1);
-        printf("|");
-        printf(" ");
-        screenGotoxy(pos_X + 1, pos_Y - 1);
-        printf("╱");
-        printf(" ");
-        screenGotoxy(pos_X - 1, pos_Y);
-        printf("─ ");
-        printf(" ");
-        screenGotoxy(pos_X + 1, pos_Y);
-        printf(" ─");
-        printf(" ");
-        screenGotoxy(pos_X - 1, pos_Y + 1);
-        printf("╱");
-        printf(" ");
-        screenGotoxy(pos_X, pos_Y + 1);
-        printf("|");
-        printf(" ");
-        screenGotoxy(pos_X + 1, pos_Y + 1);
-        printf("╲");
-        printf(" ");
-
-        usleep(5000);
-
-        screenGotoxy(pos_X - 1, pos_Y - 1);
-        printf("  ");
-        screenGotoxy(pos_X, pos_Y - 1);
-        printf("  ");
-        screenGotoxy(pos_X + 1, pos_Y - 1);
-        printf("  ");
-        screenGotoxy(pos_X - 1, pos_Y);
-        printf("  ");
-        screenGotoxy(pos_X + 1, pos_Y);
-        printf("  ");
-        screenGotoxy(pos_X - 1, pos_Y + 1);
-        printf("  ");
-        screenGotoxy(pos_X, pos_Y + 1);
-        printf("  ");
-        screenGotoxy(pos_X + 1, pos_Y + 1);
-        printf("  ");
-
-        cont--;
-    }
-}
-
-void print_shield(int pos_X, int pos_Y)
+ void print_sword(int pos_X, int pos_Y)
 {
     int cont = 55;
     while (cont > 0)
@@ -228,6 +176,20 @@ void print_shield(int pos_X, int pos_Y)
 
         cont--;
     }
+}
+
+void print_shield(int active)
+{
+    int total = 5;
+    screenGotoxy(MINX + 2, MINY + 2);
+    printf("      ");
+    for (int s = 1; s < total + 1; s++)
+    {
+        screenGotoxy(MINX + s + s, MINY + 2);
+        screenSetColor(BROWN, DARKGRAY);
+        printf("🛡");
+    }
+
 }
 
 void print_rooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int room, int *room_enemies, int enter_door_i, int enter_door_j, int exit_door_i, int exit_door_j)
@@ -470,7 +432,7 @@ void menu()
 
     screenSetColor(LIGHTRED, DARKGRAY);
 
-    while (ch != 32)
+    while (ch != 10)
     {
         if (keyhit())
         {
@@ -624,6 +586,7 @@ int main()
 
     player.sword = 0;
     player.shield = 0;
+    player.shield_active = 0;
     player.steps = 0;
     player.score = 0;
     player.hp = 3;
@@ -677,15 +640,6 @@ int main()
             add_score(&list, int_points, name);
         }
 
-        // printf("Digite o nome e a pontuacao: ");
-        // scanf("%s %s", name, points);
-        // int int_points = atoi(points);
-
-        // fprintf(file, "%s ", name);
-        // fprintf(file, "%s\n", points);
-
-        // add_score(&list, int_points, name);
-
         fclose(file);
 
         screenSetColor(LIGHTRED, DARKGRAY);
@@ -700,11 +654,11 @@ int main()
         screenSetColor(LIGHTGRAY, DARKGRAY);
 
         screenGotoxy(58, 22);
-        printf("PRESS [SPACE] TO EXIT");
+        printf("PRESS [ENTER] TO EXIT");
         print_score(list);
         free_score(list);
 
-        while (ch != 32)
+        while (ch != 10)
         {
             if (keyhit())
             {
@@ -745,7 +699,7 @@ int main()
 
         screenUpdate();
 
-        while (ch != 32)
+        while (ch != 10)
         {
             if (keyhit())
             {
@@ -754,12 +708,13 @@ int main()
                 screenUpdate();
             }
 
-            screenGotoxy(MINX + 1, MINY + 2);
+            screenGotoxy(MINX + 1, MINY + 4);
             printf("%d %d", player_x, player_y);
 
             // Update game state (move elements, verify collision, etc)
             if (timerTimeOver() == 1)
             {
+                
                 int newX = player_x, newY = player_y;
                 enemy_room_2.x = enemy_room_2.x + enemy_room_2.inc_x;
 
@@ -1091,9 +1046,20 @@ int main()
 
                 if (((ch == 107) || (ch == 75)) && (player.shield == 1)) // shield
                 {
-                    print_shield(newX, newY);
+                    if (player.shield_active == 0)
+                    {
+                        player.shield_active = 1;
+
+                    }
+                    else 
+                    {
+                        player.shield_active = 0;
+
+                    }
+
                     ch = 0;
                 }
+                print_shield(player.shield_active);
 
                 print_horizontal_hall(STARTIHALL1, FINISHIHALL1, STARTJHALL1, FINISHJHALL1);
                 print_horizontal_hall(STARTIHALL3, FINISHIHALL3, STARTJHALL3, FINISHJHALL3);
@@ -1262,7 +1228,14 @@ int main()
 
                 if (player.shield == 1)
                 {
-                    screenSetColor(WHITE, DARKGRAY);
+                    if (player.shield_active == 1)
+                    {
+                        screenSetColor(GREEN, DARKGRAY);
+                    }
+                    else {
+                        screenSetColor(WHITE, DARKGRAY);
+
+                    }
                     screenGotoxy(MINX + 42, MINY + 2);
                     printf("┏━━━┓");
                     screenGotoxy(MINX + 42, MINY + 3);
@@ -1334,21 +1307,21 @@ int main()
 
         screenSetColor(MAGENTA, DARKGRAY);
         screenGotoxy(60, 3);
-        asciiPrint("src/files/topscores.txt");
+        ascii_print("src/files/topscores.txt");
         
-        screenGotoxy(63, 22);
+        screenGotoxy(56, 22);
         printf(">");
-        screenGotoxy(87, 22);
+        screenGotoxy(80, 22);
         printf("<");
-        
+
         screenSetColor(LIGHTGRAY, DARKGRAY);
 
-        screenGotoxy(65, 22);
-        printf("PRESS [SPACE] TO EXIT");
+        screenGotoxy(58, 22);
+        printf("PRESS [ENTER] TO EXIT");
         print_score(list);
         free_score(list);
         ch = 0;
-        while (ch != 32)
+        while (ch != 10)
         {
             if (keyhit())
             {
