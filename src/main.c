@@ -719,15 +719,7 @@ int main()
         screenGotoxy(MINX + 35, MINY + 1);
         printf("┃ Inventory ┃");
 
-        if (player.shield == 0)
-        {
-            screenGotoxy(MINX + 42, MINY + 2);
-            printf("┏━━━┓");
-            screenGotoxy(MINX + 42, MINY + 3);
-            printf("┃🛡️  ┃");
-            screenGotoxy(MINX + 42, MINY + 4);
-            printf("┗━━━┛");
-        }
+        
 
         print_player(player_x, player_y);
 
@@ -1065,7 +1057,7 @@ int main()
                     ch = 0;
                 }
 
-                if (((ch == 106) || (ch == 74)) && (player.sword == 1))
+                if (((ch == 106) || (ch == 74)) && (player.sword == 1)) //sword 
                 {
                     print_sword(newX, newY);
                     if (abs(newX - enemy_room_2.x) == 1 || abs(newY - enemy_room_2.y) == 1)
@@ -1076,7 +1068,7 @@ int main()
                     ch = 0;
                 }
 
-                if (((ch == 107) || (ch == 75)) && (player.shield == 0)) // falta adicionar o escudo no mapa
+                if (((ch == 107) || (ch == 75)) && (player.shield == 1)) // shield
                 {
                     print_shield(newX, newY);
                     ch = 0;
@@ -1108,6 +1100,18 @@ int main()
 
                 if (enemies3)
                 {
+                    if (player.shield == 0)
+                    {
+                        screenGotoxy(30, 29);
+                        printf("🛡️");
+                    }
+                    
+                    else 
+                    {
+                        screenGotoxy(30, 29);
+                        printf(" ");
+                    }
+
                     for (int i = 0; i < 5; i++)
                     {
                         traps_room_3[i].previous_y = traps_room_3[i].y;
@@ -1223,6 +1227,22 @@ int main()
                     screenGotoxy(MINX + 35, MINY + 3);
                     printf("┃🗡️  ┃");
                     screenGotoxy(MINX + 35, MINY + 4);
+                    printf("┗━━━┛");
+                }
+
+                if((newX == 30 || newX == 31 || newX == 32) && newY == 29)
+                {
+                    player.shield = 1;
+                }
+
+                if (player.shield == 1)
+                {
+                    screenSetColor(WHITE, DARKGRAY);
+                    screenGotoxy(MINX + 42, MINY + 2);
+                    printf("┏━━━┓");
+                    screenGotoxy(MINX + 42, MINY + 3);
+                    printf("┃🛡️  ┃");
+                    screenGotoxy(MINX + 42, MINY + 4);
                     printf("┗━━━┛");
                 }
 
