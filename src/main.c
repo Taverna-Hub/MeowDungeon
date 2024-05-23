@@ -93,22 +93,20 @@ void print_trap(struct trap_obj trap, int new_trap_x, int new_trap_y, int direct
     }
 }
 
-int sum_score(int killed_enemies, int steps, int lifes, int itens_count){
-    int total = (killed_enemies*100) + (lifes*500) + (itens_count*250);
-    if (steps > 150){
-        total = total - (steps/30);
+int sum_score(int killed_enemies, int steps, int lifes, int itens_count)
+{
+    int total = (killed_enemies * 100) + (lifes * 500) + (itens_count * 250);
+    if (steps > 150)
+    {
+        total = total - (steps / 30);
     }
 
     return total;
-
-    
 }
-void print_enemy(struct enemy_obj enemy, int new_enemy_x, int new_enemy_y)
+void print_enemy(struct enemy_obj enemy)
 {
-    screenGotoxy(enemy.x, enemy.y);
+    screenGotoxy(enemy.previous_x, enemy.previous_y);
     printf(" ");
-    enemy.x = new_enemy_x;
-    enemy.y = new_enemy_y;
     screenGotoxy(enemy.x, enemy.y);
     printf("%s", enemy.sprite);
 }
@@ -353,7 +351,7 @@ void add_score(struct score **head, int points, char *nome)
 {
     struct score *node = *head;
     struct score *new = (struct score *)malloc(sizeof(struct score));
-    //todo
+    // todo
     new->points = points;
     new->name = (char *)malloc((strlen(nome) + 1) * sizeof(char));
     new->next = NULL;
@@ -522,32 +520,34 @@ int main()
     struct score *list = NULL;
     struct player player;
 
+    // Room 1
     struct enemy_obj enemy_room_1;
+
+    // Room 2
     struct enemy_obj enemy_room_2;
 
-    struct enemy_obj enemies_room_4[ENEMIES4LENGTH];
-    int enemies_room_4_x_values[] = {FINISHIROOM4 - 2, STARTIROOM4 + 1};
-    int enemies_room_4_y_values[] = {21, 17};
-
-    for (int i = 0; i < ENEMIES4LENGTH; i++)
-    {
-        enemies_room_4[i].x = enemies_room_4_x_values[i % 2];
-        enemies_room_4[i].y = enemies_room_4_y_values[i];
-        enemies_room_4[i].previous_x = enemies_room_4_x_values[i % 2];
-        enemies_room_4[i].previous_y = enemies_room_4_y_values[i];
-        enemies_room_4[i].inc_x = inc_values[i % 2];
-        enemies_room_4[i].is_dead = 0;
-        enemies_room_4[i].sprite = enemies[(rand() % 7)];
-    }
-
+    // Room 3
     struct trap_obj traps_room_3[5];
-    struct trap_obj traps_room_4[TRAPS4LENGTH];
 
     int traps_room_3_x_values[] = {40, 50, 60, 70, 80};
     int traps_room_3_y_values[] = {FINISHJROOM3 - 1, STARTJROOM3 + 1};
 
+    // Room 4
+    struct enemy_obj enemies_room_4[ENEMIES4LENGTH];
+    struct trap_obj traps_room_4[TRAPS4LENGTH];
+
+    int enemies_room_4_x_values[] = {FINISHIROOM4 - 2, STARTIROOM4 + 1};
+    int enemies_room_4_y_values[] = {21, 17};
+
     int traps_room_4_x_values[] = {FINISHIROOM4 - 2, STARTIROOM4 + 1};
     int traps_room_4_y_values[] = {26, 24, 22, 20, 18, 16, 14};
+
+    // Room 5
+    struct enemy_obj enemies_room_5[ENEMIES5LENGTH];
+    int enemies_room_5_x_values[] = {64, 58, 64, 69};
+    int enemies_room_5_y_values[] = {15, 13, 11, 13};
+    int enemies_room_5_inc_x_values[] = {-1, 0, 1, 0};
+    int enemies_room_5_inc_y_values[] = {0, -1, 0, 1};
 
     // enemies cont
     int enemies_cont = 0;
@@ -572,6 +572,31 @@ int main()
         traps_room_4[i].previous_x = traps_room_4_x_values[i % 2];
         traps_room_4[i].previous_y = traps_room_4_y_values[i];
         traps_room_4[i].inc_x = inc_values[i % 2];
+    }
+
+    // Room 4 enemies
+    for (int i = 0; i < ENEMIES4LENGTH; i++)
+    {
+        enemies_room_4[i].x = enemies_room_4_x_values[i % 2];
+        enemies_room_4[i].y = enemies_room_4_y_values[i];
+        enemies_room_4[i].previous_x = enemies_room_4_x_values[i % 2];
+        enemies_room_4[i].previous_y = enemies_room_4_y_values[i];
+        enemies_room_4[i].inc_x = inc_values[i % 2];
+        enemies_room_4[i].is_dead = 0;
+        enemies_room_4[i].sprite = enemies[(rand() % 7)];
+    }
+
+    // Room 5 enemies
+    for (int i = 0; i < ENEMIES5LENGTH; i++)
+    {
+        enemies_room_5[i].x = enemies_room_5_x_values[i];
+        enemies_room_5[i].y = enemies_room_5_y_values[i];
+        enemies_room_5[i].previous_x = enemies_room_5_x_values[i];
+        enemies_room_5[i].previous_y = enemies_room_5_y_values[i];
+        enemies_room_5[i].inc_x = enemies_room_5_inc_x_values[i];
+        enemies_room_5[i].inc_y = enemies_room_5_inc_y_values[i];
+        enemies_room_5[i].is_dead = 0;
+        enemies_room_5[i].sprite = enemies[i];
     }
 
     enemy_room_1.x = 22;
@@ -695,7 +720,7 @@ int main()
 
         print_rooms(STARTIROOM1, FINISHIROOM1, STARTJROOM1, FINISHJROOM1, 0, &enemies1, DOORI1, DOORJ1, DOORI1, DOORJ1); // first room
 
-      
+        print_enemy(enemy_room_1);
 
         screenUpdate();
 
@@ -730,15 +755,20 @@ int main()
                 int collisionXRoom4 = newY > STARTJROOM4 - 1 && newY < FINISHJROOM4;
                 int collisionYRoom4 = newX >= STARTIROOM4 && newX < FINISHIROOM4;
 
+                int collisionXRoom5 = newY > STARTJROOM5 - 1 && newY < FINISHJROOM5;
+                int collisionYRoom5 = newX >= STARTIROOM5 && newX < FINISHIROOM5;
+
                 int collisionYHall1 = newX >= FINISHIROOM1 - strlen("🐱") && newX <= FINISHIHALL1 + 1 && newY > STARTJHALL1 && newY < FINISHJHALL1;
                 int collisionXHall2 = newY >= FINISHJROOM2 && newY <= FINISHJHALL2 + 1 && newX > STARTIHALL2 && newX < FINISHIHALL2;
                 int collisionYHall3 = newX >= FINISHIROOM3 - strlen("🐱") && newX <= FINISHIHALL3 + 1 && newY > STARTJHALL3 && newY < FINISHJHALL3;
                 int collisionYHall4 = newX < STARTIHALL4 + strlen("🐱") && newX >= FINISHIHALL4 - 1 && newY > STARTJHALL4 && newY < FINISHJHALL4;
-                
-                if (enemy_room_1.is_dead == 0){
-                print_enemy(enemy_room_1, enemy_room_1.x, enemy_room_1.y);
+
+                if (enemy_room_1.is_dead == 0)
+                {
+                    print_enemy(enemy_room_1);
                 }
-                if (enemy_room_1.is_dead && cont1 == 0){
+                if (enemy_room_1.is_dead && cont1 == 0)
+                {
                     cont1++;
                     enemies_cont++;
                 }
@@ -801,6 +831,18 @@ int main()
                         player.steps--;
                     }
 
+                    // Colisão room 5
+                    if (newY != ENTERDOORJ5 && newX == FINISHIROOM5 - 1 && collisionXRoom5)
+                    {
+                        newX += 1;
+                        player.steps--;
+                    }
+                    else if (newX == STARTIROOM5 && collisionXRoom5)
+                    {
+                        newX += 1;
+                        player.steps--;
+                    }
+
                     if (collisionXHall2)
                     {
                         newX += 1;
@@ -824,7 +866,7 @@ int main()
                     newX = player_x + incX;
                     player.steps++;
 
-                    // ROOM 0
+                    // ROOM 1
                     if (newY != DOORJ1 && (newX == FINISHIROOM1 - 2 && collisionXRoom1))
                     {
                         newX -= 1;
@@ -867,6 +909,18 @@ int main()
                         player.steps--;
                     }
                     else if (newY != ENTERDOORJ4 && newX == STARTIROOM4 - 1 && collisionXRoom4)
+                    {
+                        newX -= 1;
+                        player.steps--;
+                    }
+
+                    // ROOM 5
+                    if (newX == FINISHIROOM5 - 2 && collisionXRoom5)
+                    {
+                        newX -= 1;
+                        player.steps--;
+                    }
+                    else if (newY != ENTERDOORJ5 && newX == STARTIROOM5 - 1 && collisionXRoom5)
                     {
                         newX -= 1;
                         player.steps--;
@@ -937,6 +991,18 @@ int main()
                         player.steps--;
                     }
                     else if (newY == FINISHJROOM4 - 1 && collisionYRoom4)
+                    {
+                        newY -= 1;
+                        player.steps--;
+                    }
+
+                    // Colisão room 5
+                    if (newY != ENTERDOORJ5 && newY == STARTJROOM5 && collisionYRoom5)
+                    {
+                        newY -= 1;
+                        player.steps--;
+                    }
+                    else if (newY == FINISHJROOM5 - 1 && collisionYRoom5)
                     {
                         newY -= 1;
                         player.steps--;
@@ -1014,6 +1080,18 @@ int main()
                         player.steps--;
                     }
 
+                    // Colisão room 5
+                    if (newY == STARTJROOM5 && collisionYRoom5)
+                    {
+                        newY += 1;
+                        player.steps--;
+                    }
+                    else if (newY == FINISHJROOM5 && collisionYRoom5)
+                    {
+                        newY += 1;
+                        player.steps--;
+                    }
+
                     if (collisionYHall1 || collisionYHall3 || collisionYHall4)
                     {
                         newY += 1;
@@ -1070,6 +1148,7 @@ int main()
                 print_rooms(STARTIROOM3, FINISHIROOM3, STARTJROOM3, FINISHJROOM3, 3, &enemies3, ENTERDOORI3, ENTERDOORJ3, EXITDOORI3, EXITDOORJ3);
                 print_rooms(STARTIROOM4, FINISHIROOM4, STARTJROOM4, FINISHJROOM4, 4, &enemies4, ENTERDOORI4, ENTERDOORJ4, EXITDOORI4, EXITDOORJ4);
                 print_rooms(STARTIROOM5, FINISHIROOM5, STARTJROOM5, FINISHJROOM5, 5, &enemies5, ENTERDOORI5, ENTERDOORJ5, EXITDOORI5, EXITDOORJ5);
+                print_rooms(STARTITRAPDOOR5, FINISHITRAPDOOR5, STARTJTRAPDOOR5, FINISHJTRAPDOOR5, 5, &enemies5, ENTERDOORI5, ENTERDOORJ5, EXITDOORI5, EXITDOORJ5);
 
                 print_player(newX, newY);
                 print_steps(player);
@@ -1082,9 +1161,10 @@ int main()
 
                 if (enemies2 == 1 && enemy_room_2.is_dead == 0)
                 {
-                    print_enemy(enemy_room_2, enemy_room_2.x, enemy_room_2.y);
+                    print_enemy(enemy_room_2);
                 }
-                if (enemy_room_2.is_dead && cont2 == 0){
+                if (enemy_room_2.is_dead && cont2 == 0)
+                {
                     cont2++;
                     enemies_cont++;
                 }
@@ -1095,12 +1175,6 @@ int main()
                     {
                         screenGotoxy(30, 29);
                         printf("🛡️");
-                    }
-
-                    else
-                    {
-                        screenGotoxy(30, 29);
-                        printf(" ");
                     }
 
                     for (int i = 0; i < 5; i++)
@@ -1159,7 +1233,7 @@ int main()
 
                     for (int i = 0; i < ENEMIES4LENGTH; i++)
                     {
-                        print_enemy(enemies_room_4[i], enemies_room_4[i].x, enemies_room_4[i].y);
+                        print_enemy(enemies_room_4[i]);
                     }
 
                     for (int i = 0; i < TRAPS4LENGTH; i++)
@@ -1202,6 +1276,40 @@ int main()
                             player.hp--;
                             print_hp(player.hp);
                         }
+                    }
+                }
+
+                if (enemies5)
+                {
+                    for (int i = 0; i < ENEMIES5LENGTH; i++)
+                    {
+                        enemies_room_5[i].x = enemies_room_5[i].previous_x + enemies_room_5[i].inc_x;
+                        enemies_room_5[i].y = enemies_room_5[i].previous_y + enemies_room_5[i].inc_y;
+
+                        if (enemies_room_5[i].inc_x == -1 && enemies_room_5[i].inc_y == 0 && enemies_room_5[i].x == 58)
+                        {
+                            enemies_room_5[i].inc_x = 0;
+                            enemies_room_5[i].inc_y = -1;
+                        }
+                        else if (enemies_room_5[i].inc_x == 0 && enemies_room_5[i].inc_y == -1 && enemies_room_5[i].y == 11)
+                        {
+                            enemies_room_5[i].inc_x = 1;
+                            enemies_room_5[i].inc_y = 0;
+                        }
+                        else if (enemies_room_5[i].inc_x == 1 && enemies_room_5[i].inc_y == 0 && enemies_room_5[i].x == 69)
+                        {
+                            enemies_room_5[i].inc_x = 0;
+                            enemies_room_5[i].inc_y = 1;
+                        }
+                        else if (enemies_room_5[i].inc_x == 0 && enemies_room_5[i].inc_y == 1 && enemies_room_5[i].y == 15)
+                        {
+                            enemies_room_5[i].inc_x = -1;
+                            enemies_room_5[i].inc_y = 0;
+                        }
+
+                        print_enemy(enemies_room_5[i]);
+                        enemies_room_5[i].previous_x = enemies_room_5[i].x;
+                        enemies_room_5[i].previous_y = enemies_room_5[i].y;
                     }
                 }
 
@@ -1282,17 +1390,19 @@ int main()
 
         // contando pontos
         int itens = 0;
-        if (player.sword){
-            itens+=1;
+        if (player.sword)
+        {
+            itens += 1;
         }
-        if (player.shield){
-            itens+=1;
+        if (player.shield)
+        {
+            itens += 1;
         }
 
         char nome[6];
         printf("Digite seu nome [5]: ");
         scanf(" %s", nome);
-        
+
         int int_points = sum_score(enemies_cont, player.steps, player.hp, itens);
         sprintf(points, "%d", int_points);
         fprintf(file, "%s ", nome);
@@ -1328,8 +1438,7 @@ int main()
                 ch = readch();
             }
         }
-        
-        
+
         printf("\n");
         keyboardDestroy();
         screenDestroy();
