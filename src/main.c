@@ -35,7 +35,6 @@ struct player
     int shield;
     int score;
     int steps;
-    char name[4];
     int hp;
 };
 
@@ -597,7 +596,6 @@ int main()
     // initial screen display
     screenInit(0);
     keyboardInit();
-
     menu();
     ch = 0;
 
@@ -771,45 +769,54 @@ int main()
                     if ((newX == FINISHIROOM1 - 1 && collisionXRoom1))
                     {
                         newX += 1;
+                        player.steps--;
                     }
                     else if (newY != DOORJ1 && newX == STARTIROOM1 && collisionXRoom1)
                     {
                         newX += 1;
+                        player.steps--;
                     }
 
                     // Colisão room 2
                     if (newY != 12 && newX == FINISHIROOM2 - 1 && collisionXRoom2)
                     {
                         newX += 1;
+                        player.steps--;
                     }
                     else if (newX == STARTIROOM2 && collisionXRoom2)
                     {
                         newX += 1;
+                        player.steps--;
                     }
 
                     // Colisão room 3
                     if (newX == FINISHIROOM3 - 1 && collisionXRoom3)
                     {
                         newX += 1;
+                        player.steps--;
                     }
                     else if (newX == STARTIROOM3 && collisionXRoom3)
                     {
                         newX += 1;
+                        player.steps--;
                     }
 
                     // Colisão room 4
                     if (newX == FINISHIROOM4 - 1 && collisionXRoom4)
                     {
                         newX += 1;
+                        player.steps--;
                     }
                     else if (newY != EXITDOORJ4 && newX == STARTIROOM4 && collisionXRoom4)
                     {
                         newX += 1;
+                        player.steps--;
                     }
 
                     if (collisionXHall2)
                     {
                         newX += 1;
+                        player.steps--;
                     }
 
                     if (!(newX <= MINX + 1))
@@ -833,40 +840,48 @@ int main()
                     if (newY != DOORJ1 && (newX == FINISHIROOM1 - 2 && collisionXRoom1))
                     {
                         newX -= 1;
+                        player.steps--;
                     }
                     else if (newX == STARTIROOM1 - 1 && collisionXRoom1)
                     {
                         newX -= 1;
+                        player.steps--;
                     }
 
                     // ROOM 2
                     if (newX == FINISHIROOM2 - 2 && collisionXRoom2)
                     {
                         newX -= 1;
+                        player.steps--;
                     }
                     else if (newY != 12 && (newX == STARTIROOM2 - 1 && collisionXRoom2))
                     {
                         newX -= 1;
+                        player.steps--;
                     }
 
                     // ROOM 3
                     if (newY != EXITDOORJ3 && newX == FINISHIROOM3 - 2 && collisionXRoom3)
                     {
                         newX -= 1;
+                        player.steps--;
                     }
                     else if (newX == STARTIROOM3 - 1 && collisionXRoom3)
                     {
                         newX -= 1;
+                        player.steps--;
                     }
 
                     // ROOM 4
                     if (newX == FINISHIROOM4 - 2 && collisionXRoom4)
                     {
                         newX -= 1;
+                        player.steps--;
                     }
                     else if (newY != ENTERDOORJ4 && newX == STARTIROOM4 - 1 && collisionXRoom4)
                     {
                         newX -= 1;
+                        player.steps--;
                     }
 
                     if (collisionXHall2)
@@ -895,45 +910,54 @@ int main()
                     if (newY == STARTJROOM1 && collisionYRoom1)
                     {
                         newY -= 1;
+                        player.steps--;
                     }
                     else if (newY == FINISHJROOM1 - 1 && collisionYRoom1)
                     {
                         newY -= 1;
+                        player.steps--;
                     }
 
                     // Colisão room 2
                     if (newY == STARTJROOM2 && collisionYRoom2)
                     {
                         newY -= 1;
+                        player.steps--;
                     }
                     else if (newX != EXITDOORI2 && newY == FINISHJROOM2 - 1 && collisionYRoom2)
                     {
                         newY -= 1;
+                        player.steps--;
                     }
 
                     // Colisão room 3
                     if (newY != ENTERDOORJ3 && newY == STARTJROOM3 && collisionYRoom3)
                     {
                         newY -= 1;
+                        player.steps--;
                     }
                     else if (newY == FINISHJROOM3 - 1 && collisionYRoom3)
                     {
                         newY -= 1;
+                        player.steps--;
                     }
 
                     // Colisão room 4
                     if (newY != ENTERDOORJ4 && newY == STARTJROOM4 && collisionYRoom4)
                     {
                         newY -= 1;
+                        player.steps--;
                     }
                     else if (newY == FINISHJROOM4 - 1 && collisionYRoom4)
                     {
                         newY -= 1;
+                        player.steps--;
                     }
 
                     if (collisionYHall1 || collisionYHall3 || collisionYHall4)
                     {
                         newY -= 1;
+                        player.steps--;
                     }
 
                     if (newY >= MAXY - 3)
@@ -958,45 +982,54 @@ int main()
                     if (newY == STARTJROOM1 && collisionYRoom1)
                     {
                         newY += 1;
+                        player.steps--;
                     }
                     else if (newY == FINISHJROOM1 && collisionYRoom1)
                     {
                         newY += 1;
+                        player.steps--;
                     }
 
                     // Colisão room 2
                     if (newY == STARTJROOM2 && collisionYRoom2)
                     {
                         newY += 1;
+                        player.steps--;
                     }
                     else if (newY == FINISHJROOM2 && collisionYRoom2)
                     {
                         newY += 1;
+                        player.steps--;
                     }
 
                     // Colisão room 3
                     if (newY == STARTJROOM3 && collisionYRoom3)
                     {
                         newY += 1;
+                        player.steps--;
                     }
                     else if (newY == FINISHJROOM3 && collisionYRoom3)
                     {
                         newY += 1;
+                        player.steps--;
                     }
 
                     // Colisão room 4
                     if (newY == STARTJROOM4 && collisionYRoom4)
                     {
                         newY += 1;
+                        player.steps--;
                     }
                     else if (newY == FINISHJROOM4 && collisionYRoom4)
                     {
                         newY += 1;
+                        player.steps--;
                     }
 
                     if (collisionYHall1 || collisionYHall3 || collisionYHall4)
                     {
                         newY += 1;
+                        player.steps--;
                     }
 
                     if (newY <= MINY + 3)
