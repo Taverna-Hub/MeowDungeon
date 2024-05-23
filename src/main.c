@@ -413,12 +413,12 @@ void printSteps(struct player p)
     printf("%d", p.steps);
 }
 
-void asciiPrint()
+void asciiPrint(char *path)
 {
     FILE *file;
     char string[128];
 
-    file = fopen("src/files/menu.txt", "r");
+    file = fopen(path, "r");
 
     if (file == NULL)
     {
@@ -471,11 +471,13 @@ void add_score(struct score **head, int points, char *nome)
 
 void print_score(struct score *head) {
     struct score *node = head;
-    int cont = 1;
+    int cont = 1, y = 11;
 
     while (node != NULL ) {
+        screenGotoxy(68, y);
         printf("%d. %s - %d\n", cont, node->name, node->points);
         cont++;
+        y++;
         node = node->next;
 
         if (cont == 11) break;
@@ -499,7 +501,7 @@ void menu()
     static int ch = 0;
 
     screenSetColor(LIGHTRED, DARKGRAY);
-    asciiPrint();
+    asciiPrint("src/files/menu.txt");
 
     screenSetColor(LIGHTGRAY, DARKGRAY);
     screenGotoxy(60, 19);
@@ -652,8 +654,11 @@ int main()
 
     else if (menu_cont == 1)
     {
-        screenClear();
-        screenUpdate();
+        screenDestroy();
+        keyboardDestroy();
+
+        screenInit(0);
+        keyboardInit();
 
         char *token;
         FILE *file;
@@ -692,20 +697,39 @@ int main()
 
         fclose(file);
 
+        screenSetColor(MAGENTA, DARKGRAY);
+        screenGotoxy(60, 3);
+        asciiPrint("src/files/topscores.txt");
+        
+        screenGotoxy(63, 22);
+        printf(">");
+        screenGotoxy(87, 22);
+        printf("<");
+        
         screenSetColor(LIGHTGRAY, DARKGRAY);
-        screenGotoxy(50, 11);
+
+        screenGotoxy(65, 22);
+        printf("PRESS [SPACE] TO EXIT");
         print_score(list);
         free_score(list);
 
-        int cu;
-        scanf("%d", &cu);
-        screenClear();
-        // screenUpdate();
-        menu();
-        printf("CR\n");
-        // usleep(1000000000);
-        // return 0;
+        while (ch != 32)
+        {
+            if (keyhit())
+            {
+                ch = readch();
+            }
+        }
+        ch = 0;
+        
+        printf("\n");
+        keyboardDestroy();
+        screenDestroy();
+        printf("fechou :D\n");
+        return 0;
     }
+
+        
     
     else
     {
