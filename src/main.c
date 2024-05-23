@@ -220,7 +220,7 @@ void print_shield(int pos_X, int pos_Y)
     }
 }
 
-void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int room, int *room_enemies, int enter_door_i, int enter_door_j, int exit_door_i, int exit_door_j)
+void print_rooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int room, int *room_enemies, int enter_door_i, int enter_door_j, int exit_door_i, int exit_door_j)
 {
     int roomRange = (player_x + 1 >= start_i_room) && (player_x <= finish_i_room) && (player_y - 1 >= start_j_room) && (player_y <= finish_j_room);
 
@@ -285,7 +285,7 @@ void printRooms(int start_i_room, int finish_i_room, int start_j_room, int finis
     }
 }
 
-void printHorizontalHall(int start_i_hall, int finish_i_hall, int start_j_hall, int finish_j_hall)
+void print_horizontal_hall(int start_i_hall, int finish_i_hall, int start_j_hall, int finish_j_hall)
 {
     if (player_x >= start_i_hall - 2 && player_x < finish_i_hall && player_y > start_j_hall && player_y < finish_j_hall)
     {
@@ -296,7 +296,7 @@ void printHorizontalHall(int start_i_hall, int finish_i_hall, int start_j_hall, 
     }
 }
 
-void printVerticalHall(int start_i_hall, int finish_i_hall, int start_j_hall, int finish_j_hall)
+void print_vertical_hall(int start_i_hall, int finish_i_hall, int start_j_hall, int finish_j_hall)
 {
     if ((player_y >= start_j_hall) && (player_y < finish_j_hall))
     {
@@ -307,7 +307,7 @@ void printVerticalHall(int start_i_hall, int finish_i_hall, int start_j_hall, in
     }
 }
 
-void printHp(int health)
+void print_hp(int health)
 {
     screenGotoxy(MINX + 1, MINY + 1);
     printf("      ");
@@ -324,7 +324,7 @@ void printHp(int health)
     }
 }
 
-void printKey(int ch)
+void print_key(int ch)
 {
     screenSetColor(YELLOW, DARKGRAY);
     screenGotoxy(65, 2);
@@ -345,7 +345,7 @@ void printKey(int ch)
     }
 }
 
-void printSteps(struct player p)
+void print_steps(struct player p)
 {
     screenSetColor(YELLOW, DARKGRAY);
     screenGotoxy(130, 2);
@@ -356,7 +356,7 @@ void printSteps(struct player p)
     printf("%d", p.steps);
 }
 
-void asciiPrint(char *path)
+void ascii_print(char *path)
 {
     FILE *file;
     char string[128];
@@ -448,7 +448,7 @@ void menu()
     static int ch = 0;
 
     screenSetColor(LIGHTRED, DARKGRAY);
-    asciiPrint("src/files/menu.txt");
+    ascii_print("src/files/menu.txt");
 
     screenSetColor(LIGHTGRAY, DARKGRAY);
     screenGotoxy(60, 19);
@@ -675,7 +675,7 @@ int main()
 
         screenSetColor(MAGENTA, DARKGRAY);
         screenGotoxy(60, 3);
-        asciiPrint("src/files/topscores.txt");
+        ascii_print("src/files/topscores.txt");
 
         screenGotoxy(63, 22);
         printf(">");
@@ -713,20 +713,18 @@ int main()
 
         screenGotoxy(MINX + 1, MINY + 1);
 
-        printHp(player.hp);
+        print_hp(player.hp);
 
         screenSetColor(WHITE, DARKGRAY);
         screenGotoxy(MINX + 35, MINY + 1);
         printf("┃ Inventory ┃");
-
-        
 
         print_player(player_x, player_y);
 
         screenGotoxy(player_x, player_y - 5);
         printf("🗡️");
 
-        printRooms(STARTIROOM1, FINISHIROOM1, STARTJROOM1, FINISHJROOM1, 0, &enemies1, DOORI1, DOORJ1, DOORI1, DOORJ1); // first room
+        print_rooms(STARTIROOM1, FINISHIROOM1, STARTJROOM1, FINISHJROOM1, 0, &enemies1, DOORI1, DOORJ1, DOORI1, DOORJ1); // first room
 
         print_enemy(enemy_room_1, enemy_room_1.x, enemy_room_1.y);
 
@@ -737,7 +735,7 @@ int main()
             if (keyhit())
             {
                 ch = readch();
-                printKey(ch);
+                print_key(ch);
                 screenUpdate();
             }
 
@@ -1057,7 +1055,7 @@ int main()
                     ch = 0;
                 }
 
-                if (((ch == 106) || (ch == 74)) && (player.sword == 1)) //sword 
+                if (((ch == 106) || (ch == 74)) && (player.sword == 1)) // sword
                 {
                     print_sword(newX, newY);
                     if (abs(newX - enemy_room_2.x) == 1 || abs(newY - enemy_room_2.y) == 1)
@@ -1074,23 +1072,23 @@ int main()
                     ch = 0;
                 }
 
-                printHorizontalHall(STARTIHALL1, FINISHIHALL1, STARTJHALL1, FINISHJHALL1);
-                printHorizontalHall(STARTIHALL3, FINISHIHALL3, STARTJHALL3, FINISHJHALL3);
-                printHorizontalHall(FINISHIHALL4, STARTIHALL4, STARTJHALL4, FINISHJHALL4);
-                printVerticalHall(STARTIHALL2, FINISHIHALL2, STARTJHALL2, FINISHJHALL2);
+                print_horizontal_hall(STARTIHALL1, FINISHIHALL1, STARTJHALL1, FINISHJHALL1);
+                print_horizontal_hall(STARTIHALL3, FINISHIHALL3, STARTJHALL3, FINISHJHALL3);
+                print_horizontal_hall(FINISHIHALL4, STARTIHALL4, STARTJHALL4, FINISHJHALL4);
+                print_vertical_hall(STARTIHALL2, FINISHIHALL2, STARTJHALL2, FINISHJHALL2);
 
-                printRooms(STARTIROOM2, FINISHIROOM2, STARTJROOM2, FINISHJROOM2, 2, &enemies2, ENTERDOORI2, ENTERDOORJ2, EXITDOORI2, EXITDOORJ2);
-                printRooms(STARTIROOM3, FINISHIROOM3, STARTJROOM3, FINISHJROOM3, 3, &enemies3, ENTERDOORI3, ENTERDOORJ3, EXITDOORI3, EXITDOORJ3);
-                printRooms(STARTIROOM4, FINISHIROOM4, STARTJROOM4, FINISHJROOM4, 4, &enemies4, ENTERDOORI4, ENTERDOORJ4, EXITDOORI4, EXITDOORJ4);
-                printRooms(STARTIROOM5, FINISHIROOM5, STARTJROOM5, FINISHJROOM5, 5, &enemies5, ENTERDOORI5, ENTERDOORJ5, EXITDOORI5, EXITDOORJ5);
+                print_rooms(STARTIROOM2, FINISHIROOM2, STARTJROOM2, FINISHJROOM2, 2, &enemies2, ENTERDOORI2, ENTERDOORJ2, EXITDOORI2, EXITDOORJ2);
+                print_rooms(STARTIROOM3, FINISHIROOM3, STARTJROOM3, FINISHJROOM3, 3, &enemies3, ENTERDOORI3, ENTERDOORJ3, EXITDOORI3, EXITDOORJ3);
+                print_rooms(STARTIROOM4, FINISHIROOM4, STARTJROOM4, FINISHJROOM4, 4, &enemies4, ENTERDOORI4, ENTERDOORJ4, EXITDOORI4, EXITDOORJ4);
+                print_rooms(STARTIROOM5, FINISHIROOM5, STARTJROOM5, FINISHJROOM5, 5, &enemies5, ENTERDOORI5, ENTERDOORJ5, EXITDOORI5, EXITDOORJ5);
 
                 print_player(newX, newY);
-                printSteps(player);
+                print_steps(player);
 
                 if (enemy_room_2.x == newX && enemy_room_2.y == newY && !enemy_room_2.is_dead)
                 {
                     player.hp--;
-                    printHp(player.hp);
+                    print_hp(player.hp);
                 }
 
                 if (enemies2 == 1 && enemy_room_2.is_dead == 0)
@@ -1105,8 +1103,8 @@ int main()
                         screenGotoxy(30, 29);
                         printf("🛡️");
                     }
-                    
-                    else 
+
+                    else
                     {
                         screenGotoxy(30, 29);
                         printf(" ");
@@ -1145,7 +1143,7 @@ int main()
                         if ((player_x == traps_room_3[i].x && player_y == traps_room_3[i].y) || (player_x + 1 == traps_room_3[i].x && player_y == traps_room_3[i].y))
                         {
                             player.hp--;
-                            printHp(player.hp);
+                            print_hp(player.hp);
                         }
                     }
                 }
@@ -1209,7 +1207,7 @@ int main()
                         if ((player_x == traps_room_4[i].x && player_y == traps_room_4[i].y) || (player_x + 1 == traps_room_4[i].x && player_y == traps_room_4[i].y))
                         {
                             player.hp--;
-                            printHp(player.hp);
+                            print_hp(player.hp);
                         }
                     }
                 }
@@ -1230,7 +1228,7 @@ int main()
                     printf("┗━━━┛");
                 }
 
-                if((newX == 30 || newX == 31 || newX == 32) && newY == 29)
+                if ((newX == 30 || newX == 31 || newX == 32) && newY == 29)
                 {
                     player.shield = 1;
                 }
@@ -1247,7 +1245,7 @@ int main()
                 }
 
                 // Updating screen
-                printKey(ch);
+                print_key(ch);
                 screenUpdate();
             }
         }
