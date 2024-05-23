@@ -1333,7 +1333,8 @@ int main()
         printf("\n");
         keyboardDestroy();
         screenDestroy();
-        printf("fechou :D\n");
+        printf("\t😼 🙀 😾\n");
+        printf("  Thank you for playing\n");
         return 0;
     }
 
