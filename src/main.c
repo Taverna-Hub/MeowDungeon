@@ -418,7 +418,7 @@ void print_score(struct score *head)
 
     while (node != NULL)
     {
-        screenGotoxy(68, y);
+        screenGotoxy(60, y);
         printf("%d. %s - %d\n", cont, node->name, node->points);
         cont++;
         y++;
@@ -638,7 +638,7 @@ int main()
 
         char *token;
         FILE *file;
-        file = fopen("src/files/score.txt", "r+");
+        file = fopen("src/files/score.txt", "r");
 
         if (file == NULL)
         {
@@ -673,18 +673,18 @@ int main()
 
         fclose(file);
 
-        screenSetColor(MAGENTA, DARKGRAY);
+        screenSetColor(LIGHTRED, DARKGRAY);
         screenGotoxy(60, 3);
         ascii_print("src/files/topscores.txt");
 
-        screenGotoxy(63, 22);
+        screenGotoxy(56, 22);
         printf(">");
-        screenGotoxy(87, 22);
+        screenGotoxy(80, 22);
         printf("<");
 
         screenSetColor(LIGHTGRAY, DARKGRAY);
 
-        screenGotoxy(65, 22);
+        screenGotoxy(58, 22);
         printf("PRESS [SPACE] TO EXIT");
         print_score(list);
         free_score(list);
