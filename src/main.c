@@ -36,13 +36,14 @@ int enemies5 = 0;
 
 struct player
 {
+    int key;
+    int hp;
     int sword;
     int shield;
     int shield_active;
-    int score;
     int steps;
-    int hp;
 };
+
 
 struct boss{
     int x;
@@ -220,7 +221,7 @@ void print_sword(int pos_X, int pos_Y)
     }
 }
 
-void print_shield(struct player *p) 
+void print_shield(struct player *p)
 {
     int *point;
     point = &p->shield_active;
@@ -233,7 +234,7 @@ void print_shield(struct player *p)
         screenSetColor(LIGHTGREEN, DARKGRAY);
         printf("🛡");
     }
-    if ( p->shield  == 0)
+    if (p->shield == 0)
     {
         screenGotoxy(MINX + 1, MINY + 2);
         printf(" Shield broken! ");
@@ -582,6 +583,7 @@ int main()
     static int ch = 0;
     struct score *list = NULL;
     struct player player;
+    int shield_verify = 0;
     struct boss boss;
 
 
@@ -681,12 +683,12 @@ int main()
     enemy_room_2.is_dead = 0;
     enemy_room_2.sprite = enemies[(rand() % 7)];
 
+    player.key = 0;
+    player.hp = 3;
     player.sword = 0;
     player.shield = 0;
     player.shield_active = 0;
     player.steps = 0;
-    player.score = 0;
-    player.hp = 3;
 
     // initial screen display
     screenInit(0);
@@ -1306,7 +1308,7 @@ int main()
 
                 if (enemies3)
                 {
-                    if (!player.shield && player.shield_active != -1)
+                    if (!shield_verify)
                     {
                         screenGotoxy(30, 29);
                         printf("🛡️");
@@ -1466,6 +1468,12 @@ int main()
 
                 if (enemies5)
                 {
+                    if (!player.key)
+                    {
+                        screenGotoxy(STARTIROOM5 + 2, STARTJROOM5 + 1);
+                        printf("🔑");
+                    }
+
                     for (int i = 0; i < ENEMIES5LENGTH; i++)
                     {
                         enemies_room_5[i].x = enemies_room_5[i].previous_x + enemies_room_5[i].inc_x;
@@ -1535,6 +1543,22 @@ int main()
                     }
                 }
 
+                if (newX == STARTIROOM5 + 2 && newY == STARTJROOM5 + 1)
+                {
+                    player.key = 1;
+                }
+
+                if (player.key == 1)
+                {
+                    screenSetColor(WHITE, DARKGRAY);
+                    screenGotoxy(MINX + 49, MINY + 2);
+                    printf("┏━━━┓");
+                    screenGotoxy(MINX + 49, MINY + 3);
+                    printf("┃🔑  ┃");
+                    screenGotoxy(MINX + 49, MINY + 4);
+                    printf("┗━━━┛");
+                }
+
                 if ((newX == 16 || newX == 15) && newY == 9)
                 {
                     player.sword = 1;
@@ -1554,6 +1578,7 @@ int main()
                 if ((newX == 30 || newX == 31) && newY == 29)
                 {
                     player.shield = 3;
+                    shield_verify = 1;
                 }
 
                 if (player.shield)
@@ -1576,7 +1601,7 @@ int main()
                     screenGotoxy(MINX + 42, MINY + 4);
                     printf("┗━━━┛");
                 }
-                
+
                 else
                 {
                     screenGotoxy(MINX + 42, MINY + 2);
