@@ -89,4 +89,10 @@
 
 #define ENEMIES5LENGTH 4
 
+//BOSS ROOM
+#define STARTIBOSS 8
+#define FINISHIBOSS 142
+#define STARTJBOSS 8
+#define FINISHJBOSS 32
+
 #endif /* __VAR_H__ */
