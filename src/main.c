@@ -176,21 +176,22 @@ void print_sword(int pos_X, int pos_Y)
     }
 }
 
-void print_shield(struct player p) 
+void print_shield(struct player *p) 
 {
     int *point;
-    point = &p.shield_active;
+    point = &p->shield_active;
 
     screenGotoxy(MINX + 1, MINY + 2);
-    printf("      ");
-    for (int s = 1; s < p.shield + 1; s++)
+    printf("                   ");
+    for (int s = 1; s < p->shield + 1; s++)
     {
         screenGotoxy(MINX + s + s, MINY + 2);
-        screenSetColor(GREEN, DARKGRAY);
+        screenSetColor(LIGHTGREEN, DARKGRAY);
         printf("🛡");
     }
-    if ( p.shield  == 0)
+    if ( p->shield  == 0)
     {
+        screenGotoxy(MINX + 1, MINY + 2);
         printf(" Shield broken! ");
         *point = -1;
     }
@@ -198,7 +199,7 @@ void print_shield(struct player p)
 
 void print_hp(int health)
 {
-    screenGotoxy(MINX + 1, MINY + 1);
+    screenGotoxy(MINX + 2, MINY + 1);
     printf("      ");
     for (int h = 1; h < health + 1; h++)
     {
@@ -209,6 +210,7 @@ void print_hp(int health)
     }
     if (health == 0)
     {
+        screenGotoxy(MINX + 2, MINY + 1);
         printf("☠️ You died! ☠️");
     }
 }
@@ -788,7 +790,7 @@ int main()
                     if (player.shield_active == 1)
                     {
                         player.shield--;
-                        print_shield(player);
+                        print_shield(&player);
                     }
                     else if (player.shield_active == 0 || player.shield_active == -1)
                     {
@@ -1202,7 +1204,7 @@ int main()
                     if (player.shield_active == 1)
                     {
                         player.shield--;
-                        print_shield(player);
+                        print_shield(&player);
                     }
                     else if (player.shield_active == 0 || player.shield_active == -1)
                     {
@@ -1217,7 +1219,7 @@ int main()
                     if (player.shield_active)
                     {
                         player.shield--;
-                        print_shield(player);
+                        print_shield(&player);
                     }
                     else if (player.shield_active == -1)
                     {
@@ -1285,7 +1287,7 @@ int main()
                             if (player.shield_active == 1)
                             {
                                 player.shield--;
-                                print_shield(player);
+                                print_shield(&player);
                             }
                             else if (player.shield_active == 0 || player.shield_active == -1)
                             {
@@ -1361,7 +1363,7 @@ int main()
                             if (player.shield_active == 1)
                             {
                                 player.shield--;
-                                print_shield(player);
+                                print_shield(&player);
                             }
                             else if (player.shield_active == 0 || player.shield_active == -1)
                             {
@@ -1378,7 +1380,7 @@ int main()
                             if (player.shield_active == 1)
                             {
                                 player.shield--;
-                                print_shield(player);
+                                print_shield(&player);
                             }
                             else if (player.shield_active == 0 || player.shield_active == -1)
                             {
@@ -1437,7 +1439,7 @@ int main()
                             if (player.shield_active == 1)
                             {
                                 player.shield--;
-                                print_shield(player);
+                                print_shield(&player);
                             }
                             else if (player.shield_active == 0 || player.shield_active == -1)
                             {
@@ -1495,7 +1497,7 @@ int main()
 
                 if (player.shield)
                 {
-                    print_shield(player);
+                    print_shield(&player);
 
                     if (player.shield_active)
                     {
@@ -1591,6 +1593,7 @@ int main()
         printf("PRESS [ENTER] TO EXIT");
         print_score(list);
         free_score(list);
+
         ch = 0;
         while (ch != 10)
         {
