@@ -206,7 +206,7 @@ void print_sword(int pos_X, int pos_Y)
     }
 }
 
-void print_shield(struct player *p) 
+void print_shield(struct player *p)
 {
     int *point;
     point = &p->shield_active;
@@ -219,7 +219,7 @@ void print_shield(struct player *p)
         screenSetColor(LIGHTGREEN, DARKGRAY);
         printf("🛡");
     }
-    if ( p->shield  == 0)
+    if (p->shield == 0)
     {
         screenGotoxy(MINX + 1, MINY + 2);
         printf(" Shield broken! ");
@@ -557,6 +557,7 @@ int main()
     static int ch = 0;
     struct score *list = NULL;
     struct player player;
+    int shield_verify = 0;
 
     // Room 1
     struct enemy_obj enemy_room_1;
@@ -1274,7 +1275,7 @@ int main()
 
                 if (enemies3)
                 {
-                    if (!player.shield && player.shield_active != -1)
+                    if (!shield_verify)
                     {
                         screenGotoxy(30, 29);
                         printf("🛡️");
@@ -1522,6 +1523,7 @@ int main()
                 if ((newX == 30 || newX == 31) && newY == 29)
                 {
                     player.shield = 3;
+                    shield_verify = 1;
                 }
 
                 if (player.shield)
@@ -1544,7 +1546,7 @@ int main()
                     screenGotoxy(MINX + 42, MINY + 4);
                     printf("┗━━━┛");
                 }
-                
+
                 else
                 {
                     screenGotoxy(MINX + 42, MINY + 2);
