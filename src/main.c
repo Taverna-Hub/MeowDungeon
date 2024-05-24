@@ -31,12 +31,12 @@ int enemies4 = 0;
 int enemies5 = 0;
 struct player
 {
+    int key;
+    int hp;
     int sword;
     int shield;
     int shield_active;
-    int score;
     int steps;
-    int hp;
 };
 
 struct enemy_obj
@@ -654,12 +654,12 @@ int main()
     enemy_room_2.is_dead = 0;
     enemy_room_2.sprite = enemies[(rand() % 7)];
 
+    player.key = 0;
+    player.hp = 3;
     player.sword = 0;
     player.shield = 0;
     player.shield_active = 0;
     player.steps = 0;
-    player.score = 0;
-    player.hp = 3;
 
     // initial screen display
     screenInit(0);
@@ -1434,6 +1434,12 @@ int main()
 
                 if (enemies5)
                 {
+                    if (!player.key)
+                    {
+                        screenGotoxy(STARTIROOM5 + 2, STARTJROOM5 + 1);
+                        printf("🔑");
+                    }
+
                     for (int i = 0; i < ENEMIES5LENGTH; i++)
                     {
                         enemies_room_5[i].x = enemies_room_5[i].previous_x + enemies_room_5[i].inc_x;
@@ -1501,6 +1507,22 @@ int main()
                         cont5_4++;
                         enemies_cont++;
                     }
+                }
+
+                if (newX == STARTIROOM5 + 2 && newY == STARTJROOM5 + 1)
+                {
+                    player.key = 1;
+                }
+
+                if (player.key == 1)
+                {
+                    screenSetColor(WHITE, DARKGRAY);
+                    screenGotoxy(MINX + 49, MINY + 2);
+                    printf("┏━━━┓");
+                    screenGotoxy(MINX + 49, MINY + 3);
+                    printf("┃🔑  ┃");
+                    screenGotoxy(MINX + 49, MINY + 4);
+                    printf("┗━━━┛");
                 }
 
                 if ((newX == 16 || newX == 15) && newY == 9)
