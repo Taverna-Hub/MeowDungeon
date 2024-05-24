@@ -551,8 +551,14 @@ int main()
 
     // enemies cont
     int enemies_cont = 0;
-    int cont1 = 0;
-    int cont2 = 0;
+    int cont1_1 = 0;
+    int cont2_1 = 0;
+    int cont4_1 = 0;
+    int cont4_2 = 0;
+    int cont5_1 = 0;
+    int cont5_2 = 0;
+    int cont5_3 = 0;
+    int cont5_4 = 0;
 
     // Room 3 traps
     for (int i = 0; i < 5; i++)
@@ -767,9 +773,9 @@ int main()
                 {
                     print_enemy(enemy_room_1);
                 }
-                if (enemy_room_1.is_dead && cont1 == 0)
+                if (enemy_room_1.is_dead && cont1_1 == 0)
                 {
-                    cont1++;
+                    cont1_1++;
                     enemies_cont++;
                 }
                 if (enemy_room_2.x == newX && enemy_room_2.y == newY && !enemy_room_2.is_dead)
@@ -1119,13 +1125,27 @@ int main()
                 if (((ch == 106) || (ch == 74)) && (player.sword == 1)) // sword
                 {
                     print_sword(newX, newY);
-                    if (abs(newX - enemy_room_2.x) == 1 || abs(newY - enemy_room_2.y) == 1)
+                    if (abs(newX - enemy_room_2.x) <= 2 || abs(newY - enemy_room_2.y) == 1)
                     {
                         enemy_room_2.is_dead = 1;
                     }
-                    if (abs(newX - enemy_room_1.x) == 1 || abs(newY - enemy_room_1.y) == 1)
+                    if (abs(newX - enemy_room_1.x) <= 2 || abs(newY - enemy_room_1.y) == 1)
                     {
                         enemy_room_1.is_dead = 1;
+                    }
+
+                    for (int i = 0; i < ENEMIES4LENGTH; i++)
+                    {
+                        if (abs(newX - enemies_room_4[i].x) <= 2 || (abs(newY - enemies_room_4[i].y)) == 1)
+                        {
+                            enemies_room_4[i].is_dead = 1;
+                        }
+                    }
+                    for (int i = 0; i < ENEMIES5LENGTH; i++){
+                        if ((abs(newX - enemies_room_5[i].x)) <= 2 || (abs(newY - enemies_room_5[i].y)) == 1) {
+                            
+                            enemies_room_5[i].is_dead = 1;
+                                }
                     }
 
                     ch = 0;
@@ -1161,6 +1181,11 @@ int main()
 
                 print_player(newX, newY);
                 print_steps(player);
+                if (enemy_room_1.x == newX && enemy_room_1.y == newY && enemy_room_1.is_dead == 0)
+                {
+                    player.hp--;
+                    print_hp(player.hp);
+                }
 
                 if (enemy_room_2.x == newX && enemy_room_2.y == newY && !enemy_room_2.is_dead)
                 {
@@ -1172,11 +1197,12 @@ int main()
                 {
                     print_enemy(enemy_room_2);
                 }
-                if (enemy_room_2.is_dead && cont2 == 0)
+                if (enemy_room_2.is_dead && cont2_1 == 0)
                 {
-                    cont2++;
+                    cont2_1++;
                     enemies_cont++;
                 }
+                
 
                 if (enemies3)
                 {
@@ -1227,7 +1253,7 @@ int main()
                 if (enemies4) // TODO
                 {
                     for (int i = 0; i < ENEMIES4LENGTH; i++)
-                    {
+                    {   
                         enemies_room_4[i].previous_x = enemies_room_4[i].x;
                         enemies_room_4[i].x = enemies_room_4[i].x + enemies_room_4[i].inc_x;
                     }
@@ -1241,8 +1267,12 @@ int main()
                     }
 
                     for (int i = 0; i < ENEMIES4LENGTH; i++)
-                    {
+                    {   
+                        if (enemies_room_4[i].is_dead == 0)
+                        {
                         print_enemy(enemies_room_4[i]);
+                        }
+                        
                     }
 
                     for (int i = 0; i < TRAPS4LENGTH; i++)
@@ -1285,7 +1315,27 @@ int main()
                             player.hp--;
                             print_hp(player.hp);
                         }
+                        
                     }
+                    for (int i = 0; i < ENEMIES4LENGTH; i++)
+                    {
+                        if (enemies_room_4[i].x == newX && enemies_room_4[i].y == newY && !enemies_room_4[i].is_dead)
+                        {
+                            player.hp--;
+                            print_hp(player.hp);
+                        }
+
+                    }
+                        if (enemies_room_4[0].is_dead && cont4_1 == 0)
+                        {
+                            cont4_1++;
+                            enemies_cont++;
+                        }
+                        if (enemies_room_4[1].is_dead && cont4_2 == 0)
+                        {
+                            cont4_2++;
+                            enemies_cont++;
+                        }
                 }
 
                 if (enemies5)
@@ -1315,11 +1365,39 @@ int main()
                             enemies_room_5[i].inc_x = -1;
                             enemies_room_5[i].inc_y = 0;
                         }
-
-                        print_enemy(enemies_room_5[i]);
+                        if (enemies_room_5[i].is_dead == 0)
+                        {
+                            print_enemy(enemies_room_5[i]);
+                        }
+                        if (enemies_room_5[i].x == newX && enemies_room_5[i].y == newY && !enemies_room_5[i].is_dead)
+                        {
+                            player.hp--;
+                            print_hp(player.hp);
+                        }
+                        
                         enemies_room_5[i].previous_x = enemies_room_5[i].x;
                         enemies_room_5[i].previous_y = enemies_room_5[i].y;
                     }
+                    if (enemies_room_5[0].is_dead && cont5_1 == 0)
+                        {
+                            cont5_1++;
+                            enemies_cont++;
+                        }
+                    if (enemies_room_5[1].is_dead && cont5_2 == 0)
+                        {
+                            cont5_2++;
+                            enemies_cont++;
+                        }
+                    if (enemies_room_5[2].is_dead && cont5_3 == 0)
+                        {
+                            cont5_3++;
+                            enemies_cont++;
+                        }
+                    if (enemies_room_5[3].is_dead && cont5_4 == 0)
+                        {
+                            cont5_4++;
+                            enemies_cont++;
+                        }
                 }
 
                 if ((newX == 16 || newX == 15) && newY == 9)
@@ -1410,7 +1488,7 @@ int main()
 
         char nome[6];
         printf("Digite seu nome [5]: ");
-        scanf(" %s", nome);
+        scanf(" %5s", nome);
 
         int int_points = sum_score(enemies_cont, player.steps, player.hp, itens);
         sprintf(points, "%d", int_points);
