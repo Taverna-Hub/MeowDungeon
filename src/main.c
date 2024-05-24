@@ -1227,6 +1227,7 @@ int main()
 
                 print_player(newX, newY);
                 print_steps(player);
+
                 if (enemy_room_1.x == newX && enemy_room_1.y == newY && !enemy_room_1.is_dead)
                 {
                     if (player.shield_active == 1)
@@ -1264,6 +1265,7 @@ int main()
                 {
                     print_enemy(enemy_room_2);
                 }
+
                 if (enemy_room_2.is_dead && cont2_1 == 0)
                 {
                     cont2_1++;
@@ -1272,7 +1274,7 @@ int main()
 
                 if (enemies3)
                 {
-                    if (!player.shield)
+                    if (!player.shield && player.shield_active != -1)
                     {
                         screenGotoxy(30, 29);
                         printf("🛡️");
@@ -1519,21 +1521,22 @@ int main()
 
                 if ((newX == 30 || newX == 31) && newY == 29)
                 {
-                    player.shield = 5;
+                    player.shield = 3;
                 }
 
                 if (player.shield)
                 {
                     print_shield(&player);
 
-                    if (player.shield_active)
+                    if (player.shield_active == 1)
                     {
                         screenSetColor(GREEN, DARKGRAY);
                     }
-                    else
+                    else if (player.shield_active == 0 || player.shield_active == -1 )
                     {
                         screenSetColor(WHITE, DARKGRAY);
                     }
+
                     screenGotoxy(MINX + 42, MINY + 2);
                     printf("┏━━━┓");
                     screenGotoxy(MINX + 42, MINY + 3);
