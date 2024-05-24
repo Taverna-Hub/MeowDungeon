@@ -1528,11 +1528,11 @@ int main()
                 {
                     print_shield(&player);
 
-                    if (player.shield_active == 1)
+                    if (player.shield_active)
                     {
                         screenSetColor(GREEN, DARKGRAY);
                     }
-                    else if (player.shield_active == 0 || player.shield_active == -1 )
+                    else
                     {
                         screenSetColor(WHITE, DARKGRAY);
                     }
@@ -1543,6 +1543,16 @@ int main()
                     printf("┃🛡️  ┃");
                     screenGotoxy(MINX + 42, MINY + 4);
                     printf("┗━━━┛");
+                }
+                
+                else
+                {
+                    screenGotoxy(MINX + 42, MINY + 2);
+                    printf("      ");
+                    screenGotoxy(MINX + 42, MINY + 3);
+                    printf("      ");
+                    screenGotoxy(MINX + 42, MINY + 4);
+                    printf("      ");
                 }
 
                 // Updating screen
