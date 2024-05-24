@@ -176,16 +176,40 @@ void print_sword(int pos_X, int pos_Y)
     }
 }
 
-void print_shield(int active)
+void print_shield(struct player p) 
 {
-    int total = 5;
-    screenGotoxy(MINX + 2, MINY + 2);
+    int *point;
+    point = &p.shield_active;
+
+    screenGotoxy(MINX + 1, MINY + 2);
     printf("      ");
-    for (int s = 1; s < total + 1; s++)
+    for (int s = 1; s < p.shield + 1; s++)
     {
         screenGotoxy(MINX + s + s, MINY + 2);
-        screenSetColor(BROWN, DARKGRAY);
+        screenSetColor(GREEN, DARKGRAY);
         printf("🛡");
+    }
+    if ( p.shield  == 0)
+    {
+        printf(" Shield broken! ");
+        *point = -1;
+    }
+}
+
+void print_hp(int health)
+{
+    screenGotoxy(MINX + 1, MINY + 1);
+    printf("      ");
+    for (int h = 1; h < health + 1; h++)
+    {
+        screenGotoxy(MINX + h + h, MINY + 1);
+        screenSetColor(RED, DARKGRAY);
+        printf("♥");
+        screenSetColor(CYAN, DARKGRAY);
+    }
+    if (health == 0)
+    {
+        printf("☠️ You died! ☠️");
     }
 }
 
@@ -273,23 +297,6 @@ void print_vertical_hall(int start_i_hall, int finish_i_hall, int start_j_hall, 
         printf("║");
         screenGotoxy(finish_i_hall, player_y);
         printf("║");
-    }
-}
-
-void print_hp(int health)
-{
-    screenGotoxy(MINX + 1, MINY + 1);
-    printf("      ");
-    for (int h = 1; h < health + 1; h++)
-    {
-        screenGotoxy(MINX + h + h, MINY + 1);
-        screenSetColor(RED, DARKGRAY);
-        printf("♥");
-        screenSetColor(CYAN, DARKGRAY);
-    }
-    if (health == 0)
-    {
-        printf("☠️ You died! ☠️");
     }
 }
 
@@ -778,8 +785,17 @@ int main()
                 }
                 if (enemy_room_2.x == newX && enemy_room_2.y == newY && !enemy_room_2.is_dead)
                 {
-                    player.hp--;
-                    print_hp(player.hp);
+                    if (player.shield_active == 1)
+                    {
+                        player.shield--;
+                        print_shield(player);
+                    }
+                    else if (player.shield_active == 0 || player.shield_active == -1)
+                    {
+                        player.hp--;
+                        print_hp(player.hp);
+
+                    }
                 }
 
                 if (enemy_room_2.x >= FINISHIROOM2 - strlen("    ") || enemy_room_2.x - 2 < STARTIROOM2)
@@ -1153,7 +1169,7 @@ int main()
                     ch = 0;
                 }
 
-                if (((ch == 107) || (ch == 75)) && (player.shield == 1)) // shield
+                if (((ch == 107) || (ch == 75)) && (player.shield != 0 && player.shield <= 5)) // shield
                 {
                     if (!player.shield_active)
                     {
@@ -1166,7 +1182,7 @@ int main()
 
                     ch = 0;
                 }
-                print_shield(player.shield_active);
+                
 
                 print_horizontal_hall(STARTIHALL1, FINISHIHALL1, STARTJHALL1, FINISHJHALL1);
                 print_horizontal_hall(STARTIHALL3, FINISHIHALL3, STARTJHALL3, FINISHJHALL3);
@@ -1183,14 +1199,37 @@ int main()
                 print_steps(player);
                 if (enemy_room_1.x == newX && enemy_room_1.y == newY && !enemy_room_1.is_dead)
                 {
-                    player.hp--;
-                    print_hp(player.hp);
+                    if (player.shield_active == 1)
+                    {
+                        player.shield--;
+                        print_shield(player);
+                    }
+                    else if (player.shield_active == 0 || player.shield_active == -1)
+                    {
+                        player.hp--;
+                        print_hp(player.hp);
+
+                    }
                 }
 
                 if (enemy_room_2.x == newX && enemy_room_2.y == newY && !enemy_room_2.is_dead)
                 {
-                    player.hp--;
-                    print_hp(player.hp);
+                    if (player.shield_active)
+                    {
+                        player.shield--;
+                        print_shield(player);
+                    }
+                    else if (player.shield_active == -1)
+                    {
+                        player.hp--;
+                        print_hp(player.hp);
+
+                    }
+                    else
+                    {
+                        player.hp--;
+                        print_hp(player.hp);
+                    }
                 }
 
                 if (enemies2 == 1 && !enemy_room_2.is_dead)
@@ -1243,8 +1282,17 @@ int main()
 
                         if ((player_x == traps_room_3[i].x && player_y == traps_room_3[i].y) || (player_x + 1 == traps_room_3[i].x && player_y == traps_room_3[i].y))
                         {
-                            player.hp--;
-                            print_hp(player.hp);
+                            if (player.shield_active == 1)
+                            {
+                                player.shield--;
+                                print_shield(player);
+                            }
+                            else if (player.shield_active == 0 || player.shield_active == -1)
+                            {
+                                player.hp--;
+                                print_hp(player.hp);
+
+                            }
                         }
                     }
                 }
@@ -1310,16 +1358,34 @@ int main()
 
                         if ((player_x == traps_room_4[i].x && player_y == traps_room_4[i].y) || (player_x + 1 == traps_room_4[i].x && player_y == traps_room_4[i].y))
                         {
-                            player.hp--;
-                            print_hp(player.hp);
+                            if (player.shield_active == 1)
+                            {
+                                player.shield--;
+                                print_shield(player);
+                            }
+                            else if (player.shield_active == 0 || player.shield_active == -1)
+                            {
+                                player.hp--;
+                                print_hp(player.hp);
+
+                            }
                         }
                     }
                     for (int i = 0; i < ENEMIES4LENGTH; i++)
                     {
                         if (enemies_room_4[i].x == newX && enemies_room_4[i].y == newY && !enemies_room_4[i].is_dead)
                         {
-                            player.hp--;
-                            print_hp(player.hp);
+                            if (player.shield_active == 1)
+                            {
+                                player.shield--;
+                                print_shield(player);
+                            }
+                            else if (player.shield_active == 0 || player.shield_active == -1)
+                            {
+                                player.hp--;
+                                print_hp(player.hp);
+
+                            }
                         }
                     }
                     if (enemies_room_4[0].is_dead && cont4_1 == 0)
@@ -1368,8 +1434,17 @@ int main()
 
                         if (enemies_room_5[i].x == newX && enemies_room_5[i].y == newY && !enemies_room_5[i].is_dead)
                         {
-                            player.hp--;
-                            print_hp(player.hp);
+                            if (player.shield_active == 1)
+                            {
+                                player.shield--;
+                                print_shield(player);
+                            }
+                            else if (player.shield_active == 0 || player.shield_active == -1)
+                            {
+                                player.hp--;
+                                print_hp(player.hp);
+
+                            }
                         }
 
                         enemies_room_5[i].previous_x = enemies_room_5[i].x;
@@ -1413,14 +1488,16 @@ int main()
                     printf("┗━━━┛");
                 }
 
-                if ((newX == 30 || newX == 31 || newX == 32) && newY == 29)
+                if ((newX == 30 || newX == 31) && newY == 29)
                 {
-                    player.shield = 1;
+                    player.shield = 5;
                 }
 
-                if (player.shield == 1)
+                if (player.shield)
                 {
-                    if (player.shield_active == 1)
+                    print_shield(player);
+
+                    if (player.shield_active)
                     {
                         screenSetColor(GREEN, DARKGRAY);
                     }
@@ -1527,7 +1604,7 @@ int main()
         keyboardDestroy();
         screenDestroy();
         printf("\t😼 🙀 😾\n");
-        printf("  Thank you for playing\n");
+        printf("  Thank you for playing\n\n");
         return 0;
     }
 
