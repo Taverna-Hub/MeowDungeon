@@ -1123,11 +1123,11 @@ int main()
                 if (((ch == 106) || (ch == 74)) && (player.sword == 1)) // sword
                 {
                     print_sword(newX, newY);
-                    if (abs(newX - enemy_room_2.x) <= 2 || abs(newY - enemy_room_2.y) == 1)
+                    if (sqrt(pow((newX - enemy_room_2.x), 2) + pow((newY - enemy_room_2.y), 2)) <= 2)
                     {
                         enemy_room_2.is_dead = 1;
                     }
-                    if (abs(newX - enemy_room_1.x) <= 2 || abs(newY - enemy_room_1.y) == 1)
+                    if (sqrt(pow((newX - enemy_room_1.x), 2) + pow((newY - enemy_room_1.y), 2)) <= 2)
                     {
                         enemy_room_1.is_dead = 1;
                     }
