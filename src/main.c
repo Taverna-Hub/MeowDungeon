@@ -588,6 +588,7 @@ int main()
     int shield_verify = 0;
     struct boss boss;
 
+    boss.verify = 0;
 
     // Room 1
     struct enemy_obj enemy_room_1;
@@ -1618,9 +1619,135 @@ int main()
                 screenUpdate();
             }
         }
+        if (boss.verify == 1)
+        {   
+            keyboardDestroy();
+            screenDestroy();
 
-        if (boss.verify == 0)
-        {
+            screenInit(1);
+            keyboardInit();
+            int timer = 130;
+            timerUpdateTimer(timer);
+            screenSetColor(WHITE, DARKGRAY);
+            screenGotoxy(MINX + 35, MINY + 1);
+            printf("┃ Inventory ┃");
+
+            print_hp(player.hp);
+
+            player_x = 70;
+            player_y = 29;
+
+                    
+            boss.incX = 1;
+            boss.incY = 1;
+            boss.x = 70;
+            boss.y = 19;
+            boss.hp = 4;
+            boss.newX = 70;
+            boss.newY = 19;
+
+            print_boss(&boss);
+            
+            print_subroom(STARTIBOSS, FINISHIBOSS, STARTJBOSS, FINISHJBOSS, &boss.verify);
+
+            print_player(player_x, player_y);
+
+            while (ch != 10)
+            {
+                if (keyhit())
+                {
+                    ch = readch();
+                    print_key(ch);
+                    screenUpdate();
+                }
+
+                if (timerTimeOver() == 1)
+                {
+                    boss.newX = boss.x + boss.incX;
+                    if (boss.newX >= (FINISHIBOSS - strlen("BOSS") - 1) || boss.newX <= STARTIBOSS + 1) 
+                    {
+                        boss.incX = -boss.incX;
+                        
+                        timerUpdateTimer(timer--);
+                    }
+
+                    boss.newY = boss.y + boss.incY;
+                    if (boss.newY >= FINISHJBOSS - 1 || boss.newY <= STARTJBOSS + 1) 
+                    {
+                        boss.incY = -boss.incY;
+                        
+                        timerUpdateTimer(timer--);
+                    }
+                
+
+                    int newX = player_x, newY = player_y;
+
+                    int collisionXRoomBoss = newY > STARTJBOSS - 1 && newY < FINISHJBOSS;
+                    int collisionYRoomBoos = newX >= STARTIBOSS && newX < FINISHIBOSS;
+
+                    if ((ch == 97) || (ch == 65)) // left
+                    {
+                        newX = player_x - incX;
+                        player.steps++;
+                        if ((newX == STARTIBOSS))
+                        {
+                            newX += 1;
+                            player.steps--;
+                        }
+                    }
+                    
+                    if ((ch == 100) || (ch == 68)) // right
+                    {
+                        newX = player_x + incX;
+                        player.steps++;
+                        if ((newX == FINISHIBOSS - 2))
+                        {
+                            newX -= 1;
+                            player.steps--;
+                        }
+
+                    }
+
+                    if ((ch == 115) || (ch == 83)) // down
+                    {
+                        newY = player_y + incY;
+                        player.steps++;
+                        if ((newY == FINISHJBOSS - 1))
+                        {
+                            newY -= 1;
+                            player.steps--;
+                        }
+                    }
+
+                    if ((ch == 119) || (ch == 87)) // up
+                    {
+                        newY = player_y - incY;
+                        player.steps++;
+                        if (newY == STARTJROOM1)
+                        {
+                            newY += 1;
+                            player.steps--;
+                        }
+                    }
+
+                    
+
+
+                    print_subroom(STARTIBOSS, FINISHIBOSS, STARTJBOSS, FINISHJBOSS, &boss.verify);
+                    
+                    print_player(newX, newY);
+                    screenGotoxy(MINX + 1, MINY + 4);
+                    printf("%d %d", player_x, player_y);
+                    print_boss(&boss);
+                    print_key(ch);
+                    
+                    ch = 0;
+                }
+            
+            }
+        
+        }
+
             keyboardDestroy();
             screenDestroy();
             timerDestroy();
@@ -1709,132 +1836,8 @@ int main()
             printf("\t😼 🙀 😾\n");
             printf("  Thank you for playing\n\n");
             return 0;
-        }
         
-        else if (boss.verify == 1)
-        {   
-            keyboardDestroy();
-            screenDestroy();
-
-            screenInit(1);
-            keyboardInit();
-
-            screenSetColor(WHITE, DARKGRAY);
-            screenGotoxy(MINX + 35, MINY + 1);
-            printf("┃ Inventory ┃");
-
-            print_hp(player.hp);
-
-            player_x = 70;
-            player_y = 29;
-
-                    
-            boss.incX = 1;
-            boss.incY = 1;
-            boss.x = 70;
-            boss.y = 19;
-            boss.hp = 4;
-            boss.newX = 70;
-            boss.newY = 19;
-
-            print_boss(&boss);
-            
-            print_subroom(STARTIBOSS, FINISHIBOSS, STARTJBOSS, FINISHJBOSS, &boss.verify);
-
-            print_player(player_x, player_y);
-
-            while (ch != 10)
-            {
-                if (keyhit())
-                {
-                    ch = readch();
-                    print_key(ch);
-                    screenUpdate();
-                }
-
-                if (timerTimeOver() == 1)
-                {
-                    boss.newX = boss.x + boss.incX;
-                    if (boss.newX >= (FINISHIBOSS - strlen("BOSS") - 1) || boss.newX <= STARTIBOSS + 1) 
-                    {
-                        boss.incX = -boss.incX;
-                    }
-
-                    boss.newY = boss.y + boss.incY;
-                    if (boss.newY >= FINISHJBOSS - 1 || boss.newY <= STARTJBOSS + 1) 
-                    {
-                        boss.incY = -boss.incY;
-                    }
-                
-
-                    int newX = player_x, newY = player_y;
-
-                    int collisionXRoomBoss = newY > STARTJBOSS - 1 && newY < FINISHJBOSS;
-                    int collisionYRoomBoos = newX >= STARTIBOSS && newX < FINISHIBOSS;
-
-                    if ((ch == 97) || (ch == 65)) // left
-                    {
-                        newX = player_x - incX;
-                        player.steps++;
-                        if ((newX == STARTIBOSS))
-                        {
-                            newX += 1;
-                            player.steps--;
-                        }
-                    }
-                    
-                    if ((ch == 100) || (ch == 68)) // right
-                    {
-                        newX = player_x + incX;
-                        player.steps++;
-                        if ((newX == FINISHIBOSS - 2))
-                        {
-                            newX -= 1;
-                            player.steps--;
-                        }
-
-                    }
-
-                    if ((ch == 115) || (ch == 83)) // down
-                    {
-                        newY = player_y + incY;
-                        player.steps++;
-                        if ((newY == FINISHJBOSS - 1))
-                        {
-                            newY -= 1;
-                            player.steps--;
-                        }
-                    }
-
-                    if ((ch == 119) || (ch == 87)) // up
-                    {
-                        newY = player_y - incY;
-                        player.steps++;
-                        if (newY == STARTJROOM1)
-                        {
-                            newY += 1;
-                            player.steps--;
-                        }
-                    }
-
-                    
-
-
-                    print_subroom(STARTIBOSS, FINISHIBOSS, STARTJBOSS, FINISHJBOSS, &boss.verify);
-                    
-                    print_player(newX, newY);
-                    screenGotoxy(MINX + 1, MINY + 4);
-                    printf("%d %d", player_x, player_y);
-                    print_boss(&boss);
-                    print_key(ch);
-
-                    ch = 0;
-                }
-            
-            }
         
-        }
-
     return 0;
     }
 }
