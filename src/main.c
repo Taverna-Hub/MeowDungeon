@@ -54,6 +54,7 @@ struct boss{
     int incX;
     int incY;
     int verify;
+    int is_dead;
 };
 
 struct enemy_obj
@@ -139,12 +140,15 @@ void print_trap(struct trap_obj trap, int new_trap_x, int new_trap_y, int direct
     }
 }
 
-int sum_score(int killed_enemies, int steps, int lifes, int itens_count)
+int sum_score(int killed_enemies, int steps, int lifes, int itens_count, int boss)
 {
     int total = (killed_enemies * 100) + (lifes * 500) + (itens_count * 250);
     if (steps > 150)
     {
         total = total - (steps / 30);
+    }
+    if (boss){
+        total = total + 3000;
     }
 
     return total;
@@ -589,6 +593,7 @@ int main()
     struct boss boss;
 
     boss.verify = 0;
+    boss.is_dead = 0;
 
     // Room 1
     struct enemy_obj enemy_room_1;
@@ -1645,6 +1650,7 @@ int main()
             boss.hp = 4;
             boss.newX = 70;
             boss.newY = 19;
+            
 
             print_boss(&boss);
             
@@ -1675,7 +1681,7 @@ int main()
                     if (boss.newY >= FINISHJBOSS - 1 || boss.newY <= STARTJBOSS + 1) 
                     {
                         boss.incY = -boss.incY;
-                        
+                      
                         timerUpdateTimer(timer--);
                     }
                 
@@ -1684,6 +1690,13 @@ int main()
 
                     int collisionXRoomBoss = newY > STARTJBOSS - 1 && newY < FINISHJBOSS;
                     int collisionYRoomBoos = newX >= STARTIBOSS && newX < FINISHIBOSS;
+                    
+                    for (int j = 0; j < strlen("boss"); j++){
+                        if (boss.newX + j == newX && boss.newY == newY){
+                            player.hp--;
+                            print_hp(player.hp);
+                        }
+                    }
 
                     if ((ch == 97) || (ch == 65)) // left
                     {
@@ -1793,7 +1806,7 @@ int main()
             printf("Digite seu nome [5]: ");
             scanf(" %5s", nome);
 
-            int int_points = sum_score(enemies_cont, player.steps, player.hp, itens);
+            int int_points = sum_score(enemies_cont, player.steps, player.hp, itens, boss.is_dead);
             sprintf(points, "%d", int_points);
             fprintf(file, "%s ", nome);
             fprintf(file, "%s\n", points);
@@ -1833,6 +1846,7 @@ int main()
             printf("\n");
             keyboardDestroy();
             screenDestroy();
+            printf("\n");
             printf("\t😼 🙀 😾\n");
             printf("  Thank you for playing\n\n");
             return 0;
