@@ -29,6 +29,11 @@ int enemies2 = 0;
 int enemies3 = 0;
 int enemies4 = 0;
 int enemies5 = 0;
+
+
+// int boss_x = 70;
+// int boss_y = 19;
+
 struct player
 {
     int key;
@@ -37,6 +42,19 @@ struct player
     int shield;
     int shield_active;
     int steps;
+};
+
+
+struct boss{
+    int x;
+    int y;
+    int hp;
+    int newX;
+    int newY;
+    int incX;
+    int incY;
+    int verify;
+    int is_dead;
 };
 
 struct enemy_obj
@@ -122,12 +140,15 @@ void print_trap(struct trap_obj trap, int new_trap_x, int new_trap_y, int direct
     }
 }
 
-int sum_score(int killed_enemies, int steps, int lifes, int itens_count)
+int sum_score(int killed_enemies, int steps, int lifes, int itens_count, int boss)
 {
     int total = (killed_enemies * 100) + (lifes * 500) + (itens_count * 250);
     if (steps > 150)
     {
         total = total - (steps / 30);
+    }
+    if (boss){
+        total = total + 3000;
     }
 
     return total;
@@ -236,7 +257,7 @@ void print_hp(int health)
         screenGotoxy(MINX + h + h, MINY + 1);
         screenSetColor(RED, DARKGRAY);
         printf("♥");
-        screenSetColor(CYAN, DARKGRAY);
+        screenSetColor(WHITE, DARKGRAY);
     }
     if (health == 0)
     {
@@ -450,6 +471,17 @@ void free_score(struct score *head)
     }
 }
 
+void print_boss(struct boss *b)
+{
+    screenSetColor(CYAN, DARKGRAY);
+    screenGotoxy(b->x, b->y);
+    printf("    ");
+    b->x = b->newX;
+    b->y = b->newY;
+    screenGotoxy(b->newX, b->newY);
+    printf("BOSS");
+}
+
 int menu_cont = 0;
 void menu()
 {
@@ -558,6 +590,10 @@ int main()
     struct score *list = NULL;
     struct player player;
     int shield_verify = 0;
+    struct boss boss;
+
+    boss.verify = 0;
+    boss.is_dead = 0;
 
     // Room 1
     struct enemy_obj enemy_room_1;
@@ -754,7 +790,6 @@ int main()
         screenGotoxy(MINX + 1, MINY + 1);
 
         print_hp(player.hp);
-
         screenSetColor(WHITE, DARKGRAY);
         screenGotoxy(MINX + 35, MINY + 1);
         printf("┃ Inventory ┃");
@@ -775,6 +810,11 @@ int main()
                 ch = readch();
                 print_key(ch);
                 screenUpdate();
+            }
+
+            if (player_x == 64 && player_y == 13 && player.key == 1){
+                boss.verify = 1;
+                break;
             }
 
             screenGotoxy(MINX + 1, MINY + 4);
@@ -1332,7 +1372,7 @@ int main()
                     }
                 }
 
-                if (enemies4) // TODO
+                if (enemies4)
                 {
                     for (int i = 0; i < ENEMIES4LENGTH; i++)
                     {
@@ -1584,96 +1624,234 @@ int main()
                 screenUpdate();
             }
         }
+        if (boss.verify == 1)
+        {   
+            keyboardDestroy();
+            screenDestroy();
 
-        keyboardDestroy();
-        screenDestroy();
-        timerDestroy();
+            screenInit(1);
+            keyboardInit();
+            int timer = 130;
+            timerUpdateTimer(timer);
+            screenSetColor(WHITE, DARKGRAY);
+            screenGotoxy(MINX + 35, MINY + 1);
+            printf("┃ Inventory ┃");
 
-        char *token;
-        FILE *file;
-        file = fopen("src/files/score.txt", "r+");
+            print_hp(player.hp);
 
-        if (file == NULL)
-        {
-            perror("File not found");
-            return 1;
-        }
+            player_x = 70;
+            player_y = 29;
 
-        char readLine[128], name[6], points[10];
+                    
+            boss.incX = 1;
+            boss.incY = 1;
+            boss.x = 70;
+            boss.y = 19;
+            boss.hp = 4;
+            boss.newX = 70;
+            boss.newY = 19;
+            
 
-        while (fgets(readLine, sizeof(readLine), file) != NULL)
-        {
-            token = strtok(readLine, " ");
-            strncpy(name, token, 5);
-            name[5] = '\0';
+            print_boss(&boss);
+            
+            print_subroom(STARTIBOSS, FINISHIBOSS, STARTJBOSS, FINISHJBOSS, &boss.verify);
 
-            token = strtok(NULL, " ");
-            strncpy(points, token, 9);
-            points[9] = '\0';
+            print_player(player_x, player_y);
 
-            int int_points = atoi(points);
-            add_score(&list, int_points, name);
-        }
-
-        // contando pontos
-        int itens = 0;
-        if (player.sword)
-        {
-            itens += 1;
-        }
-        if (player.shield)
-        {
-            itens += 1;
-        }
-
-        char nome[6];
-        printf("Digite seu nome [5]: ");
-        scanf(" %5s", nome);
-
-        int int_points = sum_score(enemies_cont, player.steps, player.hp, itens);
-        sprintf(points, "%d", int_points);
-        fprintf(file, "%s ", nome);
-        fprintf(file, "%s\n", points);
-
-        add_score(&list, int_points, nome);
-
-        fclose(file);
-
-        screenInit(0);
-        keyboardInit();
-
-        screenSetColor(MAGENTA, DARKGRAY);
-        screenGotoxy(60, 3);
-        ascii_print("src/files/topscores.txt");
-
-        screenGotoxy(56, 22);
-        printf(">");
-        screenGotoxy(80, 22);
-        printf("<");
-
-        screenSetColor(LIGHTGRAY, DARKGRAY);
-
-        screenGotoxy(58, 22);
-        printf("PRESS [ENTER] TO EXIT");
-        print_score(list);
-        free_score(list);
-
-        ch = 0;
-        while (ch != 10)
-        {
-            if (keyhit())
+            while (ch != 10)
             {
-                ch = readch();
+                if (keyhit())
+                {
+                    ch = readch();
+                    print_key(ch);
+                    screenUpdate();
+                }
+
+                if (timerTimeOver() == 1)
+                {
+                    boss.newX = boss.x + boss.incX;
+                    if (boss.newX >= (FINISHIBOSS - strlen("BOSS") - 1) || boss.newX <= STARTIBOSS + 1) 
+                    {
+                        boss.incX = -boss.incX;
+                        
+                        timerUpdateTimer(timer--);
+                    }
+
+                    boss.newY = boss.y + boss.incY;
+                    if (boss.newY >= FINISHJBOSS - 1 || boss.newY <= STARTJBOSS + 1) 
+                    {
+                        boss.incY = -boss.incY;
+                      
+                        timerUpdateTimer(timer--);
+                    }
+                
+
+                    int newX = player_x, newY = player_y;
+
+                    int collisionXRoomBoss = newY > STARTJBOSS - 1 && newY < FINISHJBOSS;
+                    int collisionYRoomBoos = newX >= STARTIBOSS && newX < FINISHIBOSS;
+                    
+                    for (int j = 0; j < strlen("boss"); j++){
+                        if (boss.newX + j == newX && boss.newY == newY){
+                            player.hp--;
+                            print_hp(player.hp);
+                        }
+                    }
+
+                    if ((ch == 97) || (ch == 65)) // left
+                    {
+                        newX = player_x - incX;
+                        player.steps++;
+                        if ((newX == STARTIBOSS))
+                        {
+                            newX += 1;
+                            player.steps--;
+                        }
+                    }
+                    
+                    if ((ch == 100) || (ch == 68)) // right
+                    {
+                        newX = player_x + incX;
+                        player.steps++;
+                        if ((newX == FINISHIBOSS - 2))
+                        {
+                            newX -= 1;
+                            player.steps--;
+                        }
+
+                    }
+
+                    if ((ch == 115) || (ch == 83)) // down
+                    {
+                        newY = player_y + incY;
+                        player.steps++;
+                        if ((newY == FINISHJBOSS - 1))
+                        {
+                            newY -= 1;
+                            player.steps--;
+                        }
+                    }
+
+                    if ((ch == 119) || (ch == 87)) // up
+                    {
+                        newY = player_y - incY;
+                        player.steps++;
+                        if (newY == STARTJROOM1)
+                        {
+                            newY += 1;
+                            player.steps--;
+                        }
+                    }
+
+                    
+
+
+                    print_subroom(STARTIBOSS, FINISHIBOSS, STARTJBOSS, FINISHJBOSS, &boss.verify);
+                    
+                    print_player(newX, newY);
+                    screenGotoxy(MINX + 1, MINY + 4);
+                    printf("%d %d", player_x, player_y);
+                    print_boss(&boss);
+                    print_key(ch);
+                    
+                    ch = 0;
+                }
+            
             }
+        
         }
 
-        printf("\n");
-        keyboardDestroy();
-        screenDestroy();
-        printf("\t😼 🙀 😾\n");
-        printf("  Thank you for playing\n\n");
-        return 0;
-    }
+            keyboardDestroy();
+            screenDestroy();
+            timerDestroy();
 
+            char *token;
+            FILE *file;
+            file = fopen("src/files/score.txt", "r+");
+
+            if (file == NULL)
+            {
+                perror("File not found");
+                return 1;
+            }
+
+            char readLine[128], name[6], points[10];
+
+            while (fgets(readLine, sizeof(readLine), file) != NULL)
+            {
+                token = strtok(readLine, " ");
+                strncpy(name, token, 5);
+                name[5] = '\0';
+
+                token = strtok(NULL, " ");
+                strncpy(points, token, 9);
+                points[9] = '\0';
+
+                int int_points = atoi(points);
+                add_score(&list, int_points, name);
+            }
+
+            // contando pontos
+            int itens = 0;
+            if (player.sword)
+            {
+                itens += 1;
+            }
+            if (player.shield)
+            {
+                itens += 1;
+            }
+
+            char nome[6];
+            printf("Digite seu nome [5]: ");
+            scanf(" %5s", nome);
+
+            int int_points = sum_score(enemies_cont, player.steps, player.hp, itens, boss.is_dead);
+            sprintf(points, "%d", int_points);
+            fprintf(file, "%s ", nome);
+            fprintf(file, "%s\n", points);
+
+            add_score(&list, int_points, nome);
+
+            fclose(file);
+
+            screenInit(0);
+            keyboardInit();
+
+            screenSetColor(MAGENTA, DARKGRAY);
+            screenGotoxy(60, 3);
+            ascii_print("src/files/topscores.txt");
+
+            screenGotoxy(56, 22);
+            printf(">");
+            screenGotoxy(80, 22);
+            printf("<");
+
+            screenSetColor(LIGHTGRAY, DARKGRAY);
+
+            screenGotoxy(58, 22);
+            printf("PRESS [ENTER] TO EXIT");
+            print_score(list);
+            free_score(list);
+
+            ch = 0;
+            while (ch != 10)
+            {
+                if (keyhit())
+                {
+                    ch = readch();
+                }
+            }
+
+            printf("\n");
+            keyboardDestroy();
+            screenDestroy();
+            printf("\n");
+            printf("\t😼 🙀 😾\n");
+            printf("  Thank you for playing\n\n");
+            return 0;
+        
+        
     return 0;
+    }
 }
