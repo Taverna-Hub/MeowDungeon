@@ -56,6 +56,11 @@ struct boss{
     int is_dead;
 };
 
+struct heart{
+    int verify;
+    int x;
+    int y;
+};
 struct enemy_obj
 {
     int x;
@@ -113,33 +118,6 @@ void print_subroom(int start_i_room, int finish_i_room, int start_j_room, int fi
     }
 }
 
-void print_pillar(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room)
-{
-    int last_j = start_j_room;
-    
-    for (int i = start_i_room; i < finish_i_room; i++)
-    {
-        for (int j = start_j_room; j < finish_j_room; j++)
-        {
-            if (j == start_j_room || j == finish_j_room - 1)
-            {
-                screenGotoxy(i, j);
-                printf("-");
-            }
-            else if (i == start_i_room || i == finish_i_room - 1)
-            {
-                screenGotoxy(i, j);
-                printf("|");
-            }
-
-            last_j = j;
-        }
-
-        screenGotoxy(i, last_j);
-        printf("\n");
-    }
-
-}
 
 void print_trap(struct trap_obj trap, int new_trap_x, int new_trap_y, int direction)
 {
@@ -280,7 +258,8 @@ void print_shield(struct player *p)
 void print_hp(int health)
 {
     screenGotoxy(MINX + 2, MINY + 1);
-    printf("      ");
+    // printf("      ");
+    printf("                  ");
     for (int h = 1; h < health + 1; h++)
     {
         screenGotoxy(MINX + h + h, MINY + 1);
@@ -623,9 +602,10 @@ int main()
     struct player player;
     int shield_verify = 0;
     struct boss boss;
-
     boss.verify = 0;
     boss.is_dead = 0;
+
+    struct heart corazon[4];
 
     // Room 1
     struct enemy_obj enemy_room_1;
@@ -724,7 +704,7 @@ int main()
     enemy_room_2.sprite = enemies[(rand() % 7)];
 
     player.key = 0;
-    player.hp = 3;
+    player.hp = 10;
     player.sword = 0;
     player.shield = 0;
     player.shield_active = 0;
@@ -1634,6 +1614,7 @@ int main()
                 screenUpdate();
             }
         }
+
         if (boss.verify == 1)
         {   
             keyboardDestroy();
@@ -1661,22 +1642,26 @@ int main()
             boss.hp = 4;
             boss.newX = 70;
             boss.newY = 19;
+
+            corazon[0].verify = 1;
+            corazon[0].x = IPILARLEFT;
+            corazon[0].y = JPILARUP;
+            
+            corazon[1].verify = 1;
+            corazon[2].x = IPILARLEFT;
+            corazon[1].y = JPILARDOWN;
+            
+            corazon[2].verify = 1;
+            corazon[2].x = IPILARRIGHT;
+            corazon[2].y = JPILARUP;
+            
+            corazon[3].verify = 1;
+            corazon[3].x = IPILARRIGHT;
+            corazon[3].y = JPILARDOWN;
             
             print_boss(&boss);
             
             print_subroom(STARTIBOSS, FINISHIBOSS, STARTJBOSS, FINISHJBOSS, &boss.verify);
-            
-            /*UP LEFT*/
-            print_pillar(STARTIPILARLEFT, FINISHIPILARLEFT, STARTJPILARUP, FINISHJPILARUP);
-           
-            /*DOWN LEFT*/ 
-            print_pillar(STARTIPILARLEFT, FINISHIPILARLEFT, STARTJPILARDOWN, FINISHJPILARDOWN);
-            
-            /*UP RIGHT*/
-            print_pillar(STARTIPILARRIGHT, FINISHIPILARRIGHT, STARTJPILARUP, FINISHJPILARUP);
-            
-            /*DOWN RIGHT*/
-            print_pillar(STARTIPILARRIGHT, FINISHIPILARRIGHT, STARTJPILARDOWN, FINISHJPILARDOWN);
             
             
             print_player(player_x, player_y);
@@ -1713,6 +1698,7 @@ int main()
 
                     int collisionXRoomBoss = newY > STARTJBOSS - 1 && newY < FINISHJBOSS;
                     int collisionYRoomBoos = newX >= STARTIBOSS && newX < FINISHIBOSS;
+                    
                     
                     for (int j = 0; j < strlen("boss"); j++){
                         if (boss.newX + j == newX && boss.newY == newY){
@@ -1766,11 +1752,32 @@ int main()
                         }
                     }
 
+                    if (((ch == 106) || (ch == 74)) && (player.sword == 1))
+                    {
+                        print_sword(newX, newY);
+
+                        for (int i = 0; i < 4; i++)
+                        {
+                            float dist = sqrt(pow((newX - corazon[i].x), 2) + pow((newY - corazon[i].y), 2));
+                            if (dist <= 2)
+                            {
+                                corazon[i].verify = 0;
+                            }
+                        }
+                    }
+
                     
-
-
                     print_subroom(STARTIBOSS, FINISHIBOSS, STARTJBOSS, FINISHJBOSS, &boss.verify);
                     
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (corazon[i].verify == 1)
+                        {
+                            screenGotoxy(corazon[i].x, corazon[i].y);
+                            printf("🫀");
+                        }
+                    }
+
                     print_player(newX, newY);
                     screenGotoxy(MINX + 1, MINY + 4);
                     printf("%d %d", player_x, player_y);
@@ -1879,7 +1886,8 @@ int main()
     }
 }
 
-void print_itens(char *str){
+void print_itens(char *str)
+{
     
     if (strcmp(str, "key") == 0)
     {
@@ -1920,3 +1928,4 @@ void print_itens(char *str){
         printf("      ");
     }
 }
+
