@@ -234,8 +234,7 @@ void print_sword(int pos_X, int pos_Y)
 
 void print_shield(struct player *p)
 {
-    int *point;
-    point = &p->shield_active;
+    
 
     screenGotoxy(MINX + 1, MINY + 2);
     printf("                   ");
@@ -251,15 +250,15 @@ void print_shield(struct player *p)
         screenGotoxy(MINX + 1, MINY + 2);
         screenSetColor(YELLOW, DARKGRAY);
         printf(" Shield broken! ");
-        *point = -1;
+        p->shield_active = -1;
     }
 }
 
 void print_hp(int health)
 {
     screenGotoxy(MINX + 2, MINY + 1);
-    // printf("      ");
-    printf("                  ");
+    printf("      ");
+    
     for (int h = 1; h < health + 1; h++)
     {
         screenGotoxy(MINX + h + h, MINY + 1);
@@ -704,7 +703,7 @@ int main()
     enemy_room_2.sprite = enemies[(rand() % 7)];
 
     player.key = 0;
-    player.hp = 10;
+    player.hp = 3;
     player.sword = 0;
     player.shield = 0;
     player.shield_active = 0;
@@ -1623,12 +1622,21 @@ int main()
             screenInit(1);
             keyboardInit();
 
-            int timer = 130;
-            timerUpdateTimer(timer);
+            timerUpdateTimer(130);
             screenSetColor(WHITE, DARKGRAY);
             screenGotoxy(MINX + 35, MINY + 1);
             printf("┃ Inventory ┃");
-
+            if (player.sword){
+                print_itens("sword");
+            }
+            if (player.shield)
+            {
+            print_itens("shield");
+            }
+            if (player.shield_active != 0){
+                
+                print_shield(&player);      
+            }
             print_hp(player.hp);
             print_shield(&player);
 
@@ -1648,7 +1656,7 @@ int main()
             corazon[0].y = JPILARUP;
             
             corazon[1].verify = 1;
-            corazon[2].x = IPILARLEFT;
+            corazon[1].x = IPILARLEFT;
             corazon[1].y = JPILARDOWN;
             
             corazon[2].verify = 1;
@@ -1658,6 +1666,8 @@ int main()
             corazon[3].verify = 1;
             corazon[3].x = IPILARRIGHT;
             corazon[3].y = JPILARDOWN;
+
+            int contBoss = 0;
             
             print_boss(&boss);
             
@@ -1665,7 +1675,7 @@ int main()
             
             
             print_player(player_x, player_y);
-
+            int timer = 100;
             while (ch != 10)
             {
                 if (keyhit())
@@ -1682,16 +1692,18 @@ int main()
                     {
                         boss.incX = -boss.incX;
                         
-                        timerUpdateTimer(timer--);
+
+                        
                     }
 
                     boss.newY = boss.y + boss.incY;
                     if (boss.newY >= FINISHJBOSS - 1 || boss.newY <= STARTJBOSS + 1) 
                     {
                         boss.incY = -boss.incY;
+                        
                       
-                        timerUpdateTimer(timer--);
                     }
+
                 
 
                     int newX = player_x, newY = player_y;
@@ -1702,9 +1714,32 @@ int main()
                     
                     for (int j = 0; j < strlen("boss"); j++){
                         if (boss.newX + j == newX && boss.newY == newY){
-                            player.hp--;
-                            print_hp(player.hp);
+                            if (player.shield_active == 1)
+                            {
+                                player.shield--;
+                                print_shield(&player);
+                                
+                            }
+                           else if (player.shield_active == 0 || player.shield_active == -1)
+                            {
+                                player.hp--;
+                                print_hp(player.hp);
+                            }
                         }
+                    }
+
+                    if (((ch == 107) || (ch == 75)) && (player.shield != 0 && player.shield <= 5)) // shield
+                    {
+                        if (!player.shield_active)
+                        {
+                            player.shield_active = 1;
+                        }
+                        else
+                        {
+                            player.shield_active = 0;
+                        }
+
+                        
                     }
 
                     if ((ch == 97) || (ch == 65)) // left
@@ -1759,8 +1794,9 @@ int main()
                         for (int i = 0; i < 4; i++)
                         {
                             float dist = sqrt(pow((newX - corazon[i].x), 2) + pow((newY - corazon[i].y), 2));
-                            if (dist <= 2)
-                            {
+                            if (dist <= 2 && corazon[i].verify == 1)
+                            {   
+                                boss.hp --;
                                 corazon[i].verify = 0;
                             }
                         }
@@ -1784,12 +1820,50 @@ int main()
                     print_boss(&boss);
                     print_key(ch);
                     
+                if (player.shield)
+                    {
+                    print_shield(&player);
+
+                    if (player.shield_active)
+                    {
+                        screenSetColor(GREEN, DARKGRAY);
+                    }
+                    else
+                    {
+                        screenSetColor(WHITE, DARKGRAY);
+                    }
+
+                    print_itens("shield");
+                    }
+
+                else
+                {
+                    print_itens("not-shield");
+                }
                     ch = 0;
                 }
-            
+                if (boss.hp == 3 && contBoss == 0){
+                    contBoss = 1;
+                    timerUpdateTimer(timer-=30 );
+                }
+                else if (boss.hp == 2 && contBoss == 1){
+                    contBoss = 2;
+                    timerUpdateTimer(timer-=30);
+                }
+                else if (boss.hp == 1 && contBoss == 2){
+                    contBoss = 3;
+                    timerUpdateTimer(timer-=30);
+                }
+
+                if (boss.hp == 0){
+                    break;
+                }
+                
             }
         
-        }
+        }   
+        timerUpdateTimer(150);
+        
 
             keyboardDestroy();
             screenDestroy();
@@ -1877,6 +1951,9 @@ int main()
             keyboardDestroy();
             screenDestroy();
             printf("\n");
+            if (boss.hp == 0){
+            printf("contratulations you has defeated the boss\n");
+        }
             printf("\t😼 🙀 😾\n");
             printf("  Thank you for playing\n\n");
             return 0;
@@ -1895,7 +1972,7 @@ void print_itens(char *str)
         screenGotoxy(MINX + 49, MINY + 2);
         printf("┏━━━┓");
         screenGotoxy(MINX + 49, MINY + 3);
-        printf("┃🔑  ┃");
+        printf("┃🔑 ┃");
         screenGotoxy(MINX + 49, MINY + 4);
         printf("┗━━━┛");
     }
