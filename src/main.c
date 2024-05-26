@@ -44,7 +44,6 @@ struct player
     int steps;
 };
 
-
 struct boss{
     int x;
     int y;
@@ -112,6 +111,34 @@ void print_subroom(int start_i_room, int finish_i_room, int start_j_room, int fi
             printf("\n");
         }
     }
+}
+
+void print_pillar(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room)
+{
+    int last_j = start_j_room;
+    
+    for (int i = start_i_room; i < finish_i_room; i++)
+    {
+        for (int j = start_j_room; j < finish_j_room; j++)
+        {
+            if (j == start_j_room || j == finish_j_room - 1)
+            {
+                screenGotoxy(i, j);
+                printf("-");
+            }
+            else if (i == start_i_room || i == finish_i_room - 1)
+            {
+                screenGotoxy(i, j);
+                printf("|");
+            }
+
+            last_j = j;
+        }
+
+        screenGotoxy(i, last_j);
+        printf("\n");
+    }
+
 }
 
 void print_trap(struct trap_obj trap, int new_trap_x, int new_trap_y, int direction)
@@ -239,10 +266,12 @@ void print_shield(struct player *p)
         screenGotoxy(MINX + s + s, MINY + 2);
         screenSetColor(LIGHTGREEN, DARKGRAY);
         printf("🛡");
+        screenSetColor(WHITE, DARKGRAY);
     }
     if (p->shield == 0)
     {
         screenGotoxy(MINX + 1, MINY + 2);
+        screenSetColor(YELLOW, DARKGRAY);
         printf(" Shield broken! ");
         *point = -1;
     }
@@ -262,7 +291,8 @@ void print_hp(int health)
     if (health == 0)
     {
         screenGotoxy(MINX + 2, MINY + 1);
-        printf("☠️ You died! ☠️");
+        screenSetColor(YELLOW, DARKGRAY);
+        printf("☠️  You died! ☠️");
     }
 }
 
@@ -580,6 +610,8 @@ void menu()
         }
     }
 }
+
+void print_itens(char *str);
 
 int main()
 {
@@ -1557,13 +1589,7 @@ int main()
 
                 if (player.key == 1)
                 {
-                    screenSetColor(WHITE, DARKGRAY);
-                    screenGotoxy(MINX + 49, MINY + 2);
-                    printf("┏━━━┓");
-                    screenGotoxy(MINX + 49, MINY + 3);
-                    printf("┃🔑  ┃");
-                    screenGotoxy(MINX + 49, MINY + 4);
-                    printf("┗━━━┛");
+                    print_itens("key");
                 }
 
                 if ((newX == 16 || newX == 15) && newY == 9)
@@ -1573,13 +1599,7 @@ int main()
 
                 if (player.sword == 1)
                 {
-                    screenSetColor(WHITE, DARKGRAY);
-                    screenGotoxy(MINX + 35, MINY + 2);
-                    printf("┏━━━┓");
-                    screenGotoxy(MINX + 35, MINY + 3);
-                    printf("┃🗡️  ┃");
-                    screenGotoxy(MINX + 35, MINY + 4);
-                    printf("┗━━━┛");
+                    print_itens("sword");
                 }
 
                 if ((newX == 30 || newX == 31) && newY == 29)
@@ -1601,22 +1621,12 @@ int main()
                         screenSetColor(WHITE, DARKGRAY);
                     }
 
-                    screenGotoxy(MINX + 42, MINY + 2);
-                    printf("┏━━━┓");
-                    screenGotoxy(MINX + 42, MINY + 3);
-                    printf("┃🛡️  ┃");
-                    screenGotoxy(MINX + 42, MINY + 4);
-                    printf("┗━━━┛");
+                    print_itens("shield");
                 }
 
                 else
                 {
-                    screenGotoxy(MINX + 42, MINY + 2);
-                    printf("      ");
-                    screenGotoxy(MINX + 42, MINY + 3);
-                    printf("      ");
-                    screenGotoxy(MINX + 42, MINY + 4);
-                    printf("      ");
+                    print_itens("not-shield");
                 }
 
                 // Updating screen
@@ -1631,6 +1641,7 @@ int main()
 
             screenInit(1);
             keyboardInit();
+
             int timer = 130;
             timerUpdateTimer(timer);
             screenSetColor(WHITE, DARKGRAY);
@@ -1638,10 +1649,10 @@ int main()
             printf("┃ Inventory ┃");
 
             print_hp(player.hp);
+            print_shield(&player);
 
             player_x = 70;
             player_y = 29;
-
                     
             boss.incX = 1;
             boss.incY = 1;
@@ -1651,11 +1662,23 @@ int main()
             boss.newX = 70;
             boss.newY = 19;
             
-
             print_boss(&boss);
             
             print_subroom(STARTIBOSS, FINISHIBOSS, STARTJBOSS, FINISHJBOSS, &boss.verify);
-
+            
+            /*UP LEFT*/
+            print_pillar(STARTIPILARLEFT, FINISHIPILARLEFT, STARTJPILARUP, FINISHJPILARUP);
+           
+            /*DOWN LEFT*/ 
+            print_pillar(STARTIPILARLEFT, FINISHIPILARLEFT, STARTJPILARDOWN, FINISHJPILARDOWN);
+            
+            /*UP RIGHT*/
+            print_pillar(STARTIPILARRIGHT, FINISHIPILARRIGHT, STARTJPILARUP, FINISHJPILARUP);
+            
+            /*DOWN RIGHT*/
+            print_pillar(STARTIPILARRIGHT, FINISHIPILARRIGHT, STARTJPILARDOWN, FINISHJPILARDOWN);
+            
+            
             print_player(player_x, player_y);
 
             while (ch != 10)
@@ -1853,5 +1876,47 @@ int main()
         
         
     return 0;
+    }
+}
+
+void print_itens(char *str){
+    
+    if (strcmp(str, "key") == 0)
+    {
+        screenSetColor(WHITE, DARKGRAY);
+        screenGotoxy(MINX + 49, MINY + 2);
+        printf("┏━━━┓");
+        screenGotoxy(MINX + 49, MINY + 3);
+        printf("┃🔑  ┃");
+        screenGotoxy(MINX + 49, MINY + 4);
+        printf("┗━━━┛");
+    }
+    else if (strcmp(str, "sword") == 0) 
+    {
+        screenSetColor(WHITE, DARKGRAY);
+        screenGotoxy(MINX + 35, MINY + 2);
+        printf("┏━━━┓");
+        screenGotoxy(MINX + 35, MINY + 3);
+        printf("┃🗡️  ┃");
+        screenGotoxy(MINX + 35, MINY + 4);
+        printf("┗━━━┛");
+    }
+    else if (strcmp(str, "shield") == 0)
+    {
+        screenGotoxy(MINX + 42, MINY + 2);
+        printf("┏━━━┓");
+        screenGotoxy(MINX + 42, MINY + 3);
+        printf("┃🛡️  ┃");
+        screenGotoxy(MINX + 42, MINY + 4);
+        printf("┗━━━┛");
+    }
+    else if (strcmp(str, "not-shield") == 0)
+    {
+        screenGotoxy(MINX + 42, MINY + 2);
+        printf("      ");
+        screenGotoxy(MINX + 42, MINY + 3);
+        printf("      ");
+        screenGotoxy(MINX + 42, MINY + 4);
+        printf("      ");
     }
 }
