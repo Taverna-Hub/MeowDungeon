@@ -367,7 +367,7 @@ int main()
 
         screenUpdate();
 
-        while (ch != 10)
+        while (player.hp != 0)
         {
             if (keyhit())
             {
@@ -1229,7 +1229,8 @@ int main()
             
             print_player(player_x, player_y);
             int timer = 100;
-            while (ch != 10)
+
+            while (player.hp != 0)
             {
                 if (keyhit())
                 {
@@ -1415,9 +1416,9 @@ int main()
             }
         
         }   
+       
         timerUpdateTimer(150);
         
-
             keyboardDestroy();
             screenDestroy();
             timerDestroy();
@@ -1459,9 +1460,28 @@ int main()
                 itens += 1;
             }
 
+            screenInit(0);
+            keyboardInit();
+
+            screenGotoxy(60, 3);
+            if (boss.hp == 0)
+            {
+                screenSetColor(GREEN, DARKGRAY);
+                print_ascii("src/files/win.txt");
+            }
+            else 
+            {
+                screenSetColor(LIGHTRED, DARKGRAY);
+                print_ascii("src/files/death.txt");
+            }
+
+            screenGotoxy(56, 22);
             char nome[6];
             printf("Your name [5]: ");
             scanf(" %5s", nome);
+
+            screenDestroy();
+            keyboardDestroy();
 
             int int_points = sum_score(enemies_cont, player.steps, player.hp, itens, boss.is_dead);
             sprintf(points, "%d", int_points);
@@ -1504,9 +1524,7 @@ int main()
             keyboardDestroy();
             screenDestroy();
             printf("\n");
-            if (boss.hp == 0){
-            printf("contratulations you has defeated the boss\n");
-        }
+            
             printf("\t😼 🙀 😾\n");
             printf("  Thank you for playing\n\n");
             return 0;
