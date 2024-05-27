@@ -1,6 +1,6 @@
 ![bannermeowdungeon](https://github.com/Taverna-Hub/MeowDungeon/assets/142419823/c1b9294f-418c-45eb-835d-8368524e7419)
 
-<p align="center"><b>MeowDungeon</b> </p>
+<p align="center"><b>MeowDungeon</b> é um rogue-like desenvolvido utilizando a linguagem C onde o jogador precisa passar passar pela dungeon até chegar no chefão final. </p>
 
 ---
 
@@ -26,11 +26,52 @@ make all
 make run
 ```
 ---
-
 <br>
 
 # 🕹️ Como jogar:
 
+<br>
+
+#### Movimentação:
+
+<p>
+Pressione <b>W</b> para se movimentar para cima
+</p>
+
+<p>
+Pressione <b>A</b> para se movimentar para esquerda
+</p>
+
+<p>
+Pressione <b>S</b> para se movimentar para baixo
+</p>
+
+<p>
+Pressione <b>D</b> para se movimentar para direita
+</p>
+
+<br>
+
+#### Espada:
+
+<p>
+Pressione <b>J</b> para atacar.
+</p>
+
+<p>
+A espada da um ataque em uma area de 1 pixel ao redor do personagem.
+</p>
+
+<br>
+
+#### Escudo:
+<p>
+Pressione <b>K</b> para ativar o escudo
+</p>
+
+<p>
+Ao ativar o escudo, serão ativadas 3 cargas, que negam um dano direto ao jogador, a cada hit recebido uma carga é consumida.
+</p>
 
 ---
 
