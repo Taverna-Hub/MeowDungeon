@@ -30,10 +30,6 @@ int enemies3 = 0;
 int enemies4 = 0;
 int enemies5 = 0;
 
-
-// int boss_x = 70;
-// int boss_y = 19;
-
 struct player
 {
     int key;
@@ -44,7 +40,8 @@ struct player
     int steps;
 };
 
-struct boss{
+struct boss
+{
     int x;
     int y;
     int hp;
@@ -56,11 +53,13 @@ struct boss{
     int is_dead;
 };
 
-struct heart{
+struct heart
+{
     int verify;
     int x;
     int y;
 };
+
 struct enemy_obj
 {
     int x;
@@ -72,6 +71,7 @@ struct enemy_obj
     int inc_y;
     char *sprite;
 };
+
 struct trap_obj
 {
     int x;
@@ -87,279 +87,8 @@ struct score
     int points;
     char *name;
     struct score *next;
-};
+}; 
 
-void print_subroom(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int *room_enemies)
-{
-    int last_j = start_j_room;
-    if (*room_enemies)
-    {
-        for (int i = start_i_room; i < finish_i_room; i++)
-        {
-            for (int j = start_j_room; j < finish_j_room; j++)
-            {
-                if (j == start_j_room || j == finish_j_room - 1)
-                {
-                    screenGotoxy(i, j);
-                    printf("-");
-                }
-                else if (i == start_i_room || i == finish_i_room - 1)
-                {
-                    screenGotoxy(i, j);
-                    printf("|");
-                }
-
-                last_j = j;
-            }
-
-            screenGotoxy(i, last_j);
-            printf("\n");
-        }
-    }
-}
-
-
-void print_trap(struct trap_obj trap, int new_trap_x, int new_trap_y, int direction)
-{
-    screenGotoxy(trap.previous_x, trap.previous_y);
-    printf(" ");
-    trap.x = new_trap_x;
-    trap.y = new_trap_y;
-    screenGotoxy(trap.x, trap.y);
-    switch (direction)
-    {
-    case 1:
-        printf("↑");
-        break;
-    case 2:
-        printf("↓");
-        break;
-
-    case 3:
-        printf("←");
-        break;
-
-    case 4:
-        printf("→");
-        break;
-    }
-}
-
-int sum_score(int killed_enemies, int steps, int lifes, int itens_count, int boss)
-{
-    int total = (killed_enemies * 100) + (lifes * 500) + (itens_count * 250);
-    if (steps > 150)
-    {
-        total = total - (steps / 30);
-    }
-    if (boss){
-        total = total + 3000;
-    }
-
-    return total;
-}
-
-void print_enemy(struct enemy_obj enemy)
-{
-    screenGotoxy(enemy.previous_x, enemy.previous_y);
-    printf(" ");
-    screenGotoxy(enemy.x, enemy.y);
-    printf("%s", enemy.sprite);
-}
-
-void print_player(int nextX, int nextY)
-{
-    screenSetColor(CYAN, DARKGRAY);
-    screenGotoxy(player_x, player_y);
-    printf("  ");
-    player_x = nextX;
-    player_y = nextY;
-    screenGotoxy(player_x, player_y);
-    printf("🐱");
-}
-
-void print_sword(int pos_X, int pos_Y)
-{
-    int cont = 55;
-    while (cont > 0)
-    {
-        screenSetColor(YELLOW, DARKGRAY);
-        screenGotoxy(pos_X - 1, pos_Y - 1);
-        printf("┌");
-        printf(" ");
-        screenGotoxy(pos_X, pos_Y - 1);
-        printf("──");
-        printf(" ");
-        screenGotoxy(pos_X + 2, pos_Y - 1);
-        printf("┐");
-        printf(" ");
-        screenGotoxy(pos_X - 1, pos_Y);
-        printf("│ ");
-        printf(" ");
-        screenGotoxy(pos_X + 1, pos_Y);
-        printf(" │");
-        printf(" ");
-        screenGotoxy(pos_X - 1, pos_Y + 1);
-        printf("└");
-        printf(" ");
-        screenGotoxy(pos_X, pos_Y + 1);
-        printf("──");
-        printf(" ");
-        screenGotoxy(pos_X + 2, pos_Y + 1);
-        printf("┘");
-        printf(" ");
-
-        usleep(5000);
-
-        screenGotoxy(pos_X - 1, pos_Y - 1);
-        printf(" ");
-        screenGotoxy(pos_X, pos_Y - 1);
-        printf("  ");
-        screenGotoxy(pos_X + 2, pos_Y - 1);
-        printf(" ");
-        screenGotoxy(pos_X - 1, pos_Y);
-        printf(" ");
-        screenGotoxy(pos_X + 1, pos_Y);
-        printf("  ");
-        screenGotoxy(pos_X - 1, pos_Y + 1);
-        printf(" ");
-        screenGotoxy(pos_X, pos_Y + 1);
-        printf("  ");
-        screenGotoxy(pos_X + 2, pos_Y + 1);
-        printf(" ");
-
-        cont--;
-    }
-}
-
-void print_shield(struct player *p)
-{
-    
-
-    screenGotoxy(MINX + 1, MINY + 2);
-    printf("                   ");
-    for (int s = 1; s < p->shield + 1; s++)
-    {
-        screenGotoxy(MINX + s + s, MINY + 2);
-        screenSetColor(LIGHTGREEN, DARKGRAY);
-        printf("🛡");
-        screenSetColor(WHITE, DARKGRAY);
-    }
-    if (p->shield == 0)
-    {
-        screenGotoxy(MINX + 1, MINY + 2);
-        screenSetColor(YELLOW, DARKGRAY);
-        printf(" Shield broken! ");
-        p->shield_active = -1;
-    }
-}
-
-void print_hp(int health)
-{
-    screenGotoxy(MINX + 2, MINY + 1);
-    printf("      ");
-    
-    for (int h = 1; h < health + 1; h++)
-    {
-        screenGotoxy(MINX + h + h, MINY + 1);
-        screenSetColor(RED, DARKGRAY);
-        printf("♥");
-        screenSetColor(WHITE, DARKGRAY);
-    }
-    if (health == 0)
-    {
-        screenGotoxy(MINX + 2, MINY + 1);
-        screenSetColor(YELLOW, DARKGRAY);
-        printf("☠️  You died! ☠️");
-    }
-}
-
-void print_rooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int room, int *room_enemies, int enter_door_i, int enter_door_j, int exit_door_i, int exit_door_j)
-{
-    int roomRange = (player_x + 1 >= start_i_room) && (player_x <= finish_i_room) && (player_y - 1 >= start_j_room) && (player_y <= finish_j_room);
-
-    screenSetColor(CYAN, DARKGRAY);
-    int last_j = start_j_room;
-    if (roomRange && (room != 0))
-    {
-        *room_enemies = 1;
-        for (int i = start_i_room; i < finish_i_room; i++)
-        {
-            for (int j = start_j_room; j < finish_j_room; j++)
-            {
-                if ((i == enter_door_i && j == enter_door_j) || (i == exit_door_i && j == exit_door_j))
-                {
-                    screenGotoxy(i, j);
-                    printf("🚪");
-                }
-                else if (j == start_j_room || j == finish_j_room - 1)
-                {
-                    screenGotoxy(i, j);
-                    printf("-");
-                }
-                else if (i == start_i_room || i == finish_i_room - 1)
-                {
-                    screenGotoxy(i, j);
-                    printf("|");
-                }
-
-                last_j = j;
-            }
-            screenGotoxy(i, last_j);
-            printf("\n");
-        }
-    }
-    else if (room == 0)
-    {
-        for (int i = start_i_room; i < finish_i_room; i++)
-        {
-            for (int j = start_j_room; j < finish_j_room; j++)
-            {
-                if (i == enter_door_i && j == enter_door_j)
-                {
-                    screenGotoxy(i, j);
-                    printf("🚪");
-                }
-                else if (j == start_j_room || j == finish_j_room - 1)
-                {
-                    screenGotoxy(i, j);
-                    printf("-");
-                }
-                else if (i == start_i_room || i == finish_i_room - 1)
-                {
-                    screenGotoxy(i, j);
-                    printf("|");
-                }
-
-                last_j = j;
-            }
-            screenGotoxy(i, last_j);
-            printf("\n");
-        }
-    }
-}
-
-void print_horizontal_hall(int start_i_hall, int finish_i_hall, int start_j_hall, int finish_j_hall)
-{
-    if (player_x >= start_i_hall - 2 && player_x < finish_i_hall && player_y > start_j_hall && player_y < finish_j_hall)
-    {
-        screenGotoxy(player_x + 2, start_j_hall);
-        printf("═");
-        screenGotoxy(player_x + 2, finish_j_hall - 1);
-        printf("═");
-    }
-}
-
-void print_vertical_hall(int start_i_hall, int finish_i_hall, int start_j_hall, int finish_j_hall)
-{
-    if ((player_y >= start_j_hall) && (player_y < finish_j_hall))
-    {
-        screenGotoxy(start_i_hall, player_y);
-        printf("║");
-        screenGotoxy(finish_i_hall, player_y);
-        printf("║");
-    }
-}
 
 void print_key(int ch)
 {
@@ -393,203 +122,27 @@ void print_steps(struct player p)
     printf("%d", p.steps);
 }
 
-void ascii_print(char *path)
-{
-    FILE *file;
-    char string[128];
-
-    file = fopen(path, "r");
-
-    if (file == NULL)
-    {
-        perror("Error opening file");
-        return;
-    }
-
-    while (fgets(string, sizeof(string), file) != NULL)
-    {
-        printf("%s", string);
-    }
-
-    fclose(file);
-}
-
-void add_score(struct score **head, int points, char *nome)
-{
-    struct score *node = *head;
-    struct score *new = (struct score *)malloc(sizeof(struct score));
-    // todo
-    new->points = points;
-    new->name = (char *)malloc((strlen(nome) + 1) * sizeof(char));
-    new->next = NULL;
-
-    strcpy(new->name, nome);
-
-    if (*head == NULL)
-    {
-        *head = new;
-    }
-
-    else if ((*head)->points < points)
-    {
-        new->next = *head;
-        *head = new;
-    }
-
-    else
-    {
-        while (node->next != NULL && node->next->points > points)
-        {
-            node = node->next;
-        }
-
-        new->next = node->next;
-        node->next = new;
-    }
-}
-
-void print_score(struct score *head)
-{
-    struct score *node = head;
-    int cont = 1, y = 11;
-
-    while (node != NULL)
-    {
-        screenGotoxy(60, y);
-        printf("%d. %s - %d\n", cont, node->name, node->points);
-        cont++;
-        y++;
-        node = node->next;
-
-        if (cont == 11)
-            break;
-    }
-}
-
-void free_score(struct score *head)
-{
-    struct score *temp;
-
-    while (head != NULL)
-    {
-        temp = head;
-        head = head->next;
-        free(temp->name);
-        free(temp);
-    }
-}
-
-void print_boss(struct boss *b)
-{
-    screenSetColor(CYAN, DARKGRAY);
-    screenGotoxy(b->x, b->y);
-    printf("    ");
-    b->x = b->newX;
-    b->y = b->newY;
-    screenGotoxy(b->newX, b->newY);
-    printf("BOSS");
-}
 
 int menu_cont = 0;
-void menu()
-{
-    static int ch = 0;
+void menu();
 
-    screenSetColor(LIGHTRED, DARKGRAY);
-    ascii_print("src/files/menu.txt");
-
-    screenSetColor(LIGHTGRAY, DARKGRAY);
-    screenGotoxy(60, 19);
-    printf("START GAME");
-    screenGotoxy(62, 21);
-    printf("SCORES");
-    screenGotoxy(63, 23);
-    printf("EXIT");
-
-    screenSetColor(LIGHTRED, DARKGRAY);
-
-    while (ch != 10)
-    {
-        if (keyhit())
-        {
-            ch = readch();
-        }
-
-        if ((ch == 115) || (ch == 83))
-        {
-            menu_cont++;
-
-            if (menu_cont == 3)
-            {
-                menu_cont = 0;
-            }
-
-            ch = 0;
-        }
-
-        if ((ch == 119) || (ch == 87))
-        {
-            menu_cont--;
-
-            if (menu_cont < 0)
-            {
-                menu_cont = 2;
-            }
-
-            ch = 0;
-        }
-
-        if (menu_cont == 0)
-        {
-            screenGotoxy(58, 19);
-            printf(">");
-            screenGotoxy(71, 19);
-            printf("<");
-            screenGotoxy(60, 21);
-            printf(" ");
-            screenGotoxy(69, 21);
-            printf(" ");
-            screenGotoxy(61, 23);
-            printf(" ");
-            screenGotoxy(68, 23);
-            printf(" ");
-        }
-
-        if (menu_cont == 1)
-        {
-            screenGotoxy(58, 19);
-            printf(" ");
-            screenGotoxy(71, 19);
-            printf(" ");
-            screenGotoxy(60, 21);
-            printf(">");
-            screenGotoxy(69, 21);
-            printf("<");
-            screenGotoxy(61, 23);
-            printf(" ");
-            screenGotoxy(68, 23);
-            printf(" ");
-        }
-
-        if (menu_cont == 2)
-        {
-            screenGotoxy(58, 19);
-            printf(" ");
-            screenGotoxy(71, 19);
-            printf(" ");
-            screenGotoxy(60, 21);
-            printf(" ");
-            screenGotoxy(69, 21);
-            printf(" ");
-            screenGotoxy(61, 23);
-            printf(">");
-            screenGotoxy(68, 23);
-            printf("<");
-        }
-    }
-}
-
-void print_itens(char *str);
+void print_ascii(char *path);
+void print_player(int nextX, int nextY);
+void print_items(char *str);
+void print_hp(int health);
+void print_shield(struct player *p);
+void print_sword(int pos_X, int pos_Y);
+void print_vertical_hall(int start_i_hall, int finish_i_hall, int start_j_hall, int finish_j_hall);
+void print_horizontal_hall(int start_i_hall, int finish_i_hall, int start_j_hall, int finish_j_hall);
+void print_rooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int room, int *room_enemies, int enter_door_i, int enter_door_j, int exit_door_i, int exit_door_j);
+void print_subroom(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int *room_enemies);
+void print_boss(struct boss *b);
+void print_enemy(struct enemy_obj enemy);
+void print_trap(struct trap_obj trap, int new_trap_x, int new_trap_y, int direction);
+int sum_score(int killed_enemies, int steps, int lifes, int itens_count, int boss);
+void print_score(struct score *head);
+void add_score(struct score **head, int points, char *nome);
+void free_score(struct score *head);
 
 int main()
 {
@@ -762,7 +315,7 @@ int main()
 
         screenSetColor(LIGHTRED, DARKGRAY);
         screenGotoxy(60, 3);
-        ascii_print("src/files/topscores.txt");
+        print_ascii("src/files/topscores.txt");
 
         screenGotoxy(56, 22);
         printf(">");
@@ -1568,7 +1121,7 @@ int main()
 
                 if (player.key == 1)
                 {
-                    print_itens("key");
+                    print_items("key");
                 }
 
                 if ((newX == 16 || newX == 15) && newY == 9)
@@ -1578,7 +1131,7 @@ int main()
 
                 if (player.sword == 1)
                 {
-                    print_itens("sword");
+                    print_items("sword");
                 }
 
                 if ((newX == 30 || newX == 31) && newY == 29)
@@ -1600,12 +1153,12 @@ int main()
                         screenSetColor(WHITE, DARKGRAY);
                     }
 
-                    print_itens("shield");
+                    print_items("shield");
                 }
 
                 else
                 {
-                    print_itens("not-shield");
+                    print_items("not-shield");
                 }
 
                 // Updating screen
@@ -1627,11 +1180,11 @@ int main()
             screenGotoxy(MINX + 35, MINY + 1);
             printf("┃ Inventory ┃");
             if (player.sword){
-                print_itens("sword");
+                print_items("sword");
             }
             if (player.shield)
             {
-            print_itens("shield");
+            print_items("shield");
             }
             if (player.shield_active != 0){
                 
@@ -1833,12 +1386,12 @@ int main()
                         screenSetColor(WHITE, DARKGRAY);
                     }
 
-                    print_itens("shield");
+                    print_items("shield");
                     }
 
                 else
                 {
-                    print_itens("not-shield");
+                    print_items("not-shield");
                 }
                     ch = 0;
                 }
@@ -1924,7 +1477,7 @@ int main()
 
             screenSetColor(MAGENTA, DARKGRAY);
             screenGotoxy(60, 3);
-            ascii_print("src/files/topscores.txt");
+            print_ascii("src/files/topscores.txt");
 
             screenGotoxy(56, 22);
             printf(">");
@@ -1963,7 +1516,137 @@ int main()
     }
 }
 
-void print_itens(char *str)
+void menu()
+{
+    static int ch = 0;
+
+    screenSetColor(LIGHTRED, DARKGRAY);
+    print_ascii("src/files/menu.txt");
+
+    screenSetColor(LIGHTGRAY, DARKGRAY);
+    screenGotoxy(60, 19);
+    printf("START GAME");
+    screenGotoxy(62, 21);
+    printf("SCORES");
+    screenGotoxy(63, 23);
+    printf("EXIT");
+
+    screenSetColor(LIGHTRED, DARKGRAY);
+
+    while (ch != 10)
+    {
+        if (keyhit())
+        {
+            ch = readch();
+        }
+
+        if ((ch == 115) || (ch == 83))
+        {
+            menu_cont++;
+
+            if (menu_cont == 3)
+            {
+                menu_cont = 0;
+            }
+
+            ch = 0;
+        }
+
+        if ((ch == 119) || (ch == 87))
+        {
+            menu_cont--;
+
+            if (menu_cont < 0)
+            {
+                menu_cont = 2;
+            }
+
+            ch = 0;
+        }
+
+        if (menu_cont == 0)
+        {
+            screenGotoxy(58, 19);
+            printf(">");
+            screenGotoxy(71, 19);
+            printf("<");
+            screenGotoxy(60, 21);
+            printf(" ");
+            screenGotoxy(69, 21);
+            printf(" ");
+            screenGotoxy(61, 23);
+            printf(" ");
+            screenGotoxy(68, 23);
+            printf(" ");
+        }
+
+        if (menu_cont == 1)
+        {
+            screenGotoxy(58, 19);
+            printf(" ");
+            screenGotoxy(71, 19);
+            printf(" ");
+            screenGotoxy(60, 21);
+            printf(">");
+            screenGotoxy(69, 21);
+            printf("<");
+            screenGotoxy(61, 23);
+            printf(" ");
+            screenGotoxy(68, 23);
+            printf(" ");
+        }
+
+        if (menu_cont == 2)
+        {
+            screenGotoxy(58, 19);
+            printf(" ");
+            screenGotoxy(71, 19);
+            printf(" ");
+            screenGotoxy(60, 21);
+            printf(" ");
+            screenGotoxy(69, 21);
+            printf(" ");
+            screenGotoxy(61, 23);
+            printf(">");
+            screenGotoxy(68, 23);
+            printf("<");
+        }
+    }
+}
+
+void print_ascii(char *path)
+{
+    FILE *file;
+    char string[128];
+
+    file = fopen(path, "r");
+
+    if (file == NULL)
+    {
+        perror("Error opening file");
+        return;
+    }
+
+    while (fgets(string, sizeof(string), file) != NULL)
+    {
+        printf("%s", string);
+    }
+
+    fclose(file);
+}
+
+void print_player(int nextX, int nextY)
+{
+    screenSetColor(CYAN, DARKGRAY);
+    screenGotoxy(player_x, player_y);
+    printf("  ");
+    player_x = nextX;
+    player_y = nextY;
+    screenGotoxy(player_x, player_y);
+    printf("🐱");
+}
+
+void print_items(char *str)
 {
     
     if (strcmp(str, "key") == 0)
@@ -2003,6 +1686,341 @@ void print_itens(char *str)
         printf("      ");
         screenGotoxy(MINX + 42, MINY + 4);
         printf("      ");
+    }
+}
+
+void print_hp(int health)
+{
+    screenGotoxy(MINX + 2, MINY + 1);
+    printf("      ");
+    
+    for (int h = 1; h < health + 1; h++)
+    {
+        screenGotoxy(MINX + h + h, MINY + 1);
+        screenSetColor(RED, DARKGRAY);
+        printf("♥");
+        screenSetColor(WHITE, DARKGRAY);
+    }
+    if (health == 0)
+    {
+        screenGotoxy(MINX + 2, MINY + 1);
+        screenSetColor(YELLOW, DARKGRAY);
+        printf("☠️  You died! ☠️");
+    }
+}
+
+void print_shield(struct player *p)
+{
+    
+
+    screenGotoxy(MINX + 1, MINY + 2);
+    printf("                   ");
+    for (int s = 1; s < p->shield + 1; s++)
+    {
+        screenGotoxy(MINX + s + s, MINY + 2);
+        screenSetColor(LIGHTGREEN, DARKGRAY);
+        printf("🛡");
+        screenSetColor(WHITE, DARKGRAY);
+    }
+    if (p->shield == 0)
+    {
+        screenGotoxy(MINX + 1, MINY + 2);
+        screenSetColor(YELLOW, DARKGRAY);
+        printf(" Shield broken! ");
+        p->shield_active = -1;
+    }
+}
+
+void print_sword(int pos_X, int pos_Y)
+{
+    int cont = 55;
+    while (cont > 0)
+    {
+        screenSetColor(YELLOW, DARKGRAY);
+        screenGotoxy(pos_X - 1, pos_Y - 1);
+        printf("┌");
+        printf(" ");
+        screenGotoxy(pos_X, pos_Y - 1);
+        printf("──");
+        printf(" ");
+        screenGotoxy(pos_X + 2, pos_Y - 1);
+        printf("┐");
+        printf(" ");
+        screenGotoxy(pos_X - 1, pos_Y);
+        printf("│ ");
+        printf(" ");
+        screenGotoxy(pos_X + 1, pos_Y);
+        printf(" │");
+        printf(" ");
+        screenGotoxy(pos_X - 1, pos_Y + 1);
+        printf("└");
+        printf(" ");
+        screenGotoxy(pos_X, pos_Y + 1);
+        printf("──");
+        printf(" ");
+        screenGotoxy(pos_X + 2, pos_Y + 1);
+        printf("┘");
+        printf(" ");
+
+        usleep(5000);
+
+        screenGotoxy(pos_X - 1, pos_Y - 1);
+        printf(" ");
+        screenGotoxy(pos_X, pos_Y - 1);
+        printf("  ");
+        screenGotoxy(pos_X + 2, pos_Y - 1);
+        printf(" ");
+        screenGotoxy(pos_X - 1, pos_Y);
+        printf(" ");
+        screenGotoxy(pos_X + 1, pos_Y);
+        printf("  ");
+        screenGotoxy(pos_X - 1, pos_Y + 1);
+        printf(" ");
+        screenGotoxy(pos_X, pos_Y + 1);
+        printf("  ");
+        screenGotoxy(pos_X + 2, pos_Y + 1);
+        printf(" ");
+
+        cont--;
+    }
+}
+
+void print_vertical_hall(int start_i_hall, int finish_i_hall, int start_j_hall, int finish_j_hall)
+{
+    if ((player_y >= start_j_hall) && (player_y < finish_j_hall))
+    {
+        screenGotoxy(start_i_hall, player_y);
+        printf("║");
+        screenGotoxy(finish_i_hall, player_y);
+        printf("║");
+    }
+}
+
+void print_horizontal_hall(int start_i_hall, int finish_i_hall, int start_j_hall, int finish_j_hall)
+{
+    if (player_x >= start_i_hall - 2 && player_x < finish_i_hall && player_y > start_j_hall && player_y < finish_j_hall)
+    {
+        screenGotoxy(player_x + 2, start_j_hall);
+        printf("═");
+        screenGotoxy(player_x + 2, finish_j_hall - 1);
+        printf("═");
+    }
+}
+
+void print_rooms(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int room, int *room_enemies, int enter_door_i, int enter_door_j, int exit_door_i, int exit_door_j)
+{
+    int roomRange = (player_x + 1 >= start_i_room) && (player_x <= finish_i_room) && (player_y - 1 >= start_j_room) && (player_y <= finish_j_room);
+
+    screenSetColor(CYAN, DARKGRAY);
+    int last_j = start_j_room;
+    if (roomRange && (room != 0))
+    {
+        *room_enemies = 1;
+        for (int i = start_i_room; i < finish_i_room; i++)
+        {
+            for (int j = start_j_room; j < finish_j_room; j++)
+            {
+                if ((i == enter_door_i && j == enter_door_j) || (i == exit_door_i && j == exit_door_j))
+                {
+                    screenGotoxy(i, j);
+                    printf("🚪");
+                }
+                else if (j == start_j_room || j == finish_j_room - 1)
+                {
+                    screenGotoxy(i, j);
+                    printf("-");
+                }
+                else if (i == start_i_room || i == finish_i_room - 1)
+                {
+                    screenGotoxy(i, j);
+                    printf("|");
+                }
+
+                last_j = j;
+            }
+            screenGotoxy(i, last_j);
+            printf("\n");
+        }
+    }
+    else if (room == 0)
+    {
+        for (int i = start_i_room; i < finish_i_room; i++)
+        {
+            for (int j = start_j_room; j < finish_j_room; j++)
+            {
+                if (i == enter_door_i && j == enter_door_j)
+                {
+                    screenGotoxy(i, j);
+                    printf("🚪");
+                }
+                else if (j == start_j_room || j == finish_j_room - 1)
+                {
+                    screenGotoxy(i, j);
+                    printf("-");
+                }
+                else if (i == start_i_room || i == finish_i_room - 1)
+                {
+                    screenGotoxy(i, j);
+                    printf("|");
+                }
+
+                last_j = j;
+            }
+            screenGotoxy(i, last_j);
+            printf("\n");
+        }
+    }
+}
+
+void print_subroom(int start_i_room, int finish_i_room, int start_j_room, int finish_j_room, int *room_enemies)
+{
+    int last_j = start_j_room;
+    if (*room_enemies)
+    {
+        for (int i = start_i_room; i < finish_i_room; i++)
+        {
+            for (int j = start_j_room; j < finish_j_room; j++)
+            {
+                if (j == start_j_room || j == finish_j_room - 1)
+                {
+                    screenGotoxy(i, j);
+                    printf("-");
+                }
+                else if (i == start_i_room || i == finish_i_room - 1)
+                {
+                    screenGotoxy(i, j);
+                    printf("|");
+                }
+
+                last_j = j;
+            }
+
+            screenGotoxy(i, last_j);
+            printf("\n");
+        }
+    }
+}
+
+void print_boss(struct boss *b)
+{
+    screenSetColor(CYAN, DARKGRAY);
+    screenGotoxy(b->x, b->y);
+    printf("    ");
+    b->x = b->newX;
+    b->y = b->newY;
+    screenGotoxy(b->newX, b->newY);
+    printf("BOSS");
+}
+
+void print_enemy(struct enemy_obj enemy)
+{
+    screenGotoxy(enemy.previous_x, enemy.previous_y);
+    printf(" ");
+    screenGotoxy(enemy.x, enemy.y);
+    printf("%s", enemy.sprite);
+}
+
+void print_trap(struct trap_obj trap, int new_trap_x, int new_trap_y, int direction)
+{
+    screenGotoxy(trap.previous_x, trap.previous_y);
+    printf(" ");
+    trap.x = new_trap_x;
+    trap.y = new_trap_y;
+    screenGotoxy(trap.x, trap.y);
+    switch (direction)
+    {
+    case 1:
+        printf("↑");
+        break;
+    case 2:
+        printf("↓");
+        break;
+
+    case 3:
+        printf("←");
+        break;
+
+    case 4:
+        printf("→");
+        break;
+    }
+}
+
+int sum_score(int killed_enemies, int steps, int lifes, int itens_count, int boss)
+{
+    int total = (killed_enemies * 100) + (lifes * 500) + (itens_count * 250);
+    if (steps > 150)
+    {
+        total = total - (steps / 30);
+    }
+    if (boss){
+        total = total + 3000;
+    }
+
+    return total;
+}
+
+void print_score(struct score *head)
+{
+    struct score *node = head;
+    int cont = 1, y = 11;
+
+    while (node != NULL)
+    {
+        screenGotoxy(60, y);
+        printf("%d. %s - %d\n", cont, node->name, node->points);
+        cont++;
+        y++;
+        node = node->next;
+
+        if (cont == 11)
+            break;
+    }
+}
+
+void add_score(struct score **head, int points, char *nome)
+{
+    struct score *node = *head;
+    struct score *new = (struct score *)malloc(sizeof(struct score));
+    new->points = points;
+    new->name = (char *)malloc((strlen(nome) + 1) * sizeof(char));
+    new->next = NULL;
+
+    strcpy(new->name, nome);
+
+    if (*head == NULL)
+    {
+        *head = new;
+    }
+
+    else if ((*head)->points < points)
+    {
+        new->next = *head;
+        *head = new;
+    }
+
+    else
+    {
+        while (node->next != NULL && node->next->points > points)
+        {
+            node = node->next;
+        }
+
+        new->next = node->next;
+        node->next = new;
+    }
+}
+
+void free_score(struct score *head)
+{
+    struct score *temp;
+
+    while (head != NULL)
+    {
+        temp = head;
+        head = head->next;
+        free(temp->name);
+        free(temp);
     }
 }
 
