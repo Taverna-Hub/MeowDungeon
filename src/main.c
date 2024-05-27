@@ -90,8 +90,8 @@ struct score
 };
 
 int menu_cont = 0;
-void menu();
 
+void menu();
 void print_ascii(char *path);
 void print_player(int nextX, int nextY);
 void print_items(char *str);
