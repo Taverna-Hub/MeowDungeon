@@ -1460,7 +1460,7 @@ int main()
             }
 
             char nome[6];
-            printf("Digite seu nome [5]: ");
+            printf("Your name [5]: ");
             scanf(" %5s", nome);
 
             int int_points = sum_score(enemies_cont, player.steps, player.hp, itens, boss.is_dead);
